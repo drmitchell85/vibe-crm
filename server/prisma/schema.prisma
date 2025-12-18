@@ -1,0 +1,126 @@
+// Prisma schema for FPH CRM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core contact entity
+model Contact {
+  id            String         @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String?        @unique
+  phone         String?
+  company       String?
+  jobTitle      String?
+  address       String?
+  birthday      DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relationships
+  interactions  Interaction[]
+  reminders     Reminder[]
+  notes         Note[]
+  tags          ContactTag[]
+
+  @@index([email])
+  @@index([lastName, firstName])
+}
+
+// Interaction types: call, meeting, email, text, etc.
+model Interaction {
+  id            String         @id @default(uuid())
+  contactId     String
+  contact       Contact        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  type          InteractionType
+  subject       String?
+  notes         String?        @db.Text
+  date          DateTime       @default(now())
+  duration      Int?           // Duration in minutes
+  location      String?
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([contactId])
+  @@index([date])
+}
+
+enum InteractionType {
+  CALL
+  MEETING
+  EMAIL
+  TEXT
+  COFFEE
+  LUNCH
+  EVENT
+  OTHER
+}
+
+// Reminders for follow-ups
+model Reminder {
+  id            String         @id @default(uuid())
+  contactId     String
+  contact       Contact        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  title         String
+  description   String?        @db.Text
+  dueDate       DateTime
+  isCompleted   Boolean        @default(false)
+  completedAt   DateTime?
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([contactId])
+  @@index([dueDate])
+  @@index([isCompleted])
+}
+
+// Notes attached to contacts
+model Note {
+  id            String         @id @default(uuid())
+  contactId     String
+  contact       Contact        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  content       String         @db.Text
+  isPinned      Boolean        @default(false)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([contactId])
+}
+
+// Tags/Categories for organizing contacts
+model Tag {
+  id            String         @id @default(uuid())
+  name          String         @unique
+  color         String?        // Hex color code
+
+  contacts      ContactTag[]
+
+  createdAt     DateTime       @default(now())
+}
+
+// Many-to-many relationship between contacts and tags
+model ContactTag {
+  contactId     String
+  tagId         String
+
+  contact       Contact        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag           Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  assignedAt    DateTime       @default(now())
+
+  @@id([contactId, tagId])
+  @@index([contactId])
+  @@index([tagId])
+}
