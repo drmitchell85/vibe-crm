@@ -11,17 +11,18 @@ datasource db {
 
 // Core contact entity
 model Contact {
-  id            String         @id @default(uuid())
-  firstName     String
-  lastName      String
-  email         String?        @unique
-  phone         String?
-  company       String?
-  jobTitle      String?
-  address       String?
-  birthday      DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id              String         @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String?        @unique
+  phone           String?
+  twitterUsername String?
+  company         String?
+  jobTitle        String?
+  address         String?
+  birthday        DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   // Relationships
   interactions  Interaction[]
@@ -31,6 +32,7 @@ model Contact {
 
   @@index([email])
   @@index([lastName, firstName])
+  @@index([twitterUsername])
 }
 
 // Interaction types: call, meeting, email, text, etc.

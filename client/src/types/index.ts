@@ -4,6 +4,7 @@ export interface Contact {
   lastName: string;
   email?: string;
   phone?: string;
+  twitterUsername?: string;
   company?: string;
   jobTitle?: string;
   address?: string;

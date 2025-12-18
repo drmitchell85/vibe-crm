@@ -25,7 +25,8 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 ## Features
 
 ### Current Features
-- Contact Management (CRUD operations)
+- Database setup with PostgreSQL and Prisma
+- Complete database schema (Contact, Interaction, Reminder, Note, Tag models)
 
 ### Planned Features
 - Interaction Tracking
@@ -40,8 +41,8 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 ### Phase 1: Foundation & Basic Contact Management 🔄 IN PROGRESS
 **Started**: 2025-12-18
 
-- [ ] Project setup (monorepo, dependencies)
-- [ ] Database schema for contacts
+- [x] Project setup (monorepo, dependencies)
+- [x] Database schema for contacts (PostgreSQL + Prisma migration)
 - [ ] Backend API for contact CRUD
 - [ ] Frontend contact list and detail pages
 - [ ] Basic styling with Tailwind
