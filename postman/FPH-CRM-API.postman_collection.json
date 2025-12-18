@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "FPH CRM API",
+    "description": "Personal Contact Relationship Manager API - Test all contact endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345"
+  },
+  "item": [
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "Get All Contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts"]
+            },
+            "description": "Retrieve all contacts, sorted by name. Includes tags."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}"]
+            },
+            "description": "Get a single contact with all related data (interactions, reminders, notes, tags)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1 555-1234\",\n  \"twitterUsername\": \"@johndoe\",\n  \"company\": \"Acme Corp\",\n  \"jobTitle\": \"Software Engineer\",\n  \"address\": \"123 Main St, San Francisco, CA\",\n  \"birthday\": \"1990-01-15T00:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts"]
+            },
+            "description": "Create a new contact. firstName and lastName are required."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Contact",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\",\n  \"phone\": \"+1 555-9999\",\n  \"twitterUsername\": \"@johndoe_new\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}"]
+            },
+            "description": "Update an existing contact. All fields are optional (partial update)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}"]
+            },
+            "description": "Delete a contact and all related data (interactions, reminders, notes). Tags are preserved."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/search?q=john",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "john",
+                  "description": "Search query (searches name, email, twitter, company)"
+                }
+              ]
+            },
+            "description": "Search contacts by name, email, twitter username, or company (case-insensitive)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if API server is running"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "contact_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
