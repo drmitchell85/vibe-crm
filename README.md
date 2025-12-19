@@ -18,21 +18,30 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - RESTful API
 
 **Development:**
-- pnpm (package manager)
+- npm workspaces (package manager)
 - ESLint + Prettier (code quality)
 - Monorepo structure
 
 ## Features
 
 ### Current Features
-- Database setup with PostgreSQL and Prisma
-- Complete database schema (Contact, Interaction, Reminder, Note, Tag models)
+- ✅ Database setup with PostgreSQL and Prisma
+- ✅ Complete database schema (Contact, Interaction, Reminder, Note, Tag models)
+- ✅ RESTful API for contact management (CRUD operations + search)
+- ✅ API documentation with Swagger UI
+- ✅ Postman collection for API testing
+- ✅ Frontend foundation with React + TypeScript + Tailwind CSS
+- ✅ API client with axios and React Query
+- ✅ Responsive layout with navigation
+- ✅ Dashboard homepage with API status
 
 ### Planned Features
+- Contact List & Detail Pages
+- Contact Forms (Create/Edit)
 - Interaction Tracking
 - Reminders & Follow-ups
 - Notes & Tagging
-- Search & Filtering
+- Advanced Search & Filtering
 - Data Import/Export
 - Dashboard with Analytics
 
@@ -41,11 +50,39 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 ### Phase 1: Foundation & Basic Contact Management 🔄 IN PROGRESS
 **Started**: 2025-12-18
 
+**Chunk 1: Database Setup** ✅ Completed
 - [x] Project setup (monorepo, dependencies)
 - [x] Database schema for contacts (PostgreSQL + Prisma migration)
-- [ ] Backend API for contact CRUD
-- [ ] Frontend contact list and detail pages
-- [ ] Basic styling with Tailwind
+- [x] Added twitterUsername field for TPOT/tech twitter tracking
+
+**Chunk 2: Service Layer** ✅ Completed
+- [x] Zod validation schemas
+- [x] Contact service with business logic (CRUD + search)
+
+**Chunk 3: API Endpoints & Documentation** ✅ Completed
+- [x] Contact controller (request handlers)
+- [x] REST API routes (GET, POST, PUT, DELETE, search)
+- [x] Swagger/OpenAPI documentation at /api-docs
+- [x] Postman collection and environment
+
+**Chunk 4: Frontend Foundation & API Client** ✅ Completed
+- [x] API client with axios wrapper
+- [x] React Query configuration
+- [x] Layout component with navigation
+- [x] HomePage with API connection test
+- [x] Verified frontend <-> backend communication
+
+**Chunk 5: Contact List Page** ⏳ Next
+- [ ] ContactsPage component with list display
+- [ ] Search functionality
+- [ ] Loading and error states
+- [ ] Empty state
+
+**Chunk 6: Contact Forms & Detail View** ⏳ Pending
+- [ ] Contact detail page
+- [ ] Create contact form
+- [ ] Edit contact form
+- [ ] Delete confirmation
 
 **Deliverable:** Working contact CRUD system with database
 
@@ -142,6 +179,7 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 **Contact**
 - Basic information: firstName, lastName, email, phone
+- Social: socialMedia (JSON field for flexible social platform tracking: twitter, linkedin, github, mastodon, etc.)
 - Additional: company, jobTitle, address, birthday
 - Relationships: interactions, reminders, notes, tags
 
@@ -258,14 +296,20 @@ fph-crm/
 
 ## API Endpoints
 
+Full interactive API documentation is available at **http://localhost:3001/api-docs** (Swagger UI)
+
 ### Contacts
 - `GET /api/contacts` - List all contacts
-- `GET /api/contacts/:id` - Get single contact
+- `GET /api/contacts/search?q={query}` - Search contacts by name, email, twitter, or company
+- `GET /api/contacts/:id` - Get single contact with related data
 - `POST /api/contacts` - Create contact
 - `PUT /api/contacts/:id` - Update contact
 - `DELETE /api/contacts/:id` - Delete contact
 
-More endpoints will be added in subsequent phases.
+### Health
+- `GET /health` - API health check
+
+More endpoints will be added in subsequent phases (interactions, reminders, notes, tags).
 
 ## Testing
 
@@ -287,6 +331,7 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-18
+**Last Updated**: 2025-12-19
 **Current Phase**: Phase 1 - Foundation & Basic Contact Management
+**Current Chunk**: Chunk 5 - Contact List Page
 **Status**: 🔄 IN PROGRESS

@@ -34,10 +34,12 @@ const router = Router();
  *           type: string
  *           description: Contact's phone number
  *           example: "+1 555-1234"
- *         twitterUsername:
- *           type: string
- *           description: Twitter/X username
- *           example: "@johndoe"
+ *         socialMedia:
+ *           type: object
+ *           additionalProperties:
+ *             type: string
+ *           description: Social media handles/usernames
+ *           example: { "twitter": "@johndoe", "linkedin": "johndoe", "github": "johndoe" }
  *         company:
  *           type: string
  *           description: Company name
@@ -81,8 +83,10 @@ const router = Router();
  *           format: email
  *         phone:
  *           type: string
- *         twitterUsername:
- *           type: string
+ *         socialMedia:
+ *           type: object
+ *           additionalProperties:
+ *             type: string
  *         company:
  *           type: string
  *         jobTitle:
@@ -105,8 +109,10 @@ const router = Router();
  *           format: email
  *         phone:
  *           type: string
- *         twitterUsername:
- *           type: string
+ *         socialMedia:
+ *           type: object
+ *           additionalProperties:
+ *             type: string
  *         company:
  *           type: string
  *         jobTitle:
@@ -173,7 +179,7 @@ router.get('/', contactController.getAllContacts);
  *   get:
  *     summary: Search contacts
  *     tags: [Contacts]
- *     description: Search contacts by name, email, twitter username, or company
+ *     description: Search contacts by name, email, or company
  *     parameters:
  *       - in: query
  *         name: q
@@ -255,7 +261,10 @@ router.get('/:id', contactController.getContactById);
  *             lastName: "Doe"
  *             email: "john.doe@example.com"
  *             phone: "+1 555-1234"
- *             twitterUsername: "@johndoe"
+ *             socialMedia:
+ *               twitter: "@johndoe"
+ *               linkedin: "johndoe"
+ *               github: "johndoe"
  *             company: "Acme Corp"
  *             jobTitle: "Software Engineer"
  *     responses:
