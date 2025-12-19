@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { createContactSchema, updateContactSchema, CreateContactInput, UpdateContactInput } from '../schemas/contactSchema';
 import { AppError } from '../middleware/errorHandler';
 
@@ -85,7 +85,9 @@ export const contactService = {
         ...validatedData,
         email: validatedData.email || null,
         phone: validatedData.phone || null,
-        twitterUsername: validatedData.twitterUsername || null,
+        socialMedia: validatedData.socialMedia && Object.keys(validatedData.socialMedia).length > 0
+          ? validatedData.socialMedia as Prisma.InputJsonValue
+          : Prisma.JsonNull,
         company: validatedData.company || null,
         jobTitle: validatedData.jobTitle || null,
         address: validatedData.address || null,
@@ -128,7 +130,11 @@ export const contactService = {
         ...validatedData,
         email: validatedData.email === '' ? null : validatedData.email,
         phone: validatedData.phone === '' ? null : validatedData.phone,
-        twitterUsername: validatedData.twitterUsername === '' ? null : validatedData.twitterUsername,
+        socialMedia: validatedData.socialMedia !== undefined
+          ? (Object.keys(validatedData.socialMedia).length > 0
+              ? validatedData.socialMedia as Prisma.InputJsonValue
+              : Prisma.JsonNull)
+          : undefined,
         company: validatedData.company === '' ? null : validatedData.company,
         jobTitle: validatedData.jobTitle === '' ? null : validatedData.jobTitle,
         address: validatedData.address === '' ? null : validatedData.address,
@@ -177,7 +183,8 @@ export const contactService = {
   },
 
   /**
-   * Search contacts by name, email, or twitter username
+   * Search contacts by name, email, or company
+   * Note: Social media search not currently supported (requires JSON search)
    * @param query - Search query string
    * @returns Array of matching contacts
    */
@@ -189,7 +196,6 @@ export const contactService = {
             { firstName: { contains: query, mode: 'insensitive' } },
             { lastName: { contains: query, mode: 'insensitive' } },
             { email: { contains: query, mode: 'insensitive' } },
-            { twitterUsername: { contains: query, mode: 'insensitive' } },
             { company: { contains: query, mode: 'insensitive' } },
           ]
         },

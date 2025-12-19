@@ -16,7 +16,7 @@ model Contact {
   lastName        String
   email           String?        @unique
   phone           String?
-  twitterUsername String?
+  socialMedia     Json?          // { "twitter": "@user", "linkedin": "user", "github": "user", etc. }
   company         String?
   jobTitle        String?
   address         String?
@@ -32,7 +32,6 @@ model Contact {
 
   @@index([email])
   @@index([lastName, firstName])
-  @@index([twitterUsername])
 }
 
 // Interaction types: call, meeting, email, text, etc.

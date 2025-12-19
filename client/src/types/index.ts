@@ -4,7 +4,7 @@ export interface Contact {
   lastName: string;
   email?: string;
   phone?: string;
-  twitterUsername?: string;
+  socialMedia?: Record<string, string>; // { "twitter": "@user", "linkedin": "user", etc. }
   company?: string;
   jobTitle?: string;
   address?: string;
@@ -18,7 +18,7 @@ export interface CreateContactInput {
   lastName: string;
   email?: string;
   phone?: string;
-  twitterUsername?: string;
+  socialMedia?: Record<string, string>;
   company?: string;
   jobTitle?: string;
   address?: string;
@@ -30,7 +30,7 @@ export interface UpdateContactInput {
   lastName?: string;
   email?: string;
   phone?: string;
-  twitterUsername?: string;
+  socialMedia?: Record<string, string>;
   company?: string;
   jobTitle?: string;
   address?: string;

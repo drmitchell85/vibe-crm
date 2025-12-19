@@ -6,7 +6,7 @@ export const contactSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email format').optional().or(z.literal('')),
   phone: z.string().optional(),
-  twitterUsername: z.string().optional(),
+  socialMedia: z.record(z.string(), z.string()).optional(), // { "twitter": "@user", "linkedin": "user", etc. }
   company: z.string().optional(),
   jobTitle: z.string().optional(),
   address: z.string().optional(),
