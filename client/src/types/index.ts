@@ -13,6 +13,30 @@ export interface Contact {
   updatedAt: string;
 }
 
+export interface CreateContactInput {
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  twitterUsername?: string;
+  company?: string;
+  jobTitle?: string;
+  address?: string;
+  birthday?: string;
+}
+
+export interface UpdateContactInput {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  twitterUsername?: string;
+  company?: string;
+  jobTitle?: string;
+  address?: string;
+  birthday?: string;
+}
+
 export interface Interaction {
   id: string;
   contactId: string;
