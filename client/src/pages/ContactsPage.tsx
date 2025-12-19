@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
-import type { Contact } from '../types';
+import { Modal } from '../components/Modal';
+import { ContactForm } from '../components/ContactForm';
+import type { Contact, CreateContactInput } from '../types';
 
 /**
  * Contacts list page - displays all contacts with search functionality
@@ -11,6 +13,9 @@ import type { Contact } from '../types';
 export function ContactsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 400);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const queryClient = useQueryClient();
 
   // Fetch contacts based on debounced search query
   const { data: contacts, isLoading, error } = useQuery({
@@ -23,15 +28,44 @@ export function ContactsPage() {
     },
   });
 
+  // Create contact mutation
+  const createMutation = useMutation({
+    mutationFn: (data: CreateContactInput) => api.createContact(data),
+    onSuccess: () => {
+      // Invalidate and refetch contacts
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      setIsCreateModalOpen(false);
+    },
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Contacts</h1>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        >
           + Add Contact
         </button>
       </div>
+
+      {/* Create Contact Modal */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Create New Contact"
+        size="xl"
+      >
+        <ContactForm
+          onSubmit={async (data) => {
+            await createMutation.mutateAsync(data as CreateContactInput);
+          }}
+          onCancel={() => setIsCreateModalOpen(false)}
+          isLoading={createMutation.isPending}
+        />
+      </Modal>
 
       {/* Search Bar */}
       <div className="bg-white rounded-lg shadow p-4">
@@ -75,7 +109,10 @@ export function ContactsPage() {
               : 'Get started by adding your first contact.'}
           </p>
           {!searchQuery && (
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
               + Add Your First Contact
             </button>
           )}
