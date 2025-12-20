@@ -113,16 +113,16 @@ A full-stack personal CRM application for managing contacts, tracking interactio
   - `updateInteraction(id, data)`
   - `deleteInteraction(id)`
 
-**Chunk 2.2: Backend — API Routes & Swagger Docs** ⏳ Pending
-- [ ] Create interaction controller (`server/src/controllers/interactionController.ts`)
-- [ ] Create interaction routes (`server/src/routes/interactions.ts`)
-  - `GET /api/contacts/:contactId/interactions` — list all for a contact
+**Chunk 2.2: Backend — API Routes & Swagger Docs** ✅ Completed
+- [x] Create interaction controller (`server/src/controllers/interactionController.ts`)
+- [x] Create interaction routes (`server/src/routes/interactions.ts`)
+  - `GET /api/contacts/:contactId/interactions` — list all for a contact (with type/date filters)
   - `GET /api/interactions/:id` — get single interaction
   - `POST /api/contacts/:contactId/interactions` — create new
   - `PUT /api/interactions/:id` — update
   - `DELETE /api/interactions/:id` — delete
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Register routes in main `index.ts`
+- [x] Add Swagger/OpenAPI documentation
+- [x] Register routes in main `index.ts`
 
 **Chunk 2.3: Frontend — API Client & Types** ⏳ Pending
 - [ ] Add `CreateInteractionInput` and `UpdateInteractionInput` types
@@ -385,10 +385,17 @@ Full interactive API documentation is available at **http://localhost:3001/api-d
 - `PUT /api/contacts/:id` - Update contact
 - `DELETE /api/contacts/:id` - Delete contact
 
+### Interactions
+- `GET /api/contacts/:contactId/interactions` - List interactions for a contact (supports `type`, `startDate`, `endDate` filters)
+- `GET /api/interactions/:id` - Get single interaction
+- `POST /api/contacts/:contactId/interactions` - Create interaction
+- `PUT /api/interactions/:id` - Update interaction
+- `DELETE /api/interactions/:id` - Delete interaction
+
 ### Health
 - `GET /health` - API health check
 
-More endpoints will be added in subsequent phases (interactions, reminders, notes, tags).
+More endpoints will be added in subsequent phases (reminders, notes, tags).
 
 ## Testing
 
@@ -412,5 +419,5 @@ MIT
 
 **Last Updated**: 2025-12-20
 **Current Phase**: Phase 2 - Interaction Tracking ⏳ IN PROGRESS
-**Current Chunk**: 2.2 - Backend API Routes & Swagger Docs
+**Current Chunk**: 2.3 - Frontend API Client & Types
 **Status**: ✅ Phase 1 Complete | ⏳ Phase 2 Starting

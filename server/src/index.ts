@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { errorHandler } from './middleware/errorHandler';
 import { swaggerSpec } from './config/swagger';
 import contactRoutes from './routes/contacts';
+import interactionRoutes from './routes/interactions';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API routes
 app.use('/api/contacts', contactRoutes);
+app.use('/api', interactionRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
