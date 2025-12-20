@@ -55,29 +55,29 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 ### Phase 1: Foundation & Basic Contact Management ✅ COMPLETED
 **Started**: 2025-12-18 | **Completed**: 2025-12-19
 
-**Chunk 1: Database Setup** ✅ Completed
+**Chunk 1.1: Database Setup** ✅ Completed
 - [x] Project setup (monorepo, dependencies)
 - [x] Database schema for contacts (PostgreSQL + Prisma migration)
 - [x] Migrated from twitterUsername to flexible socialMedia JSON field
 
-**Chunk 2: Service Layer** ✅ Completed
+**Chunk 1.2: Service Layer** ✅ Completed
 - [x] Zod validation schemas
 - [x] Contact service with business logic (CRUD + search)
 
-**Chunk 3: API Endpoints & Documentation** ✅ Completed
+**Chunk 1.3: API Endpoints & Documentation** ✅ Completed
 - [x] Contact controller (request handlers)
 - [x] REST API routes (GET, POST, PUT, DELETE, search)
 - [x] Swagger/OpenAPI documentation at /api-docs
 - [x] Postman collection and environment
 
-**Chunk 4: Frontend Foundation & API Client** ✅ Completed
+**Chunk 1.4: Frontend Foundation & API Client** ✅ Completed
 - [x] API client with axios wrapper
 - [x] React Query configuration
 - [x] Layout component with navigation
 - [x] HomePage with API connection test
 - [x] Verified frontend <-> backend communication
 
-**Chunk 5: Contact List Page** ✅ Completed
+**Chunk 1.5: Contact List Page** ✅ Completed
 - [x] ContactsPage component with table display
 - [x] Search functionality with debouncing (400ms)
 - [x] Loading and error states
@@ -85,7 +85,7 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Social media badges display
 - [x] useDebounce custom hook
 
-**Chunk 6: Contact Forms & Detail View** ✅ Completed
+**Chunk 1.6: Contact Forms & Detail View** ✅ Completed
 - [x] ContactDetailPage with formatted display (email/phone links, date formatting)
 - [x] Reusable ContactForm component (works for create and edit)
 - [x] Modal component (backdrop, ESC key, scroll lock)
@@ -100,16 +100,64 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 2: Interaction Tracking ⏳ PENDING
+### Phase 2: Interaction Tracking ⏳ IN PROGRESS
 
-**Tasks:**
-- [ ] Interaction database model
-- [ ] Backend API for interactions
-- [ ] Interaction timeline UI
-- [ ] Multiple interaction types (call, meeting, email, text, coffee, lunch, event)
-- [ ] Filters and sorting
+**Chunk 2.1: Backend — Interaction Service Layer** ✅ Completed
+- [x] Create Zod validation schemas (`server/src/schemas/interactionSchema.ts`)
+  - `createInteractionSchema` (type, contactId required; subject, notes, date, duration, location optional)
+  - `updateInteractionSchema` (all fields optional)
+- [x] Create interaction service (`server/src/services/interactionService.ts`)
+  - `getInteractionsForContact(contactId)` with optional filtering (type, date range)
+  - `getInteractionById(id)`
+  - `createInteraction(data)`
+  - `updateInteraction(id, data)`
+  - `deleteInteraction(id)`
 
-**Deliverable:** Full interaction logging with timeline view
+**Chunk 2.2: Backend — API Routes & Swagger Docs** ⏳ Pending
+- [ ] Create interaction controller (`server/src/controllers/interactionController.ts`)
+- [ ] Create interaction routes (`server/src/routes/interactions.ts`)
+  - `GET /api/contacts/:contactId/interactions` — list all for a contact
+  - `GET /api/interactions/:id` — get single interaction
+  - `POST /api/contacts/:contactId/interactions` — create new
+  - `PUT /api/interactions/:id` — update
+  - `DELETE /api/interactions/:id` — delete
+- [ ] Add Swagger/OpenAPI documentation
+- [ ] Register routes in main `index.ts`
+
+**Chunk 2.3: Frontend — API Client & Types** ⏳ Pending
+- [ ] Add `CreateInteractionInput` and `UpdateInteractionInput` types
+- [ ] Add interaction methods to API client (`client/src/lib/api.ts`)
+  - `getInteractionsForContact(contactId)`
+  - `createInteraction(contactId, data)`
+  - `updateInteraction(id, data)`
+  - `deleteInteraction(id)`
+
+**Chunk 2.4: Frontend — Interaction Timeline UI** ⏳ Pending
+- [ ] Create `InteractionTimeline` component (`client/src/components/InteractionTimeline.tsx`)
+  - Chronological list view with date grouping
+  - Type icons/badges for each interaction type
+  - Duration and location display
+  - Empty state when no interactions
+- [ ] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
+- [ ] Add "Add Interaction" button in header
+
+**Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ⏳ Pending
+- [ ] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
+  - Type dropdown with all 8 interaction types
+  - Date picker, subject, notes, duration, location fields
+  - Form validation
+- [ ] Add create interaction modal (triggered from "Add Interaction" button)
+- [ ] Add edit functionality (click on timeline item → edit modal)
+- [ ] Add delete confirmation dialog
+- [ ] React Query mutations with cache invalidation
+
+**Chunk 2.6: Frontend — Filtering & Sorting** ⏳ Pending
+- [ ] Add type filter dropdown (show only CALL, MEETING, etc.)
+- [ ] Add date range filter
+- [ ] Add sort toggle (newest first / oldest first)
+- [ ] Persist filter state in URL or local storage
+
+**Deliverable:** Full interaction logging with timeline view, CRUD operations, and filtering
 
 ---
 
@@ -240,6 +288,7 @@ fph-crm/
 │   └── package.json
 │
 ├── shared/                      # Shared TypeScript types
+├── Makefile                     # Make commands for common tasks
 ├── README.md                    # This file
 └── package.json                 # Root package.json
 ```
@@ -300,11 +349,29 @@ fph-crm/
 
 6. Open http://localhost:5173 in your browser
 
+## Make Commands
+
+This project includes a Makefile for convenient command shortcuts. Run `make help` to see all available commands:
+
+| Command | Description |
+|---------|-------------|
+| `make install` | Install all dependencies |
+| `make dev` | Start development servers (client + server) |
+| `make dev-server` | Start backend server only |
+| `make dev-client` | Start frontend client only |
+| `make build` | Build for production |
+| `make lint` | Run linting |
+| `make format` | Format code with Prettier |
+| `make db-migrate` | Run database migrations |
+| `make db-generate` | Generate Prisma client |
+| `make db-studio` | Open Prisma Studio |
+| `make clean` | Remove build artifacts and node_modules |
+
 ## Development Workflow
 
 - Backend runs on `http://localhost:3001`
 - Frontend runs on `http://localhost:5173`
-- Database GUI: `npm run prisma studio` (from `/server` directory)
+- Database GUI: `make db-studio` or `npm run prisma studio` (from `/server` directory)
 
 ## API Endpoints
 
@@ -343,7 +410,7 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-19
-**Current Phase**: Phase 1 - Foundation & Basic Contact Management ✅ COMPLETE
-**Next Phase**: Phase 2 - Interaction Tracking
-**Status**: ✅ Phase 1 Complete - Ready for Phase 2
+**Last Updated**: 2025-12-20
+**Current Phase**: Phase 2 - Interaction Tracking ⏳ IN PROGRESS
+**Current Chunk**: 2.2 - Backend API Routes & Swagger Docs
+**Status**: ✅ Phase 1 Complete | ⏳ Phase 2 Starting
