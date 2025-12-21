@@ -97,6 +97,32 @@ export interface Reminder {
   updatedAt: string;
 }
 
+export interface ReminderWithContact extends Reminder {
+  contact: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface CreateReminderInput {
+  title: string;
+  description?: string;
+  dueDate: string;
+}
+
+export interface UpdateReminderInput {
+  title?: string;
+  description?: string;
+  dueDate?: string;
+}
+
+export interface ReminderFilters {
+  isCompleted?: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface Note {
   id: string;
   contactId: string;

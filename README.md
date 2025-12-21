@@ -197,9 +197,9 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Register routes in main `index.ts`
 - [x] Update Postman collection with all 9 reminder endpoints
 
-**Chunk 3.3: Frontend — API Client & Types** ⏳ Pending
-- [ ] Add `CreateReminderInput`, `UpdateReminderInput`, and `ReminderFilters` types (`client/src/types/index.ts`)
-- [ ] Add reminder methods to API client (`client/src/lib/api.ts`)
+**Chunk 3.3: Frontend — API Client & Types** ✅ Completed
+- [x] Add `CreateReminderInput`, `UpdateReminderInput`, `ReminderFilters`, and `ReminderWithContact` types (`client/src/types/index.ts`)
+- [x] Add reminder methods to API client (`client/src/lib/api.ts`)
   - `getRemindersForContact(contactId, filters?)`
   - `getAllReminders(filters?)`
   - `getUpcomingReminders(limit?)`

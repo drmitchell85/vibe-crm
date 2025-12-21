@@ -7,6 +7,11 @@ import type {
   CreateInteractionInput,
   UpdateInteractionInput,
   InteractionFilters,
+  Reminder,
+  ReminderWithContact,
+  CreateReminderInput,
+  UpdateReminderInput,
+  ReminderFilters,
 } from '../types';
 
 /**
@@ -177,6 +182,136 @@ class ApiClient {
    */
   async deleteInteraction(id: string): Promise<void> {
     await this.client.delete(`/interactions/${id}`);
+  }
+
+  // ============================================
+  // Reminder Endpoints
+  // ============================================
+
+  /**
+   * Get all reminders for a contact with optional filters
+   */
+  async getRemindersForContact(
+    contactId: string,
+    filters?: ReminderFilters
+  ): Promise<Reminder[]> {
+    const params: Record<string, string> = {};
+    if (filters?.isCompleted !== undefined) params.isCompleted = String(filters.isCompleted);
+    if (filters?.startDate) params.startDate = filters.startDate;
+    if (filters?.endDate) params.endDate = filters.endDate;
+
+    const response = await this.client.get<ApiResponse<Reminder[]>>(
+      `/contacts/${contactId}/reminders`,
+      { params }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get all reminders with optional filters (for reminders page)
+   */
+  async getAllReminders(filters?: ReminderFilters): Promise<ReminderWithContact[]> {
+    const params: Record<string, string> = {};
+    if (filters?.isCompleted !== undefined) params.isCompleted = String(filters.isCompleted);
+    if (filters?.startDate) params.startDate = filters.startDate;
+    if (filters?.endDate) params.endDate = filters.endDate;
+
+    const response = await this.client.get<ApiResponse<ReminderWithContact[]>>(
+      '/reminders',
+      { params }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get upcoming incomplete reminders (for dashboard widget)
+   */
+  async getUpcomingReminders(limit?: number): Promise<ReminderWithContact[]> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params.limit = String(limit);
+
+    const response = await this.client.get<ApiResponse<ReminderWithContact[]>>(
+      '/reminders/upcoming',
+      { params }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get overdue incomplete reminders
+   */
+  async getOverdueReminders(): Promise<ReminderWithContact[]> {
+    const response = await this.client.get<ApiResponse<ReminderWithContact[]>>(
+      '/reminders/overdue'
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get a single reminder by ID
+   */
+  async getReminderById(id: string): Promise<ReminderWithContact> {
+    const response = await this.client.get<ApiResponse<ReminderWithContact>>(
+      `/reminders/${id}`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Create a new reminder for a contact
+   */
+  async createReminder(
+    contactId: string,
+    data: CreateReminderInput
+  ): Promise<Reminder> {
+    const response = await this.client.post<ApiResponse<Reminder>>(
+      `/contacts/${contactId}/reminders`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Update an existing reminder
+   */
+  async updateReminder(
+    id: string,
+    data: UpdateReminderInput
+  ): Promise<Reminder> {
+    const response = await this.client.put<ApiResponse<Reminder>>(
+      `/reminders/${id}`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Mark a reminder as complete
+   */
+  async markReminderComplete(id: string): Promise<Reminder> {
+    const response = await this.client.patch<ApiResponse<Reminder>>(
+      `/reminders/${id}/complete`,
+      { isCompleted: true }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Mark a reminder as incomplete
+   */
+  async markReminderIncomplete(id: string): Promise<Reminder> {
+    const response = await this.client.patch<ApiResponse<Reminder>>(
+      `/reminders/${id}/complete`,
+      { isCompleted: false }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Delete a reminder
+   */
+  async deleteReminder(id: string): Promise<void> {
+    await this.client.delete(`/reminders/${id}`);
   }
 
   // ============================================
