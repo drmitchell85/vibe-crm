@@ -124,10 +124,11 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Add Swagger/OpenAPI documentation
 - [x] Register routes in main `index.ts`
 
-**Chunk 2.3: Frontend — API Client & Types** ⏳ Pending
-- [ ] Add `CreateInteractionInput` and `UpdateInteractionInput` types
-- [ ] Add interaction methods to API client (`client/src/lib/api.ts`)
-  - `getInteractionsForContact(contactId)`
+**Chunk 2.3: Frontend — API Client & Types** ✅ Completed
+- [x] Add `CreateInteractionInput`, `UpdateInteractionInput`, and `InteractionFilters` types (`client/src/types/index.ts`)
+- [x] Add interaction methods to API client (`client/src/lib/api.ts`)
+  - `getInteractionsForContact(contactId, filters?)`
+  - `getInteractionById(id)`
   - `createInteraction(contactId, data)`
   - `updateInteraction(id, data)`
   - `deleteInteraction(id)`
@@ -419,5 +420,5 @@ MIT
 
 **Last Updated**: 2025-12-20
 **Current Phase**: Phase 2 - Interaction Tracking ⏳ IN PROGRESS
-**Current Chunk**: 2.3 - Frontend API Client & Types
-**Status**: ✅ Phase 1 Complete | ⏳ Phase 2 Starting
+**Current Chunk**: 2.4 - Frontend Interaction Timeline UI
+**Status**: ✅ Phase 1 Complete | ✅ Chunks 2.1-2.3 Complete

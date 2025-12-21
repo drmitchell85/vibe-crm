@@ -1,5 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import type { Contact, CreateContactInput, UpdateContactInput } from '../types';
+import type {
+  Contact,
+  CreateContactInput,
+  UpdateContactInput,
+  Interaction,
+  CreateInteractionInput,
+  UpdateInteractionInput,
+  InteractionFilters,
+} from '../types';
 
 /**
  * API Response wrapper
@@ -101,6 +109,74 @@ class ApiClient {
       params: { q: query },
     });
     return response.data.data;
+  }
+
+  // ============================================
+  // Interaction Endpoints
+  // ============================================
+
+  /**
+   * Get all interactions for a contact with optional filters
+   */
+  async getInteractionsForContact(
+    contactId: string,
+    filters?: InteractionFilters
+  ): Promise<Interaction[]> {
+    const params: Record<string, string> = {};
+    if (filters?.type) params.type = filters.type;
+    if (filters?.startDate) params.startDate = filters.startDate;
+    if (filters?.endDate) params.endDate = filters.endDate;
+
+    const response = await this.client.get<ApiResponse<Interaction[]>>(
+      `/contacts/${contactId}/interactions`,
+      { params }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get a single interaction by ID
+   */
+  async getInteractionById(id: string): Promise<Interaction> {
+    const response = await this.client.get<ApiResponse<Interaction>>(
+      `/interactions/${id}`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Create a new interaction for a contact
+   */
+  async createInteraction(
+    contactId: string,
+    data: CreateInteractionInput
+  ): Promise<Interaction> {
+    const response = await this.client.post<ApiResponse<Interaction>>(
+      `/contacts/${contactId}/interactions`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Update an existing interaction
+   */
+  async updateInteraction(
+    id: string,
+    data: UpdateInteractionInput
+  ): Promise<Interaction> {
+    const response = await this.client.put<ApiResponse<Interaction>>(
+      `/interactions/${id}`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Delete an interaction
+   */
+  async deleteInteraction(id: string): Promise<void> {
+    await this.client.delete(`/interactions/${id}`);
   }
 
   // ============================================
