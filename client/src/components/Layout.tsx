@@ -14,6 +14,7 @@ export function Layout({ children }: LayoutProps) {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/contacts', label: 'Contacts' },
+    { path: '/reminders', label: 'Reminders' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

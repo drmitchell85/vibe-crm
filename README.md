@@ -210,14 +210,15 @@ A full-stack personal CRM application for managing contacts, tracking interactio
   - `markReminderComplete(id)` / `markReminderIncomplete(id)`
   - `deleteReminder(id)`
 
-**Chunk 3.4: Frontend — Reminders Page UI** ⏳ Pending
-- [ ] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
-  - Tab-based views: All / Upcoming / Overdue / Completed
-  - Grouped display by due date or contact
-  - Due date formatting with relative time ("in 2 days", "overdue by 3 days")
-  - Loading, error, and empty states
-- [ ] Add route to `App.tsx`
-- [ ] Add navigation link to Layout
+**Chunk 3.4: Frontend — Reminders Page UI** ✅ Completed
+- [x] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
+  - Tab-based views: Upcoming / Overdue / Completed / All
+  - Overdue count badge on tab
+  - Due date formatting with relative time ("in 2 days", "3 days overdue")
+  - Color-coded cards (red for overdue, gray for completed)
+  - Loading, error, and empty states for each tab
+- [x] Add route to `App.tsx` (`/reminders`)
+- [x] Add navigation link to Layout
 
 **Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ⏳ Pending
 - [ ] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
