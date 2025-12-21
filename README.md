@@ -164,17 +164,89 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 3: Reminders & Follow-ups ⏳ PENDING
+### Phase 3: Reminders & Follow-ups ✅ COMPLETED
+**Started**: 2025-12-21 | **Completed**: 2025-12-21
 
-**Tasks:**
-- [ ] Reminder database model
-- [ ] Backend reminder API
-- [ ] Reminders page UI (upcoming/overdue/completed views)
-- [ ] Mark as complete functionality
-- [ ] Overdue reminder indicators
-- [ ] Dashboard widget for upcoming reminders
+**Chunk 3.1: Backend — Reminder Service Layer** ✅ Completed
+- [x] Create Zod validation schemas (`server/src/schemas/reminderSchema.ts`)
+  - `createReminderSchema` (title, dueDate, contactId required; description optional)
+  - `updateReminderSchema` (all fields optional)
+- [x] Create reminder service (`server/src/services/reminderService.ts`)
+  - `getRemindersForContact(contactId)` with optional filtering (completed, date range)
+  - `getReminderById(id)`
+  - `createReminder(data)`
+  - `updateReminder(id, data)`
+  - `deleteReminder(id)`
+  - `markAsComplete(id)` / `markAsIncomplete(id)`
+  - `getUpcomingReminders(limit?)` — for dashboard widget
+  - `getOverdueReminders()`
+  - `getAllReminders(filters?)` — for reminders page
 
-**Deliverable:** Complete reminder system with notifications
+**Chunk 3.2: Backend — API Routes & Swagger Docs** ✅ Completed
+- [x] Create reminder controller (`server/src/controllers/reminderController.ts`)
+- [x] Create reminder routes (`server/src/routes/reminders.ts`)
+  - `GET /api/contacts/:contactId/reminders` — list all for a contact
+  - `GET /api/reminders` — list all reminders (for reminders page)
+  - `GET /api/reminders/upcoming` — get upcoming reminders
+  - `GET /api/reminders/overdue` — get overdue reminders
+  - `GET /api/reminders/:id` — get single reminder
+  - `POST /api/contacts/:contactId/reminders` — create new
+  - `PUT /api/reminders/:id` — update
+  - `PATCH /api/reminders/:id/complete` — mark as complete/incomplete
+  - `DELETE /api/reminders/:id` — delete
+- [x] Add Swagger/OpenAPI documentation
+- [x] Register routes in main `index.ts`
+- [x] Update Postman collection with all 9 reminder endpoints
+
+**Chunk 3.3: Frontend — API Client & Types** ✅ Completed
+- [x] Add `CreateReminderInput`, `UpdateReminderInput`, `ReminderFilters`, and `ReminderWithContact` types (`client/src/types/index.ts`)
+- [x] Add reminder methods to API client (`client/src/lib/api.ts`)
+  - `getRemindersForContact(contactId, filters?)`
+  - `getAllReminders(filters?)`
+  - `getUpcomingReminders(limit?)`
+  - `getOverdueReminders()`
+  - `getReminderById(id)`
+  - `createReminder(contactId, data)`
+  - `updateReminder(id, data)`
+  - `markReminderComplete(id)` / `markReminderIncomplete(id)`
+  - `deleteReminder(id)`
+
+**Chunk 3.4: Frontend — Reminders Page UI** ✅ Completed
+- [x] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
+  - Tab-based views: Upcoming / Overdue / Completed / All
+  - Overdue count badge on tab
+  - Due date formatting with relative time ("in 2 days", "3 days overdue")
+  - Color-coded cards (red for overdue, gray for completed)
+  - Loading, error, and empty states for each tab
+- [x] Add route to `App.tsx` (`/reminders`)
+- [x] Add navigation link to Layout
+
+**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ✅ Completed
+- [x] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
+  - Title input (required), description textarea
+  - Due date/time picker (defaults to tomorrow 9 AM)
+  - Inline delete confirmation dialog
+- [x] Add create reminder modal with contact selector dropdown
+- [x] Add edit functionality (click on reminder title → edit modal)
+- [x] Add delete confirmation dialog (inline in form)
+- [x] Add mark complete/incomplete checkbox on each reminder card
+- [x] React Query mutations with cache invalidation (create, update, delete, toggle complete)
+
+**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ✅ Completed
+- [x] Create `RemindersList` component for ContactDetailPage
+- [x] Add "Add Reminder" button on contact detail page
+- [x] Mark as complete functionality (checkbox/button with animation)
+- [x] Overdue visual indicators (red styling, warning badge)
+- [x] Update `ContactDetailPage` to display reminders section
+
+**Chunk 3.7: Frontend — Dashboard Widget** ✅ Completed
+- [x] Create `UpcomingRemindersWidget` component
+- [x] Display next 5 upcoming reminders with quick actions
+- [x] Show overdue count as alert/badge
+- [x] Link to full Reminders page
+- [x] Add widget to Dashboard/HomePage
+
+**Deliverable:** ✅ Complete reminder system with CRUD, completion tracking, and dashboard integration - COMPLETE!
 
 ---
 
@@ -395,10 +467,21 @@ Full interactive API documentation is available at **http://localhost:3001/api-d
 - `PUT /api/interactions/:id` - Update interaction
 - `DELETE /api/interactions/:id` - Delete interaction
 
+### Reminders
+- `GET /api/reminders` - List all reminders (supports `isCompleted`, `startDate`, `endDate` filters)
+- `GET /api/reminders/upcoming` - Get upcoming incomplete reminders (supports `limit` param)
+- `GET /api/reminders/overdue` - Get overdue incomplete reminders
+- `GET /api/contacts/:contactId/reminders` - List reminders for a contact
+- `GET /api/reminders/:id` - Get single reminder
+- `POST /api/contacts/:contactId/reminders` - Create reminder
+- `PUT /api/reminders/:id` - Update reminder
+- `PATCH /api/reminders/:id/complete` - Toggle reminder completion
+- `DELETE /api/reminders/:id` - Delete reminder
+
 ### Health
 - `GET /health` - API health check
 
-More endpoints will be added in subsequent phases (reminders, notes, tags).
+More endpoints will be added in subsequent phases (notes, tags).
 
 ## Testing
 
@@ -421,6 +504,6 @@ MIT
 ---
 
 **Last Updated**: 2025-12-21
-**Current Phase**: Phase 3 - Reminders & Follow-ups ⏳ PENDING
-**Next Up**: Phase 3 - Reminder system with notifications
-**Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete
+**Current Phase**: Phase 4 - Notes & Tagging ⏳ PENDING
+**Next Up**: Phase 4 - Notes and tag-based organization
+**Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ✅ Phase 3 Complete

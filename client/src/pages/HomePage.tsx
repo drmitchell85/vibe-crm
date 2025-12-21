@@ -1,17 +1,19 @@
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { UpcomingRemindersWidget } from '../components/UpcomingRemindersWidget';
 
 /**
- * Home page - Dashboard with API connection test
+ * Home page - Dashboard with widgets and quick actions
  */
 export function HomePage() {
-  // Test API connection by fetching contacts count
+  // Fetch contacts count
   const { data: contacts, isLoading, error } = useQuery({
     queryKey: ['contacts'],
     queryFn: () => api.getAllContacts(),
   });
 
-  // Test health check
+  // Health check
   const { data: health } = useQuery({
     queryKey: ['health'],
     queryFn: () => api.healthCheck(),
@@ -19,6 +21,7 @@ export function HomePage() {
 
   return (
     <div className="space-y-8">
+      {/* Welcome Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           Welcome to FPH CRM
@@ -28,6 +31,7 @@ export function HomePage() {
         </p>
       </div>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {/* API Health Status */}
         <div className="bg-white rounded-lg shadow p-6">
@@ -48,7 +52,7 @@ export function HomePage() {
         </div>
 
         {/* Contacts Count */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <Link to="/contacts" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Total Contacts
           </h3>
@@ -61,28 +65,54 @@ export function HomePage() {
               {contacts?.length || 0}
             </p>
           )}
+        </Link>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+        {/* Upcoming Reminders Widget */}
+        <UpcomingRemindersWidget />
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Quick Actions
+            </h3>
+          </div>
+          <div className="p-4 space-y-3">
+            <Link
+              to="/contacts"
+              className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors"
+            >
+              <span className="text-xl">👥</span>
+              <div>
+                <p className="font-medium text-gray-900">View Contacts</p>
+                <p className="text-sm text-gray-500">Browse and search your contacts</p>
+              </div>
+            </Link>
+            <Link
+              to="/reminders"
+              className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 hover:bg-amber-100 transition-colors"
+            >
+              <span className="text-xl">🔔</span>
+              <div>
+                <p className="font-medium text-gray-900">Manage Reminders</p>
+                <p className="text-sm text-gray-500">View and create follow-up reminders</p>
+              </div>
+            </Link>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-400 cursor-not-allowed">
+              <span className="text-xl">📝</span>
+              <div>
+                <p className="font-medium">Notes</p>
+                <p className="text-sm">Coming in Phase 4</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="max-w-4xl mx-auto">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Quick Actions
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-            Add Contact
-          </button>
-          <button className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-            View All Contacts
-          </button>
-          <button className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-            Search Contacts
-          </button>
-        </div>
-      </div>
-
-      {/* Debug Info (optional - remove later) */}
+      {/* Debug Info (only shown on error) */}
       {error && (
         <div className="max-w-4xl mx-auto bg-red-50 border border-red-200 rounded-lg p-4">
           <h4 className="text-red-900 font-semibold mb-2">Connection Error:</h4>

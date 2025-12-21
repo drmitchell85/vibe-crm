@@ -30,6 +30,14 @@ const options: swaggerJsdoc.Options = {
       {
         name: 'Contacts',
         description: 'Contact management endpoints'
+      },
+      {
+        name: 'Interactions',
+        description: 'Interaction tracking endpoints'
+      },
+      {
+        name: 'Reminders',
+        description: 'Reminder and follow-up management endpoints'
       }
     ]
   },
