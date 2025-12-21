@@ -234,6 +234,211 @@
       ]
     },
     {
+      "name": "Reminders",
+      "item": [
+        {
+          "name": "Get All Reminders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reminders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders"],
+              "query": [
+                {
+                  "key": "isCompleted",
+                  "value": "false",
+                  "description": "Filter by completion status (true/false)",
+                  "disabled": true
+                },
+                {
+                  "key": "startDate",
+                  "value": "2025-01-01T00:00:00.000Z",
+                  "description": "Filter reminders due on or after this date",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31T23:59:59.000Z",
+                  "description": "Filter reminders due on or before this date",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all reminders with optional filtering. Used for the reminders page."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Upcoming Reminders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reminders/upcoming?limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "upcoming"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Maximum number of reminders to return (default: 5)"
+                }
+              ]
+            },
+            "description": "Get upcoming incomplete reminders (due in the future). Used for dashboard widget."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Overdue Reminders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reminders/overdue",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "overdue"]
+            },
+            "description": "Get all incomplete reminders with due date in the past."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reminders for Contact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/reminders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "reminders"],
+              "query": [
+                {
+                  "key": "isCompleted",
+                  "value": "false",
+                  "description": "Filter by completion status",
+                  "disabled": true
+                },
+                {
+                  "key": "startDate",
+                  "value": "2025-01-01T00:00:00.000Z",
+                  "description": "Filter reminders due on or after this date",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31T23:59:59.000Z",
+                  "description": "Filter reminders due on or before this date",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all reminders for a specific contact with optional filtering."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reminder by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reminders/{{reminder_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "{{reminder_id}}"]
+            },
+            "description": "Get a single reminder by its ID, includes contact info"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Reminder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Follow up on project proposal\",\n  \"description\": \"Send the revised proposal with updated timeline and budget\",\n  \"dueDate\": \"2025-12-25T10:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/reminders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "reminders"]
+            },
+            "description": "Create a new reminder for a contact. Title and dueDate are required."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reminder",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated reminder title\",\n  \"dueDate\": \"2025-12-30T14:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reminders/{{reminder_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "{{reminder_id}}"]
+            },
+            "description": "Update an existing reminder. All fields are optional (partial update)."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Reminder Complete",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reminders/{{reminder_id}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "{{reminder_id}}", "complete"]
+            },
+            "description": "Mark a reminder as complete (isCompleted: true) or incomplete (isCompleted: false)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reminder",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reminders/{{reminder_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reminders", "{{reminder_id}}"]
+            },
+            "description": "Permanently delete a reminder"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Health Check",
       "request": {
         "method": "GET",
@@ -256,6 +461,16 @@
     },
     {
       "key": "contact_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "interaction_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reminder_id",
       "value": "",
       "type": "string"
     }

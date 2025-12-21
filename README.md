@@ -181,9 +181,9 @@ A full-stack personal CRM application for managing contacts, tracking interactio
   - `getOverdueReminders()`
   - `getAllReminders(filters?)` — for reminders page
 
-**Chunk 3.2: Backend — API Routes & Swagger Docs** ⏳ Pending
-- [ ] Create reminder controller (`server/src/controllers/reminderController.ts`)
-- [ ] Create reminder routes (`server/src/routes/reminders.ts`)
+**Chunk 3.2: Backend — API Routes & Swagger Docs** ✅ Completed
+- [x] Create reminder controller (`server/src/controllers/reminderController.ts`)
+- [x] Create reminder routes (`server/src/routes/reminders.ts`)
   - `GET /api/contacts/:contactId/reminders` — list all for a contact
   - `GET /api/reminders` — list all reminders (for reminders page)
   - `GET /api/reminders/upcoming` — get upcoming reminders
@@ -193,8 +193,9 @@ A full-stack personal CRM application for managing contacts, tracking interactio
   - `PUT /api/reminders/:id` — update
   - `PATCH /api/reminders/:id/complete` — mark as complete/incomplete
   - `DELETE /api/reminders/:id` — delete
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Register routes in main `index.ts`
+- [x] Add Swagger/OpenAPI documentation
+- [x] Register routes in main `index.ts`
+- [x] Update Postman collection with all 9 reminder endpoints
 
 **Chunk 3.3: Frontend — API Client & Types** ⏳ Pending
 - [ ] Add `CreateReminderInput`, `UpdateReminderInput`, and `ReminderFilters` types (`client/src/types/index.ts`)
@@ -463,10 +464,21 @@ Full interactive API documentation is available at **http://localhost:3001/api-d
 - `PUT /api/interactions/:id` - Update interaction
 - `DELETE /api/interactions/:id` - Delete interaction
 
+### Reminders
+- `GET /api/reminders` - List all reminders (supports `isCompleted`, `startDate`, `endDate` filters)
+- `GET /api/reminders/upcoming` - Get upcoming incomplete reminders (supports `limit` param)
+- `GET /api/reminders/overdue` - Get overdue incomplete reminders
+- `GET /api/contacts/:contactId/reminders` - List reminders for a contact
+- `GET /api/reminders/:id` - Get single reminder
+- `POST /api/contacts/:contactId/reminders` - Create reminder
+- `PUT /api/reminders/:id` - Update reminder
+- `PATCH /api/reminders/:id/complete` - Toggle reminder completion
+- `DELETE /api/reminders/:id` - Delete reminder
+
 ### Health
 - `GET /health` - API health check
 
-More endpoints will be added in subsequent phases (reminders, notes, tags).
+More endpoints will be added in subsequent phases (notes, tags).
 
 ## Testing
 
