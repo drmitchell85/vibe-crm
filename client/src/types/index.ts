@@ -61,6 +61,30 @@ export enum InteractionType {
   OTHER = 'OTHER',
 }
 
+export interface CreateInteractionInput {
+  type: InteractionType;
+  subject?: string;
+  notes?: string;
+  date?: string;
+  duration?: number;
+  location?: string;
+}
+
+export interface UpdateInteractionInput {
+  type?: InteractionType;
+  subject?: string;
+  notes?: string;
+  date?: string;
+  duration?: number;
+  location?: string;
+}
+
+export interface InteractionFilters {
+  type?: InteractionType;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface Reminder {
   id: string;
   contactId: string;

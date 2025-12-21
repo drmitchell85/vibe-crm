@@ -5,7 +5,9 @@ import { api } from '../lib/api';
 import { format } from 'date-fns';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
-import type { UpdateContactInput } from '../types';
+import { InteractionForm } from '../components/InteractionForm';
+import { InteractionTimeline } from '../components/InteractionTimeline';
+import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput } from '../types';
 
 /**
  * Contact detail page - displays full information for a single contact
@@ -17,6 +19,8 @@ export function ContactDetailPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInteractionModalOpen, setIsInteractionModalOpen] = useState(false);
+  const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -42,6 +46,67 @@ export function ContactDetailPage() {
       navigate('/contacts');
     },
   });
+
+  // Create interaction mutation
+  const createInteractionMutation = useMutation({
+    mutationFn: (data: CreateInteractionInput) => api.createInteraction(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Update interaction mutation
+  const updateInteractionMutation = useMutation({
+    mutationFn: ({ interactionId, data }: { interactionId: string; data: UpdateInteractionInput }) =>
+      api.updateInteraction(interactionId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Delete interaction mutation
+  const deleteInteractionMutation = useMutation({
+    mutationFn: (interactionId: string) => api.deleteInteraction(interactionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Handlers for interaction modal
+  const openAddInteractionModal = () => {
+    setEditingInteraction(null);
+    setIsInteractionModalOpen(true);
+  };
+
+  const openEditInteractionModal = (interaction: Interaction) => {
+    setEditingInteraction(interaction);
+    setIsInteractionModalOpen(true);
+  };
+
+  const closeInteractionModal = () => {
+    setIsInteractionModalOpen(false);
+    setEditingInteraction(null);
+  };
+
+  const handleInteractionSubmit = async (data: CreateInteractionInput | UpdateInteractionInput) => {
+    if (editingInteraction) {
+      await updateInteractionMutation.mutateAsync({
+        interactionId: editingInteraction.id,
+        data: data as UpdateInteractionInput,
+      });
+    } else {
+      await createInteractionMutation.mutateAsync(data as CreateInteractionInput);
+    }
+  };
+
+  const handleInteractionDelete = () => {
+    if (editingInteraction) {
+      deleteInteractionMutation.mutate(editingInteraction.id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -204,10 +269,34 @@ export function ContactDetailPage() {
         </div>
       </div>
 
-      {/* Future: Interactions, Reminders, Notes sections will go here */}
+      {/* Interactions Timeline */}
+      <InteractionTimeline
+        contactId={id!}
+        onAddInteraction={openAddInteractionModal}
+        onEditInteraction={openEditInteractionModal}
+      />
+
+      {/* Create/Edit Interaction Modal */}
+      <Modal
+        isOpen={isInteractionModalOpen}
+        onClose={closeInteractionModal}
+        title={editingInteraction ? 'Edit Interaction' : 'Log Interaction'}
+        size="lg"
+      >
+        <InteractionForm
+          interaction={editingInteraction || undefined}
+          onSubmit={handleInteractionSubmit}
+          onCancel={closeInteractionModal}
+          onDelete={editingInteraction ? handleInteractionDelete : undefined}
+          isLoading={createInteractionMutation.isPending || updateInteractionMutation.isPending}
+          isDeleting={deleteInteractionMutation.isPending}
+        />
+      </Modal>
+
+      {/* Future: Reminders and Notes sections will go here */}
       <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
         <p className="text-gray-600">
-          Interactions, Reminders, and Notes will appear here in Phase 2-4
+          Reminders and Notes will appear here in Phase 3-4
         </p>
       </div>
     </div>
