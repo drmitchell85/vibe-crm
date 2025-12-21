@@ -142,15 +142,15 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
 - [x] Add "Add Interaction" button in header (modal placeholder for Chunk 2.5)
 
-**Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ⏳ Pending
-- [ ] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
-  - Type dropdown with all 8 interaction types
-  - Date picker, subject, notes, duration, location fields
-  - Form validation
-- [ ] Add create interaction modal (triggered from "Add Interaction" button)
-- [ ] Add edit functionality (click on timeline item → edit modal)
-- [ ] Add delete confirmation dialog
-- [ ] React Query mutations with cache invalidation
+**Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ✅ Completed
+- [x] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
+  - Type dropdown with all 8 interaction types (with emoji icons)
+  - Date/time picker, subject, notes, duration, location fields
+  - Inline delete confirmation dialog
+- [x] Add create interaction modal (triggered from "Add Interaction" button)
+- [x] Add edit functionality (click on timeline item → edit modal)
+- [x] Add delete confirmation dialog (inline within form)
+- [x] React Query mutations with cache invalidation for create/update/delete
 
 **Chunk 2.6: Frontend — Filtering & Sorting** ⏳ Pending
 - [ ] Add type filter dropdown (show only CALL, MEETING, etc.)
@@ -418,7 +418,7 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-20
+**Last Updated**: 2025-12-21
 **Current Phase**: Phase 2 - Interaction Tracking ⏳ IN PROGRESS
-**Current Chunk**: 2.5 - Frontend Interaction Form
-**Status**: ✅ Phase 1 Complete | ✅ Chunks 2.1-2.4 Complete
+**Current Chunk**: 2.6 - Frontend Filtering & Sorting
+**Status**: ✅ Phase 1 Complete | ✅ Chunks 2.1-2.5 Complete

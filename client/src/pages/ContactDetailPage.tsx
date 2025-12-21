@@ -5,8 +5,9 @@ import { api } from '../lib/api';
 import { format } from 'date-fns';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
+import { InteractionForm } from '../components/InteractionForm';
 import { InteractionTimeline } from '../components/InteractionTimeline';
-import type { UpdateContactInput } from '../types';
+import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput } from '../types';
 
 /**
  * Contact detail page - displays full information for a single contact
@@ -18,7 +19,8 @@ export function ContactDetailPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isAddInteractionModalOpen, setIsAddInteractionModalOpen] = useState(false);
+  const [isInteractionModalOpen, setIsInteractionModalOpen] = useState(false);
+  const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -44,6 +46,67 @@ export function ContactDetailPage() {
       navigate('/contacts');
     },
   });
+
+  // Create interaction mutation
+  const createInteractionMutation = useMutation({
+    mutationFn: (data: CreateInteractionInput) => api.createInteraction(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Update interaction mutation
+  const updateInteractionMutation = useMutation({
+    mutationFn: ({ interactionId, data }: { interactionId: string; data: UpdateInteractionInput }) =>
+      api.updateInteraction(interactionId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Delete interaction mutation
+  const deleteInteractionMutation = useMutation({
+    mutationFn: (interactionId: string) => api.deleteInteraction(interactionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interactions', id] });
+      closeInteractionModal();
+    },
+  });
+
+  // Handlers for interaction modal
+  const openAddInteractionModal = () => {
+    setEditingInteraction(null);
+    setIsInteractionModalOpen(true);
+  };
+
+  const openEditInteractionModal = (interaction: Interaction) => {
+    setEditingInteraction(interaction);
+    setIsInteractionModalOpen(true);
+  };
+
+  const closeInteractionModal = () => {
+    setIsInteractionModalOpen(false);
+    setEditingInteraction(null);
+  };
+
+  const handleInteractionSubmit = async (data: CreateInteractionInput | UpdateInteractionInput) => {
+    if (editingInteraction) {
+      await updateInteractionMutation.mutateAsync({
+        interactionId: editingInteraction.id,
+        data: data as UpdateInteractionInput,
+      });
+    } else {
+      await createInteractionMutation.mutateAsync(data as CreateInteractionInput);
+    }
+  };
+
+  const handleInteractionDelete = () => {
+    if (editingInteraction) {
+      deleteInteractionMutation.mutate(editingInteraction.id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -209,25 +272,25 @@ export function ContactDetailPage() {
       {/* Interactions Timeline */}
       <InteractionTimeline
         contactId={id!}
-        onAddInteraction={() => setIsAddInteractionModalOpen(true)}
+        onAddInteraction={openAddInteractionModal}
+        onEditInteraction={openEditInteractionModal}
       />
 
-      {/* Add Interaction Modal - Form will be implemented in Chunk 2.5 */}
+      {/* Create/Edit Interaction Modal */}
       <Modal
-        isOpen={isAddInteractionModalOpen}
-        onClose={() => setIsAddInteractionModalOpen(false)}
-        title="Add Interaction"
+        isOpen={isInteractionModalOpen}
+        onClose={closeInteractionModal}
+        title={editingInteraction ? 'Edit Interaction' : 'Log Interaction'}
         size="lg"
       >
-        <div className="text-center py-8 text-gray-500">
-          <p>Interaction form coming in Chunk 2.5</p>
-          <button
-            onClick={() => setIsAddInteractionModalOpen(false)}
-            className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Close
-          </button>
-        </div>
+        <InteractionForm
+          interaction={editingInteraction || undefined}
+          onSubmit={handleInteractionSubmit}
+          onCancel={closeInteractionModal}
+          onDelete={editingInteraction ? handleInteractionDelete : undefined}
+          isLoading={createInteractionMutation.isPending || updateInteractionMutation.isPending}
+          isDeleting={deleteInteractionMutation.isPending}
+        />
       </Modal>
 
       {/* Future: Reminders and Notes sections will go here */}

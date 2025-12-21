@@ -6,6 +6,7 @@ import type { Interaction, InteractionType } from '../types';
 interface InteractionTimelineProps {
   contactId: string;
   onAddInteraction?: () => void;
+  onEditInteraction?: (interaction: Interaction) => void;
 }
 
 /**
@@ -68,7 +69,7 @@ function formatDuration(minutes: number): string {
 /**
  * Interaction Timeline component - displays chronological list of interactions
  */
-export function InteractionTimeline({ contactId, onAddInteraction }: InteractionTimelineProps) {
+export function InteractionTimeline({ contactId, onAddInteraction, onEditInteraction }: InteractionTimelineProps) {
   const {
     data: interactions,
     isLoading,
@@ -105,7 +106,7 @@ export function InteractionTimeline({ contactId, onAddInteraction }: Interaction
           interactions.length === 0 ? (
             <EmptyState onAddInteraction={onAddInteraction} />
           ) : (
-            <InteractionList interactions={interactions} />
+            <InteractionList interactions={interactions} onEditInteraction={onEditInteraction} />
           )
         )}
       </div>
@@ -165,7 +166,13 @@ function EmptyState({ onAddInteraction }: { onAddInteraction?: () => void }) {
 /**
  * Main interaction list with date grouping
  */
-function InteractionList({ interactions }: { interactions: Interaction[] }) {
+function InteractionList({
+  interactions,
+  onEditInteraction,
+}: {
+  interactions: Interaction[];
+  onEditInteraction?: (interaction: Interaction) => void;
+}) {
   const groupedInteractions = groupInteractionsByDate(interactions);
 
   return (
@@ -178,7 +185,11 @@ function InteractionList({ interactions }: { interactions: Interaction[] }) {
           {/* Interactions for this date */}
           <div className="space-y-3">
             {dayInteractions.map((interaction) => (
-              <InteractionCard key={interaction.id} interaction={interaction} />
+              <InteractionCard
+                key={interaction.id}
+                interaction={interaction}
+                onClick={onEditInteraction ? () => onEditInteraction(interaction) : undefined}
+              />
             ))}
           </div>
         </div>
@@ -190,11 +201,23 @@ function InteractionList({ interactions }: { interactions: Interaction[] }) {
 /**
  * Individual interaction card
  */
-function InteractionCard({ interaction }: { interaction: Interaction }) {
+function InteractionCard({
+  interaction,
+  onClick,
+}: {
+  interaction: Interaction;
+  onClick?: () => void;
+}) {
   const config = INTERACTION_TYPE_CONFIG[interaction.type];
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer">
+    <div
+      className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}
+    >
       <div className="flex items-start gap-3">
         {/* Type badge */}
         <span
