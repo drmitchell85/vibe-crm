@@ -231,12 +231,12 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Add mark complete/incomplete checkbox on each reminder card
 - [x] React Query mutations with cache invalidation (create, update, delete, toggle complete)
 
-**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ⏳ Pending
-- [ ] Create `RemindersList` component for ContactDetailPage
-- [ ] Add "Add Reminder" button on contact detail page
-- [ ] Mark as complete functionality (checkbox/button with animation)
-- [ ] Overdue visual indicators (red styling, warning badge)
-- [ ] Update `ContactDetailPage` to display reminders section
+**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ✅ Completed
+- [x] Create `RemindersList` component for ContactDetailPage
+- [x] Add "Add Reminder" button on contact detail page
+- [x] Mark as complete functionality (checkbox/button with animation)
+- [x] Overdue visual indicators (red styling, warning badge)
+- [x] Update `ContactDetailPage` to display reminders section
 
 **Chunk 3.7: Frontend — Dashboard Widget** ⏳ Pending
 - [ ] Create `UpcomingRemindersWidget` component
@@ -503,6 +503,6 @@ MIT
 ---
 
 **Last Updated**: 2025-12-21
-**Current Phase**: Phase 3 - Reminders & Follow-ups ⏳ PENDING
-**Next Up**: Phase 3 - Reminder system with notifications
-**Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete
+**Current Phase**: Phase 3 - Reminders & Follow-ups ⏳ IN PROGRESS
+**Next Up**: Chunk 3.7 - Dashboard Widget
+**Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ⏳ Phase 3 In Progress (6/7 chunks)

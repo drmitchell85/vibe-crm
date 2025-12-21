@@ -7,7 +7,9 @@ import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
 import { InteractionForm } from '../components/InteractionForm';
 import { InteractionTimeline } from '../components/InteractionTimeline';
-import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput } from '../types';
+import { RemindersList } from '../components/RemindersList';
+import { ReminderForm } from '../components/ReminderForm';
+import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput } from '../types';
 
 /**
  * Contact detail page - displays full information for a single contact
@@ -21,6 +23,8 @@ export function ContactDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isInteractionModalOpen, setIsInteractionModalOpen] = useState(false);
   const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -75,6 +79,34 @@ export function ContactDetailPage() {
     },
   });
 
+  // Create reminder mutation
+  const createReminderMutation = useMutation({
+    mutationFn: (data: CreateReminderInput) => api.createReminder(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      closeReminderModal();
+    },
+  });
+
+  // Update reminder mutation
+  const updateReminderMutation = useMutation({
+    mutationFn: ({ reminderId, data }: { reminderId: string; data: UpdateReminderInput }) =>
+      api.updateReminder(reminderId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      closeReminderModal();
+    },
+  });
+
+  // Delete reminder mutation
+  const deleteReminderMutation = useMutation({
+    mutationFn: (reminderId: string) => api.deleteReminder(reminderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      closeReminderModal();
+    },
+  });
+
   // Handlers for interaction modal
   const openAddInteractionModal = () => {
     setEditingInteraction(null);
@@ -105,6 +137,39 @@ export function ContactDetailPage() {
   const handleInteractionDelete = () => {
     if (editingInteraction) {
       deleteInteractionMutation.mutate(editingInteraction.id);
+    }
+  };
+
+  // Handlers for reminder modal
+  const openAddReminderModal = () => {
+    setEditingReminder(null);
+    setIsReminderModalOpen(true);
+  };
+
+  const openEditReminderModal = (reminder: Reminder) => {
+    setEditingReminder(reminder);
+    setIsReminderModalOpen(true);
+  };
+
+  const closeReminderModal = () => {
+    setIsReminderModalOpen(false);
+    setEditingReminder(null);
+  };
+
+  const handleReminderSubmit = async (data: CreateReminderInput | UpdateReminderInput) => {
+    if (editingReminder) {
+      await updateReminderMutation.mutateAsync({
+        reminderId: editingReminder.id,
+        data: data as UpdateReminderInput,
+      });
+    } else {
+      await createReminderMutation.mutateAsync(data as CreateReminderInput);
+    }
+  };
+
+  const handleReminderDelete = () => {
+    if (editingReminder) {
+      deleteReminderMutation.mutate(editingReminder.id);
     }
   };
 
@@ -293,10 +358,34 @@ export function ContactDetailPage() {
         />
       </Modal>
 
-      {/* Future: Reminders and Notes sections will go here */}
+      {/* Reminders Section */}
+      <RemindersList
+        contactId={id!}
+        onAddReminder={openAddReminderModal}
+        onEditReminder={openEditReminderModal}
+      />
+
+      {/* Create/Edit Reminder Modal */}
+      <Modal
+        isOpen={isReminderModalOpen}
+        onClose={closeReminderModal}
+        title={editingReminder ? 'Edit Reminder' : 'Add Reminder'}
+        size="lg"
+      >
+        <ReminderForm
+          reminder={editingReminder || undefined}
+          onSubmit={handleReminderSubmit}
+          onCancel={closeReminderModal}
+          onDelete={editingReminder ? handleReminderDelete : undefined}
+          isLoading={createReminderMutation.isPending || updateReminderMutation.isPending}
+          isDeleting={deleteReminderMutation.isPending}
+        />
+      </Modal>
+
+      {/* Future: Notes section will go here */}
       <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
         <p className="text-gray-600">
-          Reminders and Notes will appear here in Phase 3-4
+          Notes will appear here in Phase 4
         </p>
       </div>
     </div>
