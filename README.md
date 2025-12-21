@@ -166,15 +166,83 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ### Phase 3: Reminders & Follow-ups ⏳ PENDING
 
-**Tasks:**
-- [ ] Reminder database model
-- [ ] Backend reminder API
-- [ ] Reminders page UI (upcoming/overdue/completed views)
-- [ ] Mark as complete functionality
-- [ ] Overdue reminder indicators
-- [ ] Dashboard widget for upcoming reminders
+**Chunk 3.1: Backend — Reminder Service Layer** ✅ Completed
+- [x] Create Zod validation schemas (`server/src/schemas/reminderSchema.ts`)
+  - `createReminderSchema` (title, dueDate, contactId required; description optional)
+  - `updateReminderSchema` (all fields optional)
+- [x] Create reminder service (`server/src/services/reminderService.ts`)
+  - `getRemindersForContact(contactId)` with optional filtering (completed, date range)
+  - `getReminderById(id)`
+  - `createReminder(data)`
+  - `updateReminder(id, data)`
+  - `deleteReminder(id)`
+  - `markAsComplete(id)` / `markAsIncomplete(id)`
+  - `getUpcomingReminders(limit?)` — for dashboard widget
+  - `getOverdueReminders()`
+  - `getAllReminders(filters?)` — for reminders page
 
-**Deliverable:** Complete reminder system with notifications
+**Chunk 3.2: Backend — API Routes & Swagger Docs** ⏳ Pending
+- [ ] Create reminder controller (`server/src/controllers/reminderController.ts`)
+- [ ] Create reminder routes (`server/src/routes/reminders.ts`)
+  - `GET /api/contacts/:contactId/reminders` — list all for a contact
+  - `GET /api/reminders` — list all reminders (for reminders page)
+  - `GET /api/reminders/upcoming` — get upcoming reminders
+  - `GET /api/reminders/overdue` — get overdue reminders
+  - `GET /api/reminders/:id` — get single reminder
+  - `POST /api/contacts/:contactId/reminders` — create new
+  - `PUT /api/reminders/:id` — update
+  - `PATCH /api/reminders/:id/complete` — mark as complete/incomplete
+  - `DELETE /api/reminders/:id` — delete
+- [ ] Add Swagger/OpenAPI documentation
+- [ ] Register routes in main `index.ts`
+
+**Chunk 3.3: Frontend — API Client & Types** ⏳ Pending
+- [ ] Add `CreateReminderInput`, `UpdateReminderInput`, and `ReminderFilters` types (`client/src/types/index.ts`)
+- [ ] Add reminder methods to API client (`client/src/lib/api.ts`)
+  - `getRemindersForContact(contactId, filters?)`
+  - `getAllReminders(filters?)`
+  - `getUpcomingReminders(limit?)`
+  - `getOverdueReminders()`
+  - `getReminderById(id)`
+  - `createReminder(contactId, data)`
+  - `updateReminder(id, data)`
+  - `markReminderComplete(id)` / `markReminderIncomplete(id)`
+  - `deleteReminder(id)`
+
+**Chunk 3.4: Frontend — Reminders Page UI** ⏳ Pending
+- [ ] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
+  - Tab-based views: All / Upcoming / Overdue / Completed
+  - Grouped display by due date or contact
+  - Due date formatting with relative time ("in 2 days", "overdue by 3 days")
+  - Loading, error, and empty states
+- [ ] Add route to `App.tsx`
+- [ ] Add navigation link to Layout
+
+**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ⏳ Pending
+- [ ] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
+  - Title input, description textarea
+  - Due date/time picker
+  - Contact selector (if creating from Reminders page)
+- [ ] Add create reminder modal
+- [ ] Add edit functionality (click on reminder → edit modal)
+- [ ] Add delete confirmation dialog
+- [ ] React Query mutations with cache invalidation
+
+**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ⏳ Pending
+- [ ] Create `RemindersList` component for ContactDetailPage
+- [ ] Add "Add Reminder" button on contact detail page
+- [ ] Mark as complete functionality (checkbox/button with animation)
+- [ ] Overdue visual indicators (red styling, warning badge)
+- [ ] Update `ContactDetailPage` to display reminders section
+
+**Chunk 3.7: Frontend — Dashboard Widget** ⏳ Pending
+- [ ] Create `UpcomingRemindersWidget` component
+- [ ] Display next 5 upcoming reminders with quick actions
+- [ ] Show overdue count as alert/badge
+- [ ] Link to full Reminders page
+- [ ] Add widget to Dashboard/HomePage
+
+**Deliverable:** Complete reminder system with CRUD, completion tracking, and dashboard integration
 
 ---
 
