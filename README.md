@@ -133,14 +133,14 @@ A full-stack personal CRM application for managing contacts, tracking interactio
   - `updateInteraction(id, data)`
   - `deleteInteraction(id)`
 
-**Chunk 2.4: Frontend — Interaction Timeline UI** ⏳ Pending
-- [ ] Create `InteractionTimeline` component (`client/src/components/InteractionTimeline.tsx`)
-  - Chronological list view with date grouping
-  - Type icons/badges for each interaction type
-  - Duration and location display
-  - Empty state when no interactions
-- [ ] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
-- [ ] Add "Add Interaction" button in header
+**Chunk 2.4: Frontend — Interaction Timeline UI** ✅ Completed
+- [x] Create `InteractionTimeline` component (`client/src/components/InteractionTimeline.tsx`)
+  - Chronological list view with smart date grouping (Today, Yesterday, weekday, date)
+  - Type icons/badges with color coding for all 8 interaction types
+  - Duration and location display with icons
+  - Loading, error, and empty states
+- [x] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
+- [x] Add "Add Interaction" button in header (modal placeholder for Chunk 2.5)
 
 **Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ⏳ Pending
 - [ ] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
@@ -420,5 +420,5 @@ MIT
 
 **Last Updated**: 2025-12-20
 **Current Phase**: Phase 2 - Interaction Tracking ⏳ IN PROGRESS
-**Current Chunk**: 2.4 - Frontend Interaction Timeline UI
-**Status**: ✅ Phase 1 Complete | ✅ Chunks 2.1-2.3 Complete
+**Current Chunk**: 2.5 - Frontend Interaction Form
+**Status**: ✅ Phase 1 Complete | ✅ Chunks 2.1-2.4 Complete

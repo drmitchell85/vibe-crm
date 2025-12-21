@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { format } from 'date-fns';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
+import { InteractionTimeline } from '../components/InteractionTimeline';
 import type { UpdateContactInput } from '../types';
 
 /**
@@ -17,6 +18,7 @@ export function ContactDetailPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddInteractionModalOpen, setIsAddInteractionModalOpen] = useState(false);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -204,10 +206,34 @@ export function ContactDetailPage() {
         </div>
       </div>
 
-      {/* Future: Interactions, Reminders, Notes sections will go here */}
+      {/* Interactions Timeline */}
+      <InteractionTimeline
+        contactId={id!}
+        onAddInteraction={() => setIsAddInteractionModalOpen(true)}
+      />
+
+      {/* Add Interaction Modal - Form will be implemented in Chunk 2.5 */}
+      <Modal
+        isOpen={isAddInteractionModalOpen}
+        onClose={() => setIsAddInteractionModalOpen(false)}
+        title="Add Interaction"
+        size="lg"
+      >
+        <div className="text-center py-8 text-gray-500">
+          <p>Interaction form coming in Chunk 2.5</p>
+          <button
+            onClick={() => setIsAddInteractionModalOpen(false)}
+            className="mt-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
+
+      {/* Future: Reminders and Notes sections will go here */}
       <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
         <p className="text-gray-600">
-          Interactions, Reminders, and Notes will appear here in Phase 2-4
+          Reminders and Notes will appear here in Phase 3-4
         </p>
       </div>
     </div>
