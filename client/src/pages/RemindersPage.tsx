@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
-import type { ReminderWithContact } from '../types';
+import { Modal } from '../components/Modal';
+import { ReminderForm } from '../components/ReminderForm';
+import type { ReminderWithContact, CreateReminderInput, UpdateReminderInput } from '../types';
 
 type TabType = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -75,6 +77,17 @@ function formatDate(dateString: string): string {
  */
 export function RemindersPage() {
   const [activeTab, setActiveTab] = useState<TabType>('upcoming');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState<ReminderWithContact | null>(null);
+  const [selectedContactId, setSelectedContactId] = useState<string>('');
+
+  const queryClient = useQueryClient();
+
+  // Fetch contacts for the dropdown
+  const { data: contacts } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: () => api.getAllContacts(),
+  });
 
   // Fetch reminders based on active tab
   const { data: reminders, isLoading, error } = useQuery({
@@ -94,13 +107,6 @@ export function RemindersPage() {
     },
   });
 
-  const tabs: { key: TabType; label: string; icon: string }[] = [
-    { key: 'upcoming', label: 'Upcoming', icon: '📅' },
-    { key: 'overdue', label: 'Overdue', icon: '⚠️' },
-    { key: 'completed', label: 'Completed', icon: '✅' },
-    { key: 'all', label: 'All', icon: '📋' },
-  ];
-
   // Count overdue for badge
   const { data: overdueReminders } = useQuery({
     queryKey: ['reminders', 'overdue-count'],
@@ -109,12 +115,138 @@ export function RemindersPage() {
 
   const overdueCount = overdueReminders?.length || 0;
 
+  // Create reminder mutation
+  const createMutation = useMutation({
+    mutationFn: (data: CreateReminderInput) => api.createReminder(selectedContactId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      setIsCreateModalOpen(false);
+      setSelectedContactId('');
+    },
+  });
+
+  // Update reminder mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateReminderInput }) =>
+      api.updateReminder(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      setSelectedReminder(null);
+    },
+  });
+
+  // Delete reminder mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.deleteReminder(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+      setSelectedReminder(null);
+    },
+  });
+
+  // Mark complete/incomplete mutation
+  const toggleCompleteMutation = useMutation({
+    mutationFn: ({ id, isCompleted }: { id: string; isCompleted: boolean }) =>
+      isCompleted ? api.markReminderComplete(id) : api.markReminderIncomplete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] });
+    },
+  });
+
+  const tabs: { key: TabType; label: string; icon: string }[] = [
+    { key: 'upcoming', label: 'Upcoming', icon: '📅' },
+    { key: 'overdue', label: 'Overdue', icon: '⚠️' },
+    { key: 'completed', label: 'Completed', icon: '✅' },
+    { key: 'all', label: 'All', icon: '📋' },
+  ];
+
+  const handleOpenCreateModal = () => {
+    setSelectedContactId('');
+    setIsCreateModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Reminders</h1>
+        <button
+          onClick={handleOpenCreateModal}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        >
+          + Add Reminder
+        </button>
       </div>
+
+      {/* Create Reminder Modal */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Create New Reminder"
+        size="lg"
+      >
+        <div className="space-y-6">
+          {/* Contact Selector */}
+          <div>
+            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+              Contact <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="contact"
+              value={selectedContactId}
+              onChange={(e) => setSelectedContactId(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+            >
+              <option value="">Select a contact...</option>
+              {contacts?.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.firstName} {contact.lastName}
+                  {contact.company && ` (${contact.company})`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Show form only when contact is selected */}
+          {selectedContactId ? (
+            <ReminderForm
+              onSubmit={async (data) => {
+                await createMutation.mutateAsync(data as CreateReminderInput);
+              }}
+              onCancel={() => setIsCreateModalOpen(false)}
+              isLoading={createMutation.isPending}
+            />
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-4">
+              Please select a contact to create a reminder.
+            </p>
+          )}
+        </div>
+      </Modal>
+
+      {/* Edit Reminder Modal */}
+      <Modal
+        isOpen={!!selectedReminder}
+        onClose={() => setSelectedReminder(null)}
+        title={`Edit Reminder for ${selectedReminder?.contact.firstName} ${selectedReminder?.contact.lastName}`}
+        size="lg"
+      >
+        {selectedReminder && (
+          <ReminderForm
+            reminder={selectedReminder}
+            onSubmit={async (data) => {
+              await updateMutation.mutateAsync({
+                id: selectedReminder.id,
+                data: data as UpdateReminderInput,
+              });
+            }}
+            onCancel={() => setSelectedReminder(null)}
+            onDelete={() => deleteMutation.mutate(selectedReminder.id)}
+            isLoading={updateMutation.isPending}
+            isDeleting={deleteMutation.isPending}
+          />
+        )}
+      </Modal>
 
       {/* Tabs */}
       <div className="bg-white rounded-lg shadow">
@@ -179,12 +311,20 @@ export function RemindersPage() {
                 {activeTab === 'completed' && 'No completed reminders'}
                 {activeTab === 'all' && 'No reminders yet'}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-6">
                 {activeTab === 'upcoming' && "You're all caught up! No reminders due soon."}
                 {activeTab === 'overdue' && "Great job! You don't have any overdue reminders."}
                 {activeTab === 'completed' && "Completed reminders will appear here."}
-                {activeTab === 'all' && 'Create reminders from a contact page to get started.'}
+                {activeTab === 'all' && 'Create your first reminder to get started.'}
               </p>
+              {activeTab === 'all' && (
+                <button
+                  onClick={handleOpenCreateModal}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  + Create Your First Reminder
+                </button>
+              )}
             </div>
           )}
 
@@ -192,7 +332,15 @@ export function RemindersPage() {
           {!isLoading && !error && reminders && reminders.length > 0 && (
             <div className="space-y-4">
               {reminders.map((reminder) => (
-                <ReminderCard key={reminder.id} reminder={reminder} />
+                <ReminderCard
+                  key={reminder.id}
+                  reminder={reminder}
+                  onEdit={() => setSelectedReminder(reminder)}
+                  onToggleComplete={(isCompleted) =>
+                    toggleCompleteMutation.mutate({ id: reminder.id, isCompleted })
+                  }
+                  isToggling={toggleCompleteMutation.isPending}
+                />
               ))}
             </div>
           )}
@@ -212,7 +360,17 @@ export function RemindersPage() {
 /**
  * Individual reminder card component
  */
-function ReminderCard({ reminder }: { reminder: ReminderWithContact }) {
+function ReminderCard({
+  reminder,
+  onEdit,
+  onToggleComplete,
+  isToggling,
+}: {
+  reminder: ReminderWithContact;
+  onEdit: () => void;
+  onToggleComplete: (isCompleted: boolean) => void;
+  isToggling: boolean;
+}) {
   const { text: relativeTime, isOverdue } = formatRelativeTime(reminder.dueDate);
 
   return (
@@ -227,21 +385,44 @@ function ReminderCard({ reminder }: { reminder: ReminderWithContact }) {
         }
       `}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start gap-4">
+        {/* Checkbox */}
+        <button
+          onClick={() => onToggleComplete(!reminder.isCompleted)}
+          disabled={isToggling}
+          className={`
+            mt-1 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors
+            ${reminder.isCompleted
+              ? 'bg-green-500 border-green-500 text-white'
+              : 'border-gray-300 hover:border-blue-500'
+            }
+            ${isToggling ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          `}
+          title={reminder.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
+        >
+          {reminder.isCompleted && (
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </button>
+
+        {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Title and Status */}
           <div className="flex items-center gap-2">
-            {reminder.isCompleted ? (
-              <span className="text-green-600">✓</span>
-            ) : isOverdue ? (
+            {!reminder.isCompleted && isOverdue && (
               <span className="text-red-500">⚠️</span>
-            ) : (
-              <span className="text-blue-500">🔔</span>
             )}
             <h3
-              className={`font-medium truncate ${
+              className={`font-medium truncate cursor-pointer hover:text-blue-600 ${
                 reminder.isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
               }`}
+              onClick={onEdit}
             >
               {reminder.title}
             </h3>
@@ -262,6 +443,12 @@ function ReminderCard({ reminder }: { reminder: ReminderWithContact }) {
             >
               {reminder.contact.firstName} {reminder.contact.lastName}
             </Link>
+            <button
+              onClick={onEdit}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              Edit
+            </button>
           </div>
         </div>
 

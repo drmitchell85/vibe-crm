@@ -220,15 +220,16 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Add route to `App.tsx` (`/reminders`)
 - [x] Add navigation link to Layout
 
-**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ⏳ Pending
-- [ ] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
-  - Title input, description textarea
-  - Due date/time picker
-  - Contact selector (if creating from Reminders page)
-- [ ] Add create reminder modal
-- [ ] Add edit functionality (click on reminder → edit modal)
-- [ ] Add delete confirmation dialog
-- [ ] React Query mutations with cache invalidation
+**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ✅ Completed
+- [x] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
+  - Title input (required), description textarea
+  - Due date/time picker (defaults to tomorrow 9 AM)
+  - Inline delete confirmation dialog
+- [x] Add create reminder modal with contact selector dropdown
+- [x] Add edit functionality (click on reminder title → edit modal)
+- [x] Add delete confirmation dialog (inline in form)
+- [x] Add mark complete/incomplete checkbox on each reminder card
+- [x] React Query mutations with cache invalidation (create, update, delete, toggle complete)
 
 **Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ⏳ Pending
 - [ ] Create `RemindersList` component for ContactDetailPage
