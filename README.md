@@ -43,8 +43,9 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - ✅ Loading, error, and empty states throughout UI
 
 ### Planned Features
-- Interaction Tracking
-- Reminders & Follow-ups
+- ✅ Interaction Tracking
+- ✅ Reminders & Follow-ups
+- API Testing (Unit & Integration)
 - Notes & Tagging
 - Advanced Search & Filtering
 - Data Import/Export
@@ -250,7 +251,78 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 4: Notes & Tagging ⏳ PENDING
+### Phase 4: API Testing ⏳ IN PROGRESS
+
+**Chunk 4.0: Jest Setup & Configuration** ✅ Completed
+- [x] Install Jest and testing dependencies (jest, ts-jest, @types/jest, supertest, @types/supertest, ts-node)
+- [x] Create `jest.config.ts` with TypeScript support
+- [x] Create test setup file (`server/src/test/setup.ts`)
+- [x] Add test scripts to `package.json` (`test`, `test:watch`, `test:coverage`)
+- [x] Verify Jest runs successfully
+
+**Chunk 4.1: Contacts API — Unit Tests** ⏳ Pending
+- [ ] Create `server/src/services/__tests__/contactService.test.ts`
+- [ ] Test `getAllContacts()` — returns array of contacts
+- [ ] Test `getContactById(id)` — returns contact, throws on not found
+- [ ] Test `createContact(data)` — creates and returns contact, validates required fields
+- [ ] Test `updateContact(id, data)` — updates and returns contact, throws on not found
+- [ ] Test `deleteContact(id)` — deletes contact, throws on not found
+- [ ] Test `searchContacts(query)` — searches by name, email, company
+
+**Chunk 4.2: Contacts API — Integration Tests** ⏳ Pending
+- [ ] Create `server/src/controllers/__tests__/contactController.test.ts`
+- [ ] Test `GET /api/contacts` — 200 with array
+- [ ] Test `GET /api/contacts/:id` — 200 with contact, 404 on not found
+- [ ] Test `POST /api/contacts` — 201 on success, 400 on validation error
+- [ ] Test `PUT /api/contacts/:id` — 200 on success, 404 on not found, 400 on validation error
+- [ ] Test `DELETE /api/contacts/:id` — 200 on success, 404 on not found
+- [ ] Test `GET /api/contacts/search?q=` — 200 with filtered results
+
+**Chunk 4.3: Interactions API — Unit Tests** ⏳ Pending
+- [ ] Create `server/src/services/__tests__/interactionService.test.ts`
+- [ ] Test `getInteractionsForContact(contactId, filters)` — returns array, applies filters
+- [ ] Test `getInteractionById(id)` — returns interaction, throws on not found
+- [ ] Test `createInteraction(data)` — creates and returns interaction
+- [ ] Test `updateInteraction(id, data)` — updates and returns interaction
+- [ ] Test `deleteInteraction(id)` — deletes interaction, throws on not found
+
+**Chunk 4.4: Interactions API — Integration Tests** ⏳ Pending
+- [ ] Create `server/src/controllers/__tests__/interactionController.test.ts`
+- [ ] Test `GET /api/contacts/:contactId/interactions` — 200 with array
+- [ ] Test `GET /api/interactions/:id` — 200 with interaction, 404 on not found
+- [ ] Test `POST /api/contacts/:contactId/interactions` — 201 on success, 400 on validation error
+- [ ] Test `PUT /api/interactions/:id` — 200 on success, 404 on not found
+- [ ] Test `DELETE /api/interactions/:id` — 200 on success, 404 on not found
+
+**Chunk 4.5: Reminders API — Unit Tests** ⏳ Pending
+- [ ] Create `server/src/services/__tests__/reminderService.test.ts`
+- [ ] Test `getRemindersForContact(contactId, filters)` — returns array, applies filters
+- [ ] Test `getAllReminders(filters)` — returns all reminders with filters
+- [ ] Test `getUpcomingReminders(limit)` — returns upcoming incomplete reminders
+- [ ] Test `getOverdueReminders()` — returns overdue incomplete reminders
+- [ ] Test `getReminderById(id)` — returns reminder, throws on not found
+- [ ] Test `createReminder(data)` — creates and returns reminder
+- [ ] Test `updateReminder(id, data)` — updates and returns reminder
+- [ ] Test `markAsComplete(id)` / `markAsIncomplete(id)` — toggles completion status
+- [ ] Test `deleteReminder(id)` — deletes reminder, throws on not found
+
+**Chunk 4.6: Reminders API — Integration Tests** ⏳ Pending
+- [ ] Create `server/src/controllers/__tests__/reminderController.test.ts`
+- [ ] Test `GET /api/reminders` — 200 with array
+- [ ] Test `GET /api/reminders/upcoming` — 200 with upcoming reminders
+- [ ] Test `GET /api/reminders/overdue` — 200 with overdue reminders
+- [ ] Test `GET /api/contacts/:contactId/reminders` — 200 with array
+- [ ] Test `GET /api/reminders/:id` — 200 with reminder, 404 on not found
+- [ ] Test `POST /api/contacts/:contactId/reminders` — 201 on success, 400 on validation error
+- [ ] Test `PUT /api/reminders/:id` — 200 on success, 404 on not found
+- [ ] Test `PATCH /api/reminders/:id/complete` — 200 on toggle success
+- [ ] Test `DELETE /api/reminders/:id` — 200 on success, 404 on not found
+
+**Deliverable:** Comprehensive test suite with unit tests for services and integration tests for controllers
+
+---
+
+### Phase 5: Notes & Tagging ⏳ PENDING
 
 **Tasks:**
 - [ ] Notes and tags database models
@@ -264,7 +336,7 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 5: Enhanced UI/UX & Search ⏳ PENDING
+### Phase 6: Enhanced UI/UX & Search ⏳ PENDING
 
 **Tasks:**
 - [ ] Global search implementation
@@ -279,7 +351,7 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 6: Data Management & Export ⏳ PENDING
+### Phase 7: Data Management & Export ⏳ PENDING
 
 **Tasks:**
 - [ ] CSV import/export functionality
@@ -293,7 +365,7 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 
 ---
 
-### Phase 7: Deployment & Polish ⏳ PENDING
+### Phase 8: Deployment & Polish ⏳ PENDING
 
 **Tasks:**
 - [ ] Database deployment (Railway/Supabase)
@@ -503,7 +575,7 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-21
-**Current Phase**: Phase 4 - Notes & Tagging ⏳ PENDING
-**Next Up**: Phase 4 - Notes and tag-based organization
+**Last Updated**: 2025-12-22
+**Current Phase**: Phase 4 - API Testing ⏳ IN PROGRESS
+**Next Up**: Chunk 4.1 - Contacts API Unit Tests
 **Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ✅ Phase 3 Complete
