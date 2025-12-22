@@ -233,13 +233,13 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Test `DELETE /api/contacts/:id` — 200 on success, 404 on not found, 500 on error
 - [x] Test `GET /api/contacts/search?q=` — 200 with results, 400 on missing query, special characters
 
-**Chunk 4.3: Interactions API — Unit Tests** ⏳ Pending
-- [ ] Create `server/src/services/__tests__/interactionService.test.ts`
-- [ ] Test `getInteractionsForContact(contactId, filters)` — returns array, applies filters
-- [ ] Test `getInteractionById(id)` — returns interaction, throws on not found
-- [ ] Test `createInteraction(data)` — creates and returns interaction
-- [ ] Test `updateInteraction(id, data)` — updates and returns interaction
-- [ ] Test `deleteInteraction(id)` — deletes interaction, throws on not found
+**Chunk 4.3: Interactions API — Unit Tests** ✅ Completed
+- [x] Create `server/src/services/__tests__/interactionService.test.ts`
+- [x] Test `getInteractionsForContact(contactId, filters)` — returns array, applies type/date filters, throws 404 on invalid contact
+- [x] Test `getInteractionById(id)` — returns interaction with contact relation, throws 404 on not found
+- [x] Test `createInteraction(data)` — creates and returns interaction, validates UUID/type/duration, handles optional fields
+- [x] Test `updateInteraction(id, data)` — updates and returns interaction, partial updates, empty strings → null
+- [x] Test `deleteInteraction(id)` — deletes interaction, throws 404 on not found
 
 **Chunk 4.4: Interactions API — Integration Tests** ⏳ Pending
 - [ ] Create `server/src/controllers/__tests__/interactionController.test.ts`
@@ -336,4 +336,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 4.3 - Interactions API Unit Tests
+**Next Up**: Chunk 4.4 - Interactions API Integration Tests
