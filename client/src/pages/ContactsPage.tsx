@@ -217,11 +217,10 @@ function ContactRow({ contact }: { contact: Contact }) {
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <Link
           to={`/contacts/${contact.id}`}
-          className="text-blue-600 hover:text-blue-900 mr-4"
+          className="text-blue-600 hover:text-blue-900"
         >
           View
         </Link>
-        <button className="text-gray-600 hover:text-gray-900">Edit</button>
       </td>
     </tr>
   );
