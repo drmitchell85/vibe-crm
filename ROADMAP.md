@@ -3,295 +3,162 @@
 This document tracks the implementation progress of the FPH CRM application, organized into phases and chunks for incremental development.
 
 **Current Phase**: Phase 5 - Notes & Tagging
-**Status**: Phases 1-4 Complete | Phase 5 Pending
+**Status**: Phases 1-4 Complete | Phase 5 In Progress
 
 ---
 
 ## Phase 1: Foundation & Basic Contact Management ✅ COMPLETED
-**Started**: 2025-12-18 | **Completed**: 2025-12-19
+**Completed**: 2025-12-19
 
-**Chunk 1.1: Database Setup** ✅ Completed
-- [x] Project setup (monorepo, dependencies)
-- [x] Database schema for contacts (PostgreSQL + Prisma migration)
-- [x] Migrated from twitterUsername to flexible socialMedia JSON field
+**Backend:**
+- PostgreSQL database with Prisma ORM
+- Contact model with flexible `socialMedia` JSON field (twitter, linkedin, github, etc.)
+- Contact service with CRUD operations and search
+- Zod validation schemas
+- REST API endpoints: `GET/POST/PUT/DELETE /api/contacts`, `GET /api/contacts/search`
+- Swagger/OpenAPI documentation at `/api-docs`
+- Postman collection
 
-**Chunk 1.2: Service Layer** ✅ Completed
-- [x] Zod validation schemas
-- [x] Contact service with business logic (CRUD + search)
-
-**Chunk 1.3: API Endpoints & Documentation** ✅ Completed
-- [x] Contact controller (request handlers)
-- [x] REST API routes (GET, POST, PUT, DELETE, search)
-- [x] Swagger/OpenAPI documentation at /api-docs
-- [x] Postman collection and environment
-
-**Chunk 1.4: Frontend Foundation & API Client** ✅ Completed
-- [x] API client with axios wrapper
-- [x] React Query configuration
-- [x] Layout component with navigation
-- [x] HomePage with API connection test
-- [x] Verified frontend <-> backend communication
-
-**Chunk 1.5: Contact List Page** ✅ Completed
-- [x] ContactsPage component with table display
-- [x] Search functionality with debouncing (400ms)
-- [x] Loading and error states
-- [x] Empty state (no contacts and no search results variants)
-- [x] Social media badges display
-- [x] useDebounce custom hook
-
-**Chunk 1.6: Contact Forms & Detail View** ✅ Completed
-- [x] ContactDetailPage with formatted display (email/phone links, date formatting)
-- [x] Reusable ContactForm component (works for create and edit)
-- [x] Modal component (backdrop, ESC key, scroll lock)
-- [x] Create contact modal with validation
-- [x] Edit contact modal with pre-populated data
-- [x] Delete confirmation dialog
-- [x] Dynamic social media fields (add/remove platforms)
-- [x] React Query mutations with cache invalidation
-- [x] Full CRUD operations tested
-
-**Deliverable:** ✅ Working contact CRUD system with database - COMPLETE!
+**Frontend:**
+- React + TypeScript + Vite foundation
+- Axios API client with React Query integration
+- Layout with navigation
+- Contact list page with table display and debounced search (400ms)
+- Contact detail page with formatted display
+- Create/Edit contact forms with validation
+- Delete confirmation dialog
+- Dynamic social media field management
+- Loading, error, and empty states throughout
 
 ---
 
 ## Phase 2: Interaction Tracking ✅ COMPLETED
 
-**Chunk 2.1: Backend — Interaction Service Layer** ✅ Completed
-- [x] Create Zod validation schemas (`server/src/schemas/interactionSchema.ts`)
-  - `createInteractionSchema` (type, contactId required; subject, notes, date, duration, location optional)
-  - `updateInteractionSchema` (all fields optional)
-- [x] Create interaction service (`server/src/services/interactionService.ts`)
-  - `getInteractionsForContact(contactId)` with optional filtering (type, date range)
-  - `getInteractionById(id)`
-  - `createInteraction(data)`
-  - `updateInteraction(id, data)`
-  - `deleteInteraction(id)`
+**Backend:**
+- Interaction model with 8 types: CALL, MEETING, EMAIL, TEXT, COFFEE, LUNCH, EVENT, OTHER
+- Fields: subject, notes, date, duration, location
+- Interaction service with CRUD and filtering (by type, date range)
+- REST API endpoints nested under contacts
+- Swagger documentation updated
 
-**Chunk 2.2: Backend — API Routes & Swagger Docs** ✅ Completed
-- [x] Create interaction controller (`server/src/controllers/interactionController.ts`)
-- [x] Create interaction routes (`server/src/routes/interactions.ts`)
-  - `GET /api/contacts/:contactId/interactions` — list all for a contact (with type/date filters)
-  - `GET /api/interactions/:id` — get single interaction
-  - `POST /api/contacts/:contactId/interactions` — create new
-  - `PUT /api/interactions/:id` — update
-  - `DELETE /api/interactions/:id` — delete
-- [x] Add Swagger/OpenAPI documentation
-- [x] Register routes in main `index.ts`
-
-**Chunk 2.3: Frontend — API Client & Types** ✅ Completed
-- [x] Add `CreateInteractionInput`, `UpdateInteractionInput`, and `InteractionFilters` types (`client/src/types/index.ts`)
-- [x] Add interaction methods to API client (`client/src/lib/api.ts`)
-  - `getInteractionsForContact(contactId, filters?)`
-  - `getInteractionById(id)`
-  - `createInteraction(contactId, data)`
-  - `updateInteraction(id, data)`
-  - `deleteInteraction(id)`
-
-**Chunk 2.4: Frontend — Interaction Timeline UI** ✅ Completed
-- [x] Create `InteractionTimeline` component (`client/src/components/InteractionTimeline.tsx`)
-  - Chronological list view with smart date grouping (Today, Yesterday, weekday, date)
-  - Type icons/badges with color coding for all 8 interaction types
-  - Duration and location display with icons
-  - Loading, error, and empty states
-- [x] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
-- [x] Add "Add Interaction" button in header (modal placeholder for Chunk 2.5)
-
-**Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ✅ Completed
-- [x] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
-  - Type dropdown with all 8 interaction types (with emoji icons)
-  - Date/time picker, subject, notes, duration, location fields
-  - Inline delete confirmation dialog
-- [x] Add create interaction modal (triggered from "Add Interaction" button)
-- [x] Add edit functionality (click on timeline item → edit modal)
-- [x] Add delete confirmation dialog (inline within form)
-- [x] React Query mutations with cache invalidation for create/update/delete
-
-**Chunk 2.6: Frontend — Filtering & Sorting** ✅ Completed
-- [x] Add type filter dropdown (all 8 interaction types with emoji icons)
-- [x] Add date range filter (From/To date pickers)
-- [x] Add sort toggle (Newest First / Oldest First)
-- [x] Persist filter state in URL search params (shareable filtered views)
-- [x] Collapsible filter panel with active filter badges
-- [x] "No results" state when filters return empty
-
-**Deliverable:** ✅ Full interaction logging with timeline view, CRUD operations, and filtering - COMPLETE!
+**Frontend:**
+- InteractionTimeline component with smart date grouping (Today, Yesterday, etc.)
+- Color-coded type badges with emoji icons
+- Create/Edit/Delete interaction modals
+- Collapsible filter panel (type, date range, sort order)
+- Filter state persisted in URL search params
 
 ---
 
 ## Phase 3: Reminders & Follow-ups ✅ COMPLETED
-**Started**: 2025-12-21 | **Completed**: 2025-12-21
+**Completed**: 2025-12-21
 
-**Chunk 3.1: Backend — Reminder Service Layer** ✅ Completed
-- [x] Create Zod validation schemas (`server/src/schemas/reminderSchema.ts`)
-  - `createReminderSchema` (title, dueDate, contactId required; description optional)
-  - `updateReminderSchema` (all fields optional)
-- [x] Create reminder service (`server/src/services/reminderService.ts`)
-  - `getRemindersForContact(contactId)` with optional filtering (completed, date range)
-  - `getReminderById(id)`
-  - `createReminder(data)`
-  - `updateReminder(id, data)`
-  - `deleteReminder(id)`
-  - `markAsComplete(id)` / `markAsIncomplete(id)`
-  - `getUpcomingReminders(limit?)` — for dashboard widget
-  - `getOverdueReminders()`
-  - `getAllReminders(filters?)` — for reminders page
+**Backend:**
+- Reminder model with title, description, dueDate, isCompleted, completedAt
+- Reminder service with CRUD, mark complete/incomplete, upcoming/overdue queries
+- REST API: 9 endpoints including `/api/reminders/upcoming` and `/api/reminders/overdue`
+- Swagger documentation and Postman collection updated
 
-**Chunk 3.2: Backend — API Routes & Swagger Docs** ✅ Completed
-- [x] Create reminder controller (`server/src/controllers/reminderController.ts`)
-- [x] Create reminder routes (`server/src/routes/reminders.ts`)
-  - `GET /api/contacts/:contactId/reminders` — list all for a contact
-  - `GET /api/reminders` — list all reminders (for reminders page)
-  - `GET /api/reminders/upcoming` — get upcoming reminders
-  - `GET /api/reminders/overdue` — get overdue reminders
-  - `GET /api/reminders/:id` — get single reminder
-  - `POST /api/contacts/:contactId/reminders` — create new
-  - `PUT /api/reminders/:id` — update
-  - `PATCH /api/reminders/:id/complete` — mark as complete/incomplete
-  - `DELETE /api/reminders/:id` — delete
-- [x] Add Swagger/OpenAPI documentation
-- [x] Register routes in main `index.ts`
-- [x] Update Postman collection with all 9 reminder endpoints
-
-**Chunk 3.3: Frontend — API Client & Types** ✅ Completed
-- [x] Add `CreateReminderInput`, `UpdateReminderInput`, `ReminderFilters`, and `ReminderWithContact` types (`client/src/types/index.ts`)
-- [x] Add reminder methods to API client (`client/src/lib/api.ts`)
-  - `getRemindersForContact(contactId, filters?)`
-  - `getAllReminders(filters?)`
-  - `getUpcomingReminders(limit?)`
-  - `getOverdueReminders()`
-  - `getReminderById(id)`
-  - `createReminder(contactId, data)`
-  - `updateReminder(id, data)`
-  - `markReminderComplete(id)` / `markReminderIncomplete(id)`
-  - `deleteReminder(id)`
-
-**Chunk 3.4: Frontend — Reminders Page UI** ✅ Completed
-- [x] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
-  - Tab-based views: Upcoming / Overdue / Completed / All
-  - Overdue count badge on tab
-  - Due date formatting with relative time ("in 2 days", "3 days overdue")
-  - Color-coded cards (red for overdue, gray for completed)
-  - Loading, error, and empty states for each tab
-- [x] Add route to `App.tsx` (`/reminders`)
-- [x] Add navigation link to Layout
-
-**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ✅ Completed
-- [x] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
-  - Title input (required), description textarea
-  - Due date/time picker (defaults to tomorrow 9 AM)
-  - Inline delete confirmation dialog
-- [x] Add create reminder modal with contact selector dropdown
-- [x] Add edit functionality (click on reminder title → edit modal)
-- [x] Add delete confirmation dialog (inline in form)
-- [x] Add mark complete/incomplete checkbox on each reminder card
-- [x] React Query mutations with cache invalidation (create, update, delete, toggle complete)
-
-**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ✅ Completed
-- [x] Create `RemindersList` component for ContactDetailPage
-- [x] Add "Add Reminder" button on contact detail page
-- [x] Mark as complete functionality (checkbox/button with animation)
-- [x] Overdue visual indicators (red styling, warning badge)
-- [x] Update `ContactDetailPage` to display reminders section
-
-**Chunk 3.7: Frontend — Dashboard Widget** ✅ Completed
-- [x] Create `UpcomingRemindersWidget` component
-- [x] Display next 5 upcoming reminders with quick actions
-- [x] Show overdue count as alert/badge
-- [x] Link to full Reminders page
-- [x] Add widget to Dashboard/HomePage
-
-**Deliverable:** ✅ Complete reminder system with CRUD, completion tracking, and dashboard integration - COMPLETE!
+**Frontend:**
+- Dedicated Reminders page with tab views: Upcoming, Overdue, Completed, All
+- Relative time formatting ("in 2 days", "3 days overdue")
+- Color-coded cards (red for overdue, gray for completed)
+- Create/Edit/Delete reminder modals with contact selector
+- Mark complete/incomplete with checkbox
+- RemindersList component on Contact detail page
+- UpcomingRemindersWidget on Dashboard/HomePage with overdue alert badge
 
 ---
 
 ## Phase 4: API Testing ✅ COMPLETED
-**Started**: 2025-12-22 | **Completed**: 2025-12-22
+**Completed**: 2025-12-22
 
-**Chunk 4.0: Jest Setup & Configuration** ✅ Completed
-- [x] Install Jest and testing dependencies (jest, ts-jest, @types/jest, supertest, @types/supertest, ts-node)
-- [x] Create `jest.config.ts` with TypeScript support
-- [x] Create test setup file (`server/src/test/setup.ts`)
-- [x] Add test scripts to `package.json` (`test`, `test:watch`, `test:coverage`)
-- [x] Verify Jest runs successfully
+**Test Infrastructure:**
+- Jest with TypeScript support (ts-jest)
+- Supertest for HTTP integration testing
+- Refactored Express app into `app.ts` for testability (separate from server startup)
+- Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
-**Chunk 4.1: Contacts API — Unit Tests** ✅ Completed
-- [x] Create `server/src/services/__tests__/contactService.test.ts`
-- [x] Test `getAllContacts()` — returns array of contacts, handles empty state, throws on DB error
-- [x] Test `getContactById(id)` — returns contact with relations, throws 404 on not found
-- [x] Test `createContact(data)` — creates contact, validates required fields, handles duplicate email (409)
-- [x] Test `updateContact(id, data)` — updates contact, partial updates, throws 404 on not found
-- [x] Test `deleteContact(id)` — deletes contact, throws 404 on not found
-- [x] Test `searchContacts(query)` — searches by firstName, lastName, email, company
-
-**Chunk 4.2: Contacts API — Integration Tests** ✅ Completed
-- [x] Create `server/src/controllers/__tests__/contactController.test.ts`
-- [x] Refactor Express app into `app.ts` for testability (separate from server startup)
-- [x] Test `GET /api/contacts` — 200 with array, empty array, 500 on error
-- [x] Test `GET /api/contacts/:id` — 200 with contact, 404 on not found, 500 on error
-- [x] Test `POST /api/contacts` — 201 on success, 400 on validation error, 409 on duplicate email
-- [x] Test `PUT /api/contacts/:id` — 200 on success, 404 on not found, 400 on validation, 409 on duplicate
-- [x] Test `DELETE /api/contacts/:id` — 200 on success, 404 on not found, 500 on error
-- [x] Test `GET /api/contacts/search?q=` — 200 with results, 400 on missing query, special characters
-
-**Chunk 4.3: Interactions API — Unit Tests** ✅ Completed
-- [x] Create `server/src/services/__tests__/interactionService.test.ts`
-- [x] Test `getInteractionsForContact(contactId, filters)` — returns array, applies type/date filters, throws 404 on invalid contact
-- [x] Test `getInteractionById(id)` — returns interaction with contact relation, throws 404 on not found
-- [x] Test `createInteraction(data)` — creates and returns interaction, validates UUID/type/duration, handles optional fields
-- [x] Test `updateInteraction(id, data)` — updates and returns interaction, partial updates, empty strings → null
-- [x] Test `deleteInteraction(id)` — deletes interaction, throws 404 on not found
-
-**Chunk 4.4: Interactions API — Integration Tests** ✅ Completed
-- [x] Create `server/src/controllers/__tests__/interactionController.test.ts`
-- [x] Test `GET /api/contacts/:contactId/interactions` — 200 with array, filter support (type, date range), 400 on invalid type, 404 on contact not found
-- [x] Test `GET /api/interactions/:id` — 200 with interaction, 404 on not found, 500 on error
-- [x] Test `POST /api/contacts/:contactId/interactions` — 201 on success, 201 with minimal data, 400 on validation errors (missing type, invalid enum, invalid duration), 404 on contact not found
-- [x] Test `PUT /api/interactions/:id` — 200 on success, partial updates, type changes, 404 on not found, 400 on validation
-- [x] Test `DELETE /api/interactions/:id` — 200 on success, 404 on not found, 500 on error
-- [x] Edge cases: All 8 interaction types, combined filters, malformed JSON
-
-**Chunk 4.5: Reminders API — Unit Tests** ✅ Completed
-- [x] Create `server/src/services/__tests__/reminderService.test.ts`
-- [x] Test `getRemindersForContact(contactId, filters)` — returns array, applies isCompleted/date range filters, 404 on contact not found
-- [x] Test `getAllReminders(filters)` — returns all reminders with contact info, applies isCompleted/date range filters
-- [x] Test `getUpcomingReminders(limit)` — returns upcoming incomplete reminders, respects limit, default limit 5
-- [x] Test `getOverdueReminders()` — returns overdue incomplete reminders with contact info
-- [x] Test `getReminderById(id)` — returns reminder with contact relation, 404 on not found
-- [x] Test `createReminder(data)` — creates reminder, validates required fields (contactId, title, dueDate), validates UUID/datetime formats, 404 on contact not found
-- [x] Test `updateReminder(id, data)` — updates reminder, partial updates, empty description → null, 404 on not found
-- [x] Test `markAsComplete(id)` — sets isCompleted=true and completedAt timestamp, 404 on not found
-- [x] Test `markAsIncomplete(id)` — sets isCompleted=false and clears completedAt, 404 on not found
-- [x] Test `deleteReminder(id)` — deletes reminder, 404 on not found
-
-**Chunk 4.6: Reminders API — Integration Tests** ✅ Completed
-- [x] Create `server/src/controllers/__tests__/reminderController.test.ts`
-- [x] Test `GET /api/reminders` — 200 with array, filter support (isCompleted, date range), 500 on error
-- [x] Test `GET /api/reminders/upcoming` — 200 with upcoming reminders, default limit 5, custom limit support
-- [x] Test `GET /api/reminders/overdue` — 200 with overdue reminders, empty array when none overdue
-- [x] Test `GET /api/contacts/:contactId/reminders` — 200 with array, filter support (isCompleted, date range), 404 on contact not found
-- [x] Test `GET /api/reminders/:id` — 200 with reminder, 404 on not found, 500 on error
-- [x] Test `POST /api/contacts/:contactId/reminders` — 201 on success, 201 with minimal data, 400 on validation errors (missing title/dueDate, invalid datetime), 404 on contact not found
-- [x] Test `PUT /api/reminders/:id` — 200 on success, partial updates, 404 on not found, 400 on validation
-- [x] Test `PATCH /api/reminders/:id/complete` — 200 on mark complete, 200 on mark incomplete, 404 on not found
-- [x] Test `DELETE /api/reminders/:id` — 200 on success, 404 on not found, 500 on error
-- [x] Edge cases: Combined filters, malformed JSON, empty request body
-
-**Deliverable:** ✅ Comprehensive test suite with 214 tests (unit + integration) covering all 3 API resources - COMPLETE!
+**Test Coverage (240 tests total):**
+- **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints)
+- **Interaction API**: Unit tests + Integration tests with filter validation
+- **Reminder API**: Unit tests + Integration tests including upcoming/overdue endpoints
+- Edge cases: Validation errors, 404s, duplicate handling, malformed JSON
 
 ---
 
-## Phase 5: Notes & Tagging ⏳ PENDING
+## Phase 5: Notes & Tagging ⏳ IN PROGRESS
+**Started**: 2025-12-22
 
-**Tasks:**
-- [ ] Notes and tags database models
-- [ ] Backend APIs for notes and tags
-- [ ] Notes UI on contact pages
-- [ ] Tag management interface
-- [ ] Tag-based filtering
-- [ ] Tag color coding
+**Chunk 5.1: Tag Service & Validation** ✅ COMPLETED
+- [x] Created Zod validation schemas (`server/src/schemas/tagSchema.ts`)
+  - `createTagSchema` (name required, color optional with default `#6B7280`)
+  - `updateTagSchema` (all fields optional)
+  - Hex color validation regex, 50 char name limit
+- [x] Created tag service (`server/src/services/tagService.ts`)
+  - `getAllTags()` — list all tags with contact count
+  - `getTagById(id)` — get single tag with contact count
+  - `createTag(data)` — create new tag (unique name validation, P2002 handling)
+  - `updateTag(id, data)` — update tag
+  - `deleteTag(id)` — delete tag (cascade removes from contacts)
+- [x] Unit tests for tag service (`server/src/services/__tests__/tagService.test.ts`) — 26 tests
 
-**Deliverable:** Note-taking and tag-based organization system
+**Chunk 5.2: Tag API (Controller & Routes)** ⏳ Pending
+- [ ] Create tag controller (`server/src/controllers/tagController.ts`)
+- [ ] Create tag routes (`server/src/routes/tags.ts`)
+  - `GET /api/tags` — list all tags
+  - `GET /api/tags/:id` — get single tag
+  - `POST /api/tags` — create tag
+  - `PUT /api/tags/:id` — update tag
+  - `DELETE /api/tags/:id` — delete tag
+- [ ] Add Swagger/OpenAPI documentation
+- [ ] Register routes in main `index.ts`
+- [ ] Integration tests for tag API (`server/src/controllers/__tests__/tagController.test.ts`)
+
+**Chunk 5.3: Contact-Tag Linking** ⏳ Pending
+- [ ] Add service methods to contactService or tagService
+  - `addTagToContact(contactId, tagId)`
+  - `removeTagFromContact(contactId, tagId)`
+  - `getContactsByTag(tagId)` — filter contacts by tag
+- [ ] Add API endpoints
+  - `POST /api/contacts/:id/tags` — add tag to contact
+  - `DELETE /api/contacts/:id/tags/:tagId` — remove tag from contact
+- [ ] Enhance `GET /api/contacts` to support `?tags=tag1,tag2` filtering
+- [ ] Unit and integration tests for linking functionality
+
+**Chunk 5.4: Note Service & Validation** ⏳ Pending
+- [ ] Create Zod validation schemas (`server/src/schemas/noteSchema.ts`)
+  - `createNoteSchema` (content, contactId required; isPinned optional)
+  - `updateNoteSchema` (all fields optional)
+- [ ] Create note service (`server/src/services/noteService.ts`)
+  - `getNotesForContact(contactId)` — list notes for a contact (pinned first)
+  - `getNoteById(id)` — get single note
+  - `createNote(data)` — create note
+  - `updateNote(id, data)` — update note
+  - `deleteNote(id)` — delete note
+  - `togglePin(id)` — toggle isPinned status
+- [ ] Unit tests for note service (`server/src/services/__tests__/noteService.test.ts`)
+
+**Chunk 5.5: Note API (Controller & Routes)** ⏳ Pending
+- [ ] Create note controller (`server/src/controllers/noteController.ts`)
+- [ ] Create note routes (`server/src/routes/notes.ts`)
+  - `GET /api/contacts/:contactId/notes` — list notes for a contact
+  - `GET /api/notes/:id` — get single note
+  - `POST /api/contacts/:contactId/notes` — create note
+  - `PUT /api/notes/:id` — update note
+  - `PATCH /api/notes/:id/pin` — toggle pin status
+  - `DELETE /api/notes/:id` — delete note
+- [ ] Add Swagger/OpenAPI documentation
+- [ ] Register routes in main `index.ts`
+- [ ] Integration tests for note API (`server/src/controllers/__tests__/noteController.test.ts`)
+
+**Chunk 5.6: Documentation & Cleanup** ⏳ Pending
+- [ ] Update Swagger/OpenAPI docs with all new endpoints
+- [ ] Update Postman collection with tag and note endpoints
+- [ ] Update README.md with new API endpoints
+- [ ] Run full test suite to ensure no regressions
+
+**Deliverable:** Complete notes and tag-based organization system with full test coverage
 
 ---
 
@@ -340,4 +207,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Phase 5 - Notes & Tagging
+**Next Up**: Chunk 5.2 - Tag API (Controller & Routes)
