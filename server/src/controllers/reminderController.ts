@@ -145,13 +145,7 @@ export const reminderController = {
     } catch (error) {
       // Handle Zod validation errors
       if (error instanceof ZodError) {
-        const validationError = new AppError(
-          'Validation failed',
-          400,
-          'VALIDATION_ERROR'
-        );
-        (validationError as any).details = error.errors;
-        return next(validationError);
+        return next(new AppError('Validation failed', 400, 'VALIDATION_ERROR', error.errors));
       }
       next(error);
     }
@@ -172,13 +166,7 @@ export const reminderController = {
     } catch (error) {
       // Handle Zod validation errors
       if (error instanceof ZodError) {
-        const validationError = new AppError(
-          'Validation failed',
-          400,
-          'VALIDATION_ERROR'
-        );
-        (validationError as any).details = error.errors;
-        return next(validationError);
+        return next(new AppError('Validation failed', 400, 'VALIDATION_ERROR', error.errors));
       }
       next(error);
     }

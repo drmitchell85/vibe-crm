@@ -1,5 +1,12 @@
 import { useState, FormEvent } from 'react';
 import type { Contact, CreateContactInput, UpdateContactInput } from '../types';
+import { FormError } from './ui';
+import {
+  inputStyles,
+  labelStyles,
+  primaryButtonStyles,
+  secondaryButtonStyles,
+} from '../lib/formStyles';
 
 interface ContactFormProps {
   contact?: Contact; // If provided, form is in "edit" mode
@@ -84,18 +91,14 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 text-sm">{error}</p>
-        </div>
-      )}
+      <FormError message={error} />
 
       {/* Basic Information */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="firstName" className={labelStyles}>
               First Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -105,12 +108,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="lastName" className={labelStyles}>
               Last Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -120,12 +123,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className={labelStyles}>
               Email
             </label>
             <input
@@ -134,12 +137,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="phone" className={labelStyles}>
               Phone
             </label>
             <input
@@ -148,12 +151,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="company" className={labelStyles}>
               Company
             </label>
             <input
@@ -162,12 +165,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="company"
               value={formData.company}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="jobTitle" className={labelStyles}>
               Job Title
             </label>
             <input
@@ -176,12 +179,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="jobTitle"
               value={formData.jobTitle}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="address" className={labelStyles}>
               Address
             </label>
             <input
@@ -190,12 +193,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label htmlFor="birthday" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="birthday" className={labelStyles}>
               Birthday
             </label>
             <input
@@ -204,7 +207,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
               name="birthday"
               value={formData.birthday}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={inputStyles}
             />
           </div>
         </div>
@@ -262,14 +265,14 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+          className={secondaryButtonStyles}
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 flex items-center gap-2"
+          className={primaryButtonStyles}
         >
           {isLoading && (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

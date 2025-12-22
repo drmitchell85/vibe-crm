@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, formatDistanceToNow, isPast } from 'date-fns';
 import { api } from '../lib/api';
 import { ReminderWithContact } from '../types';
+import { LoadingState, ErrorState, EmptyState } from './ui';
 
 /**
  * Dashboard widget showing upcoming reminders and overdue alerts
@@ -83,11 +84,27 @@ export function UpcomingRemindersWidget() {
       {/* Content */}
       <div className="p-4">
         {isLoading ? (
-          <LoadingState />
+          <LoadingState message="Loading reminders..." size="sm" />
         ) : upcomingError ? (
-          <ErrorState />
+          <ErrorState message="Failed to load reminders" />
         ) : !hasReminders ? (
-          <EmptyState />
+          <EmptyState
+            icon="✨"
+            title="All caught up!"
+            description="No upcoming reminders"
+            size="sm"
+            action={
+              <Link
+                to="/reminders"
+                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add a reminder
+              </Link>
+            }
+          />
         ) : upcomingReminders && upcomingReminders.length > 0 ? (
           <div className="space-y-3">
             {upcomingReminders.map((reminder) => (
@@ -115,51 +132,6 @@ export function UpcomingRemindersWidget() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-/**
- * Loading state
- */
-function LoadingState() {
-  return (
-    <div className="text-center py-6">
-      <div className="inline-block w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <p className="mt-2 text-gray-500 text-sm">Loading reminders...</p>
-    </div>
-  );
-}
-
-/**
- * Error state
- */
-function ErrorState() {
-  return (
-    <div className="text-center py-6">
-      <p className="text-red-600 text-sm">Failed to load reminders</p>
-    </div>
-  );
-}
-
-/**
- * Empty state
- */
-function EmptyState() {
-  return (
-    <div className="text-center py-6">
-      <div className="text-3xl mb-2">✨</div>
-      <p className="text-gray-600 font-medium">All caught up!</p>
-      <p className="text-gray-500 text-sm mt-1">No upcoming reminders</p>
-      <Link
-        to="/reminders"
-        className="inline-flex items-center gap-1 mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-        Add a reminder
-      </Link>
     </div>
   );
 }

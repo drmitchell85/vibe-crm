@@ -4,73 +4,11 @@ import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { Modal } from '../components/Modal';
 import { ReminderForm } from '../components/ReminderForm';
+import { LoadingState, ErrorState, EmptyState } from '../components/ui';
+import { formatRelativeTime, formatDisplayDate } from '../lib/dateUtils';
 import type { ReminderWithContact, CreateReminderInput, UpdateReminderInput } from '../types';
 
 type TabType = 'all' | 'upcoming' | 'overdue' | 'completed';
-
-/**
- * Format a date as relative time (e.g., "in 2 days", "3 days ago")
- */
-function formatRelativeTime(dateString: string): { text: string; isOverdue: boolean } {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = date.getTime() - now.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-  if (diffDays === 0) {
-    if (diffHours < 0) {
-      const hoursAgo = Math.abs(diffHours);
-      if (hoursAgo < 24) {
-        return { text: `${hoursAgo} hour${hoursAgo !== 1 ? 's' : ''} overdue`, isOverdue: true };
-      }
-    }
-    if (diffHours >= 0 && diffHours < 24) {
-      return { text: 'Due today', isOverdue: false };
-    }
-  }
-
-  if (diffDays === 1) {
-    return { text: 'Due tomorrow', isOverdue: false };
-  }
-
-  if (diffDays === -1) {
-    return { text: '1 day overdue', isOverdue: true };
-  }
-
-  if (diffDays > 1 && diffDays <= 7) {
-    return { text: `in ${diffDays} days`, isOverdue: false };
-  }
-
-  if (diffDays > 7) {
-    const weeks = Math.floor(diffDays / 7);
-    return { text: `in ${weeks} week${weeks !== 1 ? 's' : ''}`, isOverdue: false };
-  }
-
-  if (diffDays < -1) {
-    const daysOverdue = Math.abs(diffDays);
-    if (daysOverdue <= 7) {
-      return { text: `${daysOverdue} days overdue`, isOverdue: true };
-    }
-    const weeks = Math.floor(daysOverdue / 7);
-    return { text: `${weeks} week${weeks !== 1 ? 's' : ''} overdue`, isOverdue: true };
-  }
-
-  return { text: 'Due today', isOverdue: false };
-}
-
-/**
- * Format date for display
- */
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
-  });
-}
 
 /**
  * Reminders page - displays all reminders with tab-based filtering
@@ -279,45 +217,38 @@ export function RemindersPage() {
         {/* Content */}
         <div className="p-6">
           {/* Loading State */}
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-4 text-gray-600">Loading reminders...</p>
-            </div>
-          )}
+          {isLoading && <LoadingState message="Loading reminders..." size="lg" />}
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h3 className="text-red-900 font-semibold mb-2">Error Loading Reminders</h3>
-              <p className="text-red-700">
-                {(error as any)?.error?.message || 'Failed to load reminders. Please try again.'}
-              </p>
-            </div>
+            <ErrorState
+              title="Error Loading Reminders"
+              message={(error as any)?.error?.message || 'Failed to load reminders. Please try again.'}
+              size="md"
+            />
           )}
 
           {/* Empty State */}
           {!isLoading && !error && reminders && reminders.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">
-                {activeTab === 'upcoming' && '📅'}
-                {activeTab === 'overdue' && '🎉'}
-                {activeTab === 'completed' && '📝'}
-                {activeTab === 'all' && '🔔'}
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {activeTab === 'upcoming' && 'No upcoming reminders'}
-                {activeTab === 'overdue' && 'No overdue reminders'}
-                {activeTab === 'completed' && 'No completed reminders'}
-                {activeTab === 'all' && 'No reminders yet'}
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {activeTab === 'upcoming' && "You're all caught up! No reminders due soon."}
-                {activeTab === 'overdue' && "Great job! You don't have any overdue reminders."}
-                {activeTab === 'completed' && "Completed reminders will appear here."}
-                {activeTab === 'all' && 'Create your first reminder to get started.'}
-              </p>
-              {activeTab === 'all' && (
+            <EmptyState
+              icon={
+                activeTab === 'upcoming' ? '📅' :
+                activeTab === 'overdue' ? '🎉' :
+                activeTab === 'completed' ? '📝' : '🔔'
+              }
+              title={
+                activeTab === 'upcoming' ? 'No upcoming reminders' :
+                activeTab === 'overdue' ? 'No overdue reminders' :
+                activeTab === 'completed' ? 'No completed reminders' : 'No reminders yet'
+              }
+              description={
+                activeTab === 'upcoming' ? "You're all caught up! No reminders due soon." :
+                activeTab === 'overdue' ? "Great job! You don't have any overdue reminders." :
+                activeTab === 'completed' ? "Completed reminders will appear here." :
+                'Create your first reminder to get started.'
+              }
+              size="lg"
+              action={activeTab === 'all' && (
                 <button
                   onClick={handleOpenCreateModal}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -325,7 +256,7 @@ export function RemindersPage() {
                   + Create Your First Reminder
                 </button>
               )}
-            </div>
+            />
           )}
 
           {/* Reminders List */}
@@ -463,7 +394,7 @@ function ReminderCard({
                   : 'text-gray-900'
             }`}
           >
-            {formatDate(reminder.dueDate)}
+            {formatDisplayDate(reminder.dueDate)}
           </div>
           <div
             className={`text-xs mt-1 ${

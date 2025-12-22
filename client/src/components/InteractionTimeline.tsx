@@ -1,9 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { format, isToday, isYesterday, isThisWeek, isThisYear } from 'date-fns';
+import { format } from 'date-fns';
 import { api } from '../lib/api';
 import { Interaction, InteractionType, InteractionFilters } from '../types';
+import { LoadingState, ErrorState, EmptyState } from './ui';
+import { getDateGroupLabel, formatDuration } from '../lib/dateUtils';
+import { INTERACTION_TYPE_CONFIG, INTERACTION_TYPES_LIST } from '../constants/interactionTypes';
 
 interface InteractionTimelineProps {
   contactId: string;
@@ -11,40 +14,7 @@ interface InteractionTimelineProps {
   onEditInteraction?: (interaction: Interaction) => void;
 }
 
-/**
- * Interaction type configuration with icons and colors
- */
-const INTERACTION_TYPE_CONFIG: Record<
-  InteractionType,
-  { icon: string; label: string; bgColor: string; textColor: string }
-> = {
-  [InteractionType.CALL]: { icon: '📞', label: 'Call', bgColor: 'bg-green-100', textColor: 'text-green-800' },
-  [InteractionType.MEETING]: { icon: '🤝', label: 'Meeting', bgColor: 'bg-blue-100', textColor: 'text-blue-800' },
-  [InteractionType.EMAIL]: { icon: '✉️', label: 'Email', bgColor: 'bg-purple-100', textColor: 'text-purple-800' },
-  [InteractionType.TEXT]: { icon: '💬', label: 'Text', bgColor: 'bg-pink-100', textColor: 'text-pink-800' },
-  [InteractionType.COFFEE]: { icon: '☕', label: 'Coffee', bgColor: 'bg-amber-100', textColor: 'text-amber-800' },
-  [InteractionType.LUNCH]: { icon: '🍽️', label: 'Lunch', bgColor: 'bg-orange-100', textColor: 'text-orange-800' },
-  [InteractionType.EVENT]: { icon: '🎉', label: 'Event', bgColor: 'bg-indigo-100', textColor: 'text-indigo-800' },
-  [InteractionType.OTHER]: { icon: '📝', label: 'Other', bgColor: 'bg-gray-100', textColor: 'text-gray-800' },
-};
-
-/**
- * All interaction types for the filter dropdown
- */
-const ALL_INTERACTION_TYPES = Object.values(InteractionType);
-
 type SortOrder = 'newest' | 'oldest';
-
-/**
- * Format a date into a human-readable group label
- */
-function getDateGroupLabel(date: Date): string {
-  if (isToday(date)) return 'Today';
-  if (isYesterday(date)) return 'Yesterday';
-  if (isThisWeek(date)) return format(date, 'EEEE'); // Day name
-  if (isThisYear(date)) return format(date, 'MMMM d'); // Month Day
-  return format(date, 'MMMM d, yyyy'); // Full date
-}
 
 /**
  * Group interactions by date
@@ -63,16 +33,6 @@ function groupInteractionsByDate(interactions: Interaction[]): Map<string, Inter
   }
 
   return groups;
-}
-
-/**
- * Format duration in minutes to a readable string
- */
-function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
 /**
@@ -210,9 +170,9 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
               >
                 <option value="">All Types</option>
-                {ALL_INTERACTION_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {INTERACTION_TYPE_CONFIG[type].icon} {INTERACTION_TYPE_CONFIG[type].label}
+                {INTERACTION_TYPES_LIST.map((config) => (
+                  <option key={config.type} value={config.type}>
+                    {config.icon} {config.label}
                   </option>
                 ))}
               </select>
@@ -302,14 +262,29 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
 
       {/* Content */}
       <div className="p-6">
-        {isLoading && <LoadingState />}
+        {isLoading && <LoadingState message="Loading interactions..." />}
         {error && <ErrorState message={(error as any)?.error?.message || 'Failed to load interactions'} />}
         {!isLoading && !error && interactions && (
           sortedInteractions.length === 0 ? (
             hasActiveFilters ? (
               <NoResultsState onClearFilters={clearAllFilters} />
             ) : (
-              <EmptyState onAddInteraction={onAddInteraction} />
+              <EmptyState
+                icon="📅"
+                title="No interactions yet"
+                description="Start tracking your conversations and meetings with this contact."
+                action={onAddInteraction && (
+                  <button
+                    onClick={onAddInteraction}
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Log your first interaction
+                  </button>
+                )}
+              />
             )
           ) : (
             <InteractionList interactions={sortedInteractions} onEditInteraction={onEditInteraction} />
@@ -337,55 +312,6 @@ function FilterBadge({ label, onRemove }: { label: string; onRemove: () => void 
         </svg>
       </button>
     </span>
-  );
-}
-
-/**
- * Loading state component
- */
-function LoadingState() {
-  return (
-    <div className="text-center py-8">
-      <div className="inline-block w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <p className="mt-3 text-gray-600 text-sm">Loading interactions...</p>
-    </div>
-  );
-}
-
-/**
- * Error state component
- */
-function ErrorState({ message }: { message: string }) {
-  return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-      <p className="text-red-700 text-sm">{message}</p>
-    </div>
-  );
-}
-
-/**
- * Empty state component (no interactions at all)
- */
-function EmptyState({ onAddInteraction }: { onAddInteraction?: () => void }) {
-  return (
-    <div className="text-center py-8">
-      <div className="text-4xl mb-3">📅</div>
-      <h3 className="text-gray-900 font-medium mb-1">No interactions yet</h3>
-      <p className="text-gray-500 text-sm mb-4">
-        Start tracking your conversations and meetings with this contact.
-      </p>
-      {onAddInteraction && (
-        <button
-          onClick={onAddInteraction}
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Log your first interaction
-        </button>
-      )}
-    </div>
   );
 }
 

@@ -1,6 +1,15 @@
 import { useState, FormEvent } from 'react';
-import { format } from 'date-fns';
 import { Reminder, CreateReminderInput, UpdateReminderInput } from '../types';
+import { formatDateForInput } from '../lib/dateUtils';
+import { FormError, DeleteConfirmation } from './ui';
+import {
+  inputStyles,
+  textareaStyles,
+  labelStyles,
+  primaryButtonStyles,
+  secondaryButtonStyles,
+  dangerButtonStyles,
+} from '../lib/formStyles';
 
 interface ReminderFormProps {
   reminder?: Reminder; // If provided, form is in "edit" mode
@@ -24,23 +33,11 @@ export function ReminderForm({
 }: ReminderFormProps) {
   const isEditMode = !!reminder;
 
-  // Format existing date for datetime-local input
-  const formatDateForInput = (dateString?: string) => {
-    if (!dateString) {
-      // Default to tomorrow at 9 AM
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-      return format(tomorrow, "yyyy-MM-dd'T'HH:mm");
-    }
-    return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm");
-  };
-
-  // Form state
+  // Form state - use defaultToTomorrow for new reminders
   const [formData, setFormData] = useState({
     title: reminder?.title || '',
     description: reminder?.description || '',
-    dueDate: formatDateForInput(reminder?.dueDate),
+    dueDate: formatDateForInput(reminder?.dueDate, true), // Default to tomorrow at 9 AM
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -93,15 +90,11 @@ export function ReminderForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 text-sm">{error}</p>
-        </div>
-      )}
+      <FormError message={error} />
 
       {/* Title */}
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="title" className={labelStyles}>
           Title <span className="text-red-500">*</span>
         </label>
         <input
@@ -111,14 +104,14 @@ export function ReminderForm({
           value={formData.title}
           onChange={handleChange}
           placeholder="What do you need to remember?"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className={inputStyles}
           autoFocus
         />
       </div>
 
       {/* Due Date and Time */}
       <div>
-        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="dueDate" className={labelStyles}>
           Due Date & Time <span className="text-red-500">*</span>
         </label>
         <input
@@ -127,13 +120,13 @@ export function ReminderForm({
           name="dueDate"
           value={formData.dueDate}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className={inputStyles}
         />
       </div>
 
       {/* Description */}
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="description" className={labelStyles}>
           Description
         </label>
         <textarea
@@ -143,39 +136,18 @@ export function ReminderForm({
           onChange={handleChange}
           rows={4}
           placeholder="Additional details about this reminder..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+          className={textareaStyles}
         />
       </div>
 
       {/* Delete Confirmation */}
-      {showDeleteConfirm && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 text-sm mb-3">
-            Are you sure you want to delete this reminder? This action cannot be undone.
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50 flex items-center gap-2"
-            >
-              {isDeleting && (
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              )}
-              Yes, Delete
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(false)}
-              disabled={isDeleting}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmation
+        show={showDeleteConfirm}
+        itemType="reminder"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isDeleting={isDeleting}
+      />
 
       {/* Form Actions */}
       <div className="flex justify-between pt-4 border-t">
@@ -186,7 +158,7 @@ export function ReminderForm({
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
               disabled={isLoading || isDeleting}
-              className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium disabled:opacity-50"
+              className={dangerButtonStyles}
             >
               Delete
             </button>
@@ -199,14 +171,14 @@ export function ReminderForm({
             type="button"
             onClick={onCancel}
             disabled={isLoading || isDeleting}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+            className={secondaryButtonStyles}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading || isDeleting}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 flex items-center gap-2"
+            className={primaryButtonStyles}
           >
             {isLoading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
