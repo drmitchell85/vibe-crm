@@ -79,11 +79,12 @@ This document tracks the implementation progress of the FPH CRM application, org
 - Refactored Express app into `app.ts` for testability (separate from server startup)
 - Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
-**Test Coverage (302 tests total):**
+**Test Coverage (328 tests total):**
 - **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints) + Tag linking tests
 - **Tag API**: Unit tests + Integration tests including contact-by-tag lookup
 - **Interaction API**: Unit tests + Integration tests with filter validation
 - **Reminder API**: Unit tests + Integration tests including upcoming/overdue endpoints
+- **Note API**: Unit tests for service layer (26 tests)
 - Edge cases: Validation errors, 404s, duplicate handling, malformed JSON
 
 ---
@@ -132,18 +133,18 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Unit tests for service methods — 18 tests
 - [x] Integration tests for API endpoints — 19 tests
 
-**Chunk 5.4: Note Service & Validation** ⏳ Pending
-- [ ] Create Zod validation schemas (`server/src/schemas/noteSchema.ts`)
-  - `createNoteSchema` (content, contactId required; isPinned optional)
-  - `updateNoteSchema` (all fields optional)
-- [ ] Create note service (`server/src/services/noteService.ts`)
-  - `getNotesForContact(contactId)` — list notes for a contact (pinned first)
-  - `getNoteById(id)` — get single note
-  - `createNote(data)` — create note
-  - `updateNote(id, data)` — update note
+**Chunk 5.4: Note Service & Validation** ✅ COMPLETED
+- [x] Created Zod validation schemas (`server/src/schemas/noteSchema.ts`)
+  - `createNoteSchema` (content required; isPinned optional)
+  - `updateNoteSchema` (all fields optional for partial updates)
+- [x] Created note service (`server/src/services/noteService.ts`)
+  - `getNotesForContact(contactId)` — list notes for a contact (pinned first, then by date)
+  - `getNoteById(id)` — get single note with contact info
+  - `createNote(contactId, data)` — create note for a contact
+  - `updateNote(id, data)` — update note (partial updates allowed)
   - `deleteNote(id)` — delete note
   - `togglePin(id)` — toggle isPinned status
-- [ ] Unit tests for note service (`server/src/services/__tests__/noteService.test.ts`)
+- [x] Unit tests for note service (`server/src/services/__tests__/noteService.test.ts`) — 26 tests
 
 **Chunk 5.5: Note API (Controller & Routes)** ⏳ Pending
 - [ ] Create note controller (`server/src/controllers/noteController.ts`)
@@ -213,4 +214,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 5.4 - Note Service & Validation
+**Next Up**: Chunk 5.5 - Note API (Controller & Routes)
