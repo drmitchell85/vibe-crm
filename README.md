@@ -269,14 +269,15 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Test `deleteContact(id)` — deletes contact, throws 404 on not found
 - [x] Test `searchContacts(query)` — searches by firstName, lastName, email, company
 
-**Chunk 4.2: Contacts API — Integration Tests** ⏳ Pending
-- [ ] Create `server/src/controllers/__tests__/contactController.test.ts`
-- [ ] Test `GET /api/contacts` — 200 with array
-- [ ] Test `GET /api/contacts/:id` — 200 with contact, 404 on not found
-- [ ] Test `POST /api/contacts` — 201 on success, 400 on validation error
-- [ ] Test `PUT /api/contacts/:id` — 200 on success, 404 on not found, 400 on validation error
-- [ ] Test `DELETE /api/contacts/:id` — 200 on success, 404 on not found
-- [ ] Test `GET /api/contacts/search?q=` — 200 with filtered results
+**Chunk 4.2: Contacts API — Integration Tests** ✅ Completed
+- [x] Create `server/src/controllers/__tests__/contactController.test.ts`
+- [x] Refactor Express app into `app.ts` for testability (separate from server startup)
+- [x] Test `GET /api/contacts` — 200 with array, empty array, 500 on error
+- [x] Test `GET /api/contacts/:id` — 200 with contact, 404 on not found, 500 on error
+- [x] Test `POST /api/contacts` — 201 on success, 400 on validation error, 409 on duplicate email
+- [x] Test `PUT /api/contacts/:id` — 200 on success, 404 on not found, 400 on validation, 409 on duplicate
+- [x] Test `DELETE /api/contacts/:id` — 200 on success, 404 on not found, 500 on error
+- [x] Test `GET /api/contacts/search?q=` — 200 with results, 400 on missing query, special characters
 
 **Chunk 4.3: Interactions API — Unit Tests** ⏳ Pending
 - [ ] Create `server/src/services/__tests__/interactionService.test.ts`
@@ -580,5 +581,5 @@ MIT
 
 **Last Updated**: 2025-12-22
 **Current Phase**: Phase 4 - API Testing ⏳ IN PROGRESS
-**Next Up**: Chunk 4.2 - Contacts API Integration Tests
+**Next Up**: Chunk 4.3 - Interactions API Unit Tests
 **Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ✅ Phase 3 Complete
