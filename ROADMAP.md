@@ -79,7 +79,7 @@ This document tracks the implementation progress of the FPH CRM application, org
 - Refactored Express app into `app.ts` for testability (separate from server startup)
 - Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
-**Test Coverage (240 tests total):**
+**Test Coverage (266 tests total):**
 - **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints)
 - **Interaction API**: Unit tests + Integration tests with filter validation
 - **Reminder API**: Unit tests + Integration tests including upcoming/overdue endpoints
@@ -103,17 +103,18 @@ This document tracks the implementation progress of the FPH CRM application, org
   - `deleteTag(id)` — delete tag (cascade removes from contacts)
 - [x] Unit tests for tag service (`server/src/services/__tests__/tagService.test.ts`) — 26 tests
 
-**Chunk 5.2: Tag API (Controller & Routes)** ⏳ Pending
-- [ ] Create tag controller (`server/src/controllers/tagController.ts`)
-- [ ] Create tag routes (`server/src/routes/tags.ts`)
-  - `GET /api/tags` — list all tags
+**Chunk 5.2: Tag API (Controller & Routes)** ✅ COMPLETED
+- [x] Created tag controller (`server/src/controllers/tagController.ts`)
+- [x] Created tag routes (`server/src/routes/tags.ts`)
+  - `GET /api/tags` — list all tags with contact counts
   - `GET /api/tags/:id` — get single tag
-  - `POST /api/tags` — create tag
-  - `PUT /api/tags/:id` — update tag
-  - `DELETE /api/tags/:id` — delete tag
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Register routes in main `index.ts`
-- [ ] Integration tests for tag API (`server/src/controllers/__tests__/tagController.test.ts`)
+  - `POST /api/tags` — create tag (returns 409 on duplicate name)
+  - `PUT /api/tags/:id` — update tag (partial updates allowed)
+  - `DELETE /api/tags/:id` — delete tag (cascade removes from contacts)
+- [x] Added Swagger/OpenAPI documentation with schema definitions
+- [x] Registered routes in `app.ts`
+- [x] Integration tests for tag API — 27 tests
+- [x] Updated Postman collection with Tags folder
 
 **Chunk 5.3: Contact-Tag Linking** ⏳ Pending
 - [ ] Add service methods to contactService or tagService
@@ -207,4 +208,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 5.2 - Tag API (Controller & Routes)
+**Next Up**: Chunk 5.3 - Contact-Tag Linking
