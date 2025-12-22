@@ -17,8 +17,17 @@ const mockTagService = {
   deleteTag: jest.fn(),
 };
 
+// Mock the contact service (for getContactsByTag)
+const mockContactService = {
+  getContactsByTag: jest.fn(),
+};
+
 jest.mock('../../services/tagService', () => ({
   tagService: mockTagService,
+}));
+
+jest.mock('../../services/contactService', () => ({
+  contactService: mockContactService,
 }));
 
 // Import app after mocking
@@ -34,8 +43,72 @@ describe('Tag Controller - Integration Tests', () => {
     contactCount: 5,
   };
 
+  // Sample contact for getContactsByTag tests
+  const mockContact = {
+    id: 'contact-123',
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john@example.com',
+    phone: '555-1234',
+    tags: [{ tag: mockTag }],
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  // ============================================
+  // GET /api/tags/:tagId/contacts
+  // ============================================
+  describe('GET /api/tags/:tagId/contacts', () => {
+    it('should return 200 with array of contacts for a tag', async () => {
+      const contacts = [mockContact, { ...mockContact, id: 'contact-456', firstName: 'Jane' }];
+      mockContactService.getContactsByTag.mockResolvedValue(contacts);
+
+      const response = await request(app).get('/api/tags/tag-123/contacts');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        success: true,
+        data: contacts,
+      });
+      expect(mockContactService.getContactsByTag).toHaveBeenCalledWith('tag-123');
+    });
+
+    it('should return 200 with empty array when no contacts have the tag', async () => {
+      mockContactService.getContactsByTag.mockResolvedValue([]);
+
+      const response = await request(app).get('/api/tags/tag-123/contacts');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        success: true,
+        data: [],
+      });
+    });
+
+    it('should return 404 when tag not found', async () => {
+      mockContactService.getContactsByTag.mockRejectedValue(
+        new AppError('Tag not found', 404, 'TAG_NOT_FOUND')
+      );
+
+      const response = await request(app).get('/api/tags/non-existent/contacts');
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('TAG_NOT_FOUND');
+    });
+
+    it('should return 500 on database error', async () => {
+      mockContactService.getContactsByTag.mockRejectedValue(
+        new AppError('Database error', 500, 'FETCH_CONTACTS_BY_TAG_ERROR')
+      );
+
+      const response = await request(app).get('/api/tags/tag-123/contacts');
+
+      expect(response.status).toBe(500);
+      expect(response.body.success).toBe(false);
+    });
   });
 
   // ============================================

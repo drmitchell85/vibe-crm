@@ -152,7 +152,14 @@ const router = Router();
  *   get:
  *     summary: Get all contacts
  *     tags: [Contacts]
- *     description: Retrieve a list of all contacts, sorted by name
+ *     description: Retrieve a list of all contacts, sorted by name. Supports filtering by tags.
+ *     parameters:
+ *       - in: query
+ *         name: tags
+ *         schema:
+ *           type: string
+ *         description: Comma-separated list of tag IDs to filter by (contacts must have ALL specified tags)
+ *         example: "tag-uuid-1,tag-uuid-2"
  *     responses:
  *       200:
  *         description: List of contacts retrieved successfully
@@ -171,7 +178,7 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-router.get('/', contactController.getAllContacts);
+router.get('/', contactController.getContactsWithTagFilter);
 
 /**
  * @swagger
@@ -371,5 +378,97 @@ router.put('/:id', contactController.updateContact);
  *         description: Server error
  */
 router.delete('/:id', contactController.deleteContact);
+
+/**
+ * @swagger
+ * /api/contacts/{id}/tags:
+ *   post:
+ *     summary: Add a tag to a contact
+ *     tags: [Contacts]
+ *     description: Add a tag to a contact. If the tag is already assigned, the operation is idempotent.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Contact ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - tagId
+ *             properties:
+ *               tagId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID of the tag to add
+ *           example:
+ *             tagId: "550e8400-e29b-41d4-a716-446655440000"
+ *     responses:
+ *       201:
+ *         description: Tag added to contact successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Missing tag ID
+ *       404:
+ *         description: Contact or tag not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/:id/tags', contactController.addTagToContact);
+
+/**
+ * @swagger
+ * /api/contacts/{id}/tags/{tagId}:
+ *   delete:
+ *     summary: Remove a tag from a contact
+ *     tags: [Contacts]
+ *     description: Remove a tag from a contact
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Contact ID
+ *       - in: path
+ *         name: tagId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Tag ID to remove
+ *     responses:
+ *       200:
+ *         description: Tag removed from contact successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Contact'
+ *       404:
+ *         description: Contact not found or tag not assigned to contact
+ *       500:
+ *         description: Server error
+ */
+router.delete('/:id/tags/:tagId', contactController.removeTagFromContact);
 
 export default router;

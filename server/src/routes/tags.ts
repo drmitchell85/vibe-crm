@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { tagController } from '../controllers/tagController';
+import { contactController } from '../controllers/contactController';
 
 const router = Router();
 
@@ -272,5 +273,41 @@ router.put('/:id', tagController.updateTag);
  *         description: Server error
  */
 router.delete('/:id', tagController.deleteTag);
+
+/**
+ * @swagger
+ * /api/tags/{id}/contacts:
+ *   get:
+ *     summary: Get all contacts with a specific tag
+ *     tags: [Tags]
+ *     description: Retrieve all contacts that have the specified tag assigned
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Tag ID
+ *     responses:
+ *       200:
+ *         description: List of contacts with the tag
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contact'
+ *       404:
+ *         description: Tag not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:tagId/contacts', contactController.getContactsByTag);
 
 export default router;

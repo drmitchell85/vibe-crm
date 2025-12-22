@@ -115,5 +115,88 @@ export const contactController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  /**
+   * Get all contacts with optional tag filtering
+   */
+  async getContactsWithTagFilter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tags } = req.query;
+
+      // Parse tags query parameter (comma-separated tag IDs)
+      let tagIds: string[] | undefined;
+      if (tags && typeof tags === 'string') {
+        tagIds = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+      }
+
+      const contacts = await contactService.getContactsWithTagFilter(tagIds);
+
+      res.json({
+        success: true,
+        data: contacts
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Add a tag to a contact
+   */
+  async addTagToContact(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { tagId } = req.body;
+
+      if (!tagId || typeof tagId !== 'string') {
+        throw new AppError('Tag ID is required', 400, 'MISSING_TAG_ID');
+      }
+
+      const contact = await contactService.addTagToContact(id, tagId);
+
+      res.status(201).json({
+        success: true,
+        data: contact
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Remove a tag from a contact
+   */
+  async removeTagFromContact(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id, tagId } = req.params;
+
+      const contact = await contactService.removeTagFromContact(id, tagId);
+
+      res.json({
+        success: true,
+        data: contact
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Get all contacts by tag
+   */
+  async getContactsByTag(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tagId } = req.params;
+
+      const contacts = await contactService.getContactsByTag(tagId);
+
+      res.json({
+        success: true,
+        data: contacts
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };
