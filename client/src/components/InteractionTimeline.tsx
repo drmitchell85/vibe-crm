@@ -6,34 +6,13 @@ import { api } from '../lib/api';
 import { Interaction, InteractionType, InteractionFilters } from '../types';
 import { LoadingState, ErrorState, EmptyState } from './ui';
 import { getDateGroupLabel, formatDuration } from '../lib/dateUtils';
+import { INTERACTION_TYPE_CONFIG, INTERACTION_TYPES_LIST } from '../constants/interactionTypes';
 
 interface InteractionTimelineProps {
   contactId: string;
   onAddInteraction?: () => void;
   onEditInteraction?: (interaction: Interaction) => void;
 }
-
-/**
- * Interaction type configuration with icons and colors
- */
-const INTERACTION_TYPE_CONFIG: Record<
-  InteractionType,
-  { icon: string; label: string; bgColor: string; textColor: string }
-> = {
-  [InteractionType.CALL]: { icon: '📞', label: 'Call', bgColor: 'bg-green-100', textColor: 'text-green-800' },
-  [InteractionType.MEETING]: { icon: '🤝', label: 'Meeting', bgColor: 'bg-blue-100', textColor: 'text-blue-800' },
-  [InteractionType.EMAIL]: { icon: '✉️', label: 'Email', bgColor: 'bg-purple-100', textColor: 'text-purple-800' },
-  [InteractionType.TEXT]: { icon: '💬', label: 'Text', bgColor: 'bg-pink-100', textColor: 'text-pink-800' },
-  [InteractionType.COFFEE]: { icon: '☕', label: 'Coffee', bgColor: 'bg-amber-100', textColor: 'text-amber-800' },
-  [InteractionType.LUNCH]: { icon: '🍽️', label: 'Lunch', bgColor: 'bg-orange-100', textColor: 'text-orange-800' },
-  [InteractionType.EVENT]: { icon: '🎉', label: 'Event', bgColor: 'bg-indigo-100', textColor: 'text-indigo-800' },
-  [InteractionType.OTHER]: { icon: '📝', label: 'Other', bgColor: 'bg-gray-100', textColor: 'text-gray-800' },
-};
-
-/**
- * All interaction types for the filter dropdown
- */
-const ALL_INTERACTION_TYPES = Object.values(InteractionType);
 
 type SortOrder = 'newest' | 'oldest';
 
@@ -191,9 +170,9 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
               >
                 <option value="">All Types</option>
-                {ALL_INTERACTION_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {INTERACTION_TYPE_CONFIG[type].icon} {INTERACTION_TYPE_CONFIG[type].label}
+                {INTERACTION_TYPES_LIST.map((config) => (
+                  <option key={config.type} value={config.type}>
+                    {config.icon} {config.label}
                   </option>
                 ))}
               </select>
