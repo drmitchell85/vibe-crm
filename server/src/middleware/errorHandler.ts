@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 export interface ApiError extends Error {
   statusCode?: number;
   code?: string;
+  details?: unknown;
 }
 
 export const errorHandler = (
@@ -22,7 +23,8 @@ export const errorHandler = (
     error: {
       message,
       code,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+      ...(err.details !== undefined ? { details: err.details } : {}),
+      ...(process.env.NODE_ENV === 'development' ? { stack: err.stack } : {})
     }
   });
 };
@@ -30,11 +32,13 @@ export const errorHandler = (
 export class AppError extends Error implements ApiError {
   statusCode: number;
   code: string;
+  details?: unknown;
 
-  constructor(message: string, statusCode: number = 500, code: string = 'ERROR') {
+  constructor(message: string, statusCode: number = 500, code: string = 'ERROR', details?: unknown) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
+    this.details = details;
     Error.captureStackTrace(this, this.constructor);
   }
 }
