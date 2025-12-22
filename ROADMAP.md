@@ -250,17 +250,18 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Test `DELETE /api/interactions/:id` — 200 on success, 404 on not found, 500 on error
 - [x] Edge cases: All 8 interaction types, combined filters, malformed JSON
 
-**Chunk 4.5: Reminders API — Unit Tests** ⏳ Pending
-- [ ] Create `server/src/services/__tests__/reminderService.test.ts`
-- [ ] Test `getRemindersForContact(contactId, filters)` — returns array, applies filters
-- [ ] Test `getAllReminders(filters)` — returns all reminders with filters
-- [ ] Test `getUpcomingReminders(limit)` — returns upcoming incomplete reminders
-- [ ] Test `getOverdueReminders()` — returns overdue incomplete reminders
-- [ ] Test `getReminderById(id)` — returns reminder, throws on not found
-- [ ] Test `createReminder(data)` — creates and returns reminder
-- [ ] Test `updateReminder(id, data)` — updates and returns reminder
-- [ ] Test `markAsComplete(id)` / `markAsIncomplete(id)` — toggles completion status
-- [ ] Test `deleteReminder(id)` — deletes reminder, throws on not found
+**Chunk 4.5: Reminders API — Unit Tests** ✅ Completed
+- [x] Create `server/src/services/__tests__/reminderService.test.ts`
+- [x] Test `getRemindersForContact(contactId, filters)` — returns array, applies isCompleted/date range filters, 404 on contact not found
+- [x] Test `getAllReminders(filters)` — returns all reminders with contact info, applies isCompleted/date range filters
+- [x] Test `getUpcomingReminders(limit)` — returns upcoming incomplete reminders, respects limit, default limit 5
+- [x] Test `getOverdueReminders()` — returns overdue incomplete reminders with contact info
+- [x] Test `getReminderById(id)` — returns reminder with contact relation, 404 on not found
+- [x] Test `createReminder(data)` — creates reminder, validates required fields (contactId, title, dueDate), validates UUID/datetime formats, 404 on contact not found
+- [x] Test `updateReminder(id, data)` — updates reminder, partial updates, empty description → null, 404 on not found
+- [x] Test `markAsComplete(id)` — sets isCompleted=true and completedAt timestamp, 404 on not found
+- [x] Test `markAsIncomplete(id)` — sets isCompleted=false and clears completedAt, 404 on not found
+- [x] Test `deleteReminder(id)` — deletes reminder, 404 on not found
 
 **Chunk 4.6: Reminders API — Integration Tests** ⏳ Pending
 - [ ] Create `server/src/controllers/__tests__/reminderController.test.ts`
@@ -337,4 +338,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 4.5 - Reminders API Unit Tests
+**Next Up**: Chunk 4.6 - Reminders API Integration Tests
