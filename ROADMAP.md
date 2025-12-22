@@ -79,8 +79,9 @@ This document tracks the implementation progress of the FPH CRM application, org
 - Refactored Express app into `app.ts` for testability (separate from server startup)
 - Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
-**Test Coverage (266 tests total):**
-- **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints)
+**Test Coverage (302 tests total):**
+- **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints) + Tag linking tests
+- **Tag API**: Unit tests + Integration tests including contact-by-tag lookup
 - **Interaction API**: Unit tests + Integration tests with filter validation
 - **Reminder API**: Unit tests + Integration tests including upcoming/overdue endpoints
 - Edge cases: Validation errors, 404s, duplicate handling, malformed JSON
@@ -116,16 +117,20 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Integration tests for tag API — 27 tests
 - [x] Updated Postman collection with Tags folder
 
-**Chunk 5.3: Contact-Tag Linking** ⏳ Pending
-- [ ] Add service methods to contactService or tagService
-  - `addTagToContact(contactId, tagId)`
-  - `removeTagFromContact(contactId, tagId)`
-  - `getContactsByTag(tagId)` — filter contacts by tag
-- [ ] Add API endpoints
-  - `POST /api/contacts/:id/tags` — add tag to contact
+**Chunk 5.3: Contact-Tag Linking** ✅ COMPLETED
+- [x] Added service methods to contactService (`server/src/services/contactService.ts`)
+  - `getContactsWithTagFilter(tagIds?)` — filter contacts by multiple tag IDs (AND logic)
+  - `addTagToContact(contactId, tagId)` — idempotent tag assignment using Prisma upsert
+  - `removeTagFromContact(contactId, tagId)` — remove tag from contact
+  - `getContactsByTag(tagId)` — get all contacts with specific tag
+- [x] Added API endpoints
+  - `GET /api/contacts?tags=tag1,tag2` — enhanced to support tag filtering (AND logic)
+  - `POST /api/contacts/:id/tags` — add tag to contact (idempotent, returns 201)
   - `DELETE /api/contacts/:id/tags/:tagId` — remove tag from contact
-- [ ] Enhance `GET /api/contacts` to support `?tags=tag1,tag2` filtering
-- [ ] Unit and integration tests for linking functionality
+  - `GET /api/tags/:tagId/contacts` — list all contacts with specific tag
+- [x] Added Swagger/OpenAPI documentation for all endpoints
+- [x] Unit tests for service methods — 18 tests
+- [x] Integration tests for API endpoints — 19 tests
 
 **Chunk 5.4: Note Service & Validation** ⏳ Pending
 - [ ] Create Zod validation schemas (`server/src/schemas/noteSchema.ts`)
@@ -208,4 +213,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 5.3 - Contact-Tag Linking
+**Next Up**: Chunk 5.4 - Note Service & Validation
