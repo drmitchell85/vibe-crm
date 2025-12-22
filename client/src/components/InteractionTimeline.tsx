@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { format, isToday, isYesterday, isThisWeek, isThisYear } from 'date-fns';
+import { format } from 'date-fns';
 import { api } from '../lib/api';
 import { Interaction, InteractionType, InteractionFilters } from '../types';
+import { LoadingState, ErrorState, EmptyState } from './ui';
+import { getDateGroupLabel, formatDuration } from '../lib/dateUtils';
 
 interface InteractionTimelineProps {
   contactId: string;
@@ -36,17 +38,6 @@ const ALL_INTERACTION_TYPES = Object.values(InteractionType);
 type SortOrder = 'newest' | 'oldest';
 
 /**
- * Format a date into a human-readable group label
- */
-function getDateGroupLabel(date: Date): string {
-  if (isToday(date)) return 'Today';
-  if (isYesterday(date)) return 'Yesterday';
-  if (isThisWeek(date)) return format(date, 'EEEE'); // Day name
-  if (isThisYear(date)) return format(date, 'MMMM d'); // Month Day
-  return format(date, 'MMMM d, yyyy'); // Full date
-}
-
-/**
  * Group interactions by date
  */
 function groupInteractionsByDate(interactions: Interaction[]): Map<string, Interaction[]> {
@@ -63,16 +54,6 @@ function groupInteractionsByDate(interactions: Interaction[]): Map<string, Inter
   }
 
   return groups;
-}
-
-/**
- * Format duration in minutes to a readable string
- */
-function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
 /**
@@ -302,14 +283,29 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
 
       {/* Content */}
       <div className="p-6">
-        {isLoading && <LoadingState />}
+        {isLoading && <LoadingState message="Loading interactions..." />}
         {error && <ErrorState message={(error as any)?.error?.message || 'Failed to load interactions'} />}
         {!isLoading && !error && interactions && (
           sortedInteractions.length === 0 ? (
             hasActiveFilters ? (
               <NoResultsState onClearFilters={clearAllFilters} />
             ) : (
-              <EmptyState onAddInteraction={onAddInteraction} />
+              <EmptyState
+                icon="📅"
+                title="No interactions yet"
+                description="Start tracking your conversations and meetings with this contact."
+                action={onAddInteraction && (
+                  <button
+                    onClick={onAddInteraction}
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Log your first interaction
+                  </button>
+                )}
+              />
             )
           ) : (
             <InteractionList interactions={sortedInteractions} onEditInteraction={onEditInteraction} />
@@ -337,55 +333,6 @@ function FilterBadge({ label, onRemove }: { label: string; onRemove: () => void 
         </svg>
       </button>
     </span>
-  );
-}
-
-/**
- * Loading state component
- */
-function LoadingState() {
-  return (
-    <div className="text-center py-8">
-      <div className="inline-block w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <p className="mt-3 text-gray-600 text-sm">Loading interactions...</p>
-    </div>
-  );
-}
-
-/**
- * Error state component
- */
-function ErrorState({ message }: { message: string }) {
-  return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-      <p className="text-red-700 text-sm">{message}</p>
-    </div>
-  );
-}
-
-/**
- * Empty state component (no interactions at all)
- */
-function EmptyState({ onAddInteraction }: { onAddInteraction?: () => void }) {
-  return (
-    <div className="text-center py-8">
-      <div className="text-4xl mb-3">📅</div>
-      <h3 className="text-gray-900 font-medium mb-1">No interactions yet</h3>
-      <p className="text-gray-500 text-sm mb-4">
-        Start tracking your conversations and meetings with this contact.
-      </p>
-      {onAddInteraction && (
-        <button
-          onClick={onAddInteraction}
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Log your first interaction
-        </button>
-      )}
-    </div>
   );
 }
 

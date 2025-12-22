@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
+import { LoadingState, ErrorState, EmptyState } from '../components/ui';
 import type { Contact, CreateContactInput } from '../types';
 
 /**
@@ -80,42 +81,41 @@ export function ContactsPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600">Loading contacts...</p>
+        <div className="bg-white rounded-lg shadow">
+          <LoadingState message="Loading contacts..." size="lg" />
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h3 className="text-red-900 font-semibold mb-2">Error Loading Contacts</h3>
-          <p className="text-red-700">
-            {(error as any)?.error?.message || 'Failed to load contacts. Please try again.'}
-          </p>
-        </div>
+        <ErrorState
+          title="Error Loading Contacts"
+          message={(error as any)?.error?.message || 'Failed to load contacts. Please try again.'}
+          size="md"
+        />
       )}
 
       {/* Empty State */}
       {!isLoading && !error && contacts && contacts.length === 0 && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-6xl mb-4">👥</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {searchQuery ? 'No contacts found' : 'No contacts yet'}
-          </h3>
-          <p className="text-gray-600 mb-6">
-            {searchQuery
-              ? `No results for "${searchQuery}". Try a different search.`
-              : 'Get started by adding your first contact.'}
-          </p>
-          {!searchQuery && (
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              + Add Your First Contact
-            </button>
-          )}
+        <div className="bg-white rounded-lg shadow">
+          <EmptyState
+            icon="👥"
+            title={searchQuery ? 'No contacts found' : 'No contacts yet'}
+            description={
+              searchQuery
+                ? `No results for "${searchQuery}". Try a different search.`
+                : 'Get started by adding your first contact.'
+            }
+            size="lg"
+            action={!searchQuery && (
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                + Add Your First Contact
+              </button>
+            )}
+          />
         </div>
       )}
 

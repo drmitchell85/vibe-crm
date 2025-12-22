@@ -1,30 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { format, isPast, formatDistanceToNow } from 'date-fns';
+import { format, isPast } from 'date-fns';
 import { api } from '../lib/api';
 import { Reminder } from '../types';
+import { LoadingState, ErrorState, EmptyState } from './ui';
+import { formatDueDate } from '../lib/dateUtils';
 
 interface RemindersListProps {
   contactId: string;
   onAddReminder?: () => void;
   onEditReminder?: (reminder: Reminder) => void;
-}
-
-/**
- * Format due date with relative time
- */
-function formatDueDate(dueDate: string, isCompleted: boolean): { text: string; isOverdue: boolean } {
-  const date = new Date(dueDate);
-  const isOverdue = !isCompleted && isPast(date);
-
-  if (isCompleted) {
-    return { text: format(date, 'MMM d, yyyy'), isOverdue: false };
-  }
-
-  if (isOverdue) {
-    return { text: `${formatDistanceToNow(date)} overdue`, isOverdue: true };
-  }
-
-  return { text: `Due ${formatDistanceToNow(date, { addSuffix: true })}`, isOverdue: false };
 }
 
 /**
@@ -101,11 +85,26 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
 
       {/* Content */}
       <div className="p-6">
-        {isLoading && <LoadingState />}
+        {isLoading && <LoadingState message="Loading reminders..." />}
         {error && <ErrorState message={(error as any)?.error?.message || 'Failed to load reminders'} />}
         {!isLoading && !error && reminders && (
           sortedReminders.length === 0 ? (
-            <EmptyState onAddReminder={onAddReminder} />
+            <EmptyState
+              icon="🔔"
+              title="No reminders"
+              description="Set reminders to follow up with this contact."
+              action={onAddReminder && (
+                <button
+                  onClick={onAddReminder}
+                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add your first reminder
+                </button>
+              )}
+            />
           ) : (
             <div className="space-y-3">
               {sortedReminders.map((reminder) => (
@@ -124,55 +123,6 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
           )
         )}
       </div>
-    </div>
-  );
-}
-
-/**
- * Loading state component
- */
-function LoadingState() {
-  return (
-    <div className="text-center py-8">
-      <div className="inline-block w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <p className="mt-3 text-gray-600 text-sm">Loading reminders...</p>
-    </div>
-  );
-}
-
-/**
- * Error state component
- */
-function ErrorState({ message }: { message: string }) {
-  return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-      <p className="text-red-700 text-sm">{message}</p>
-    </div>
-  );
-}
-
-/**
- * Empty state component
- */
-function EmptyState({ onAddReminder }: { onAddReminder?: () => void }) {
-  return (
-    <div className="text-center py-8">
-      <div className="text-4xl mb-3">🔔</div>
-      <h3 className="text-gray-900 font-medium mb-1">No reminders</h3>
-      <p className="text-gray-500 text-sm mb-4">
-        Set reminders to follow up with this contact.
-      </p>
-      {onAddReminder && (
-        <button
-          onClick={onAddReminder}
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add your first reminder
-        </button>
-      )}
     </div>
   );
 }

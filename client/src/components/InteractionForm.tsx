@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
-import { format } from 'date-fns';
 import { Interaction, CreateInteractionInput, UpdateInteractionInput, InteractionType } from '../types';
+import { formatDateForInput } from '../lib/dateUtils';
 
 interface InteractionFormProps {
   interaction?: Interaction; // If provided, form is in "edit" mode
@@ -37,12 +37,6 @@ export function InteractionForm({
   isDeleting = false,
 }: InteractionFormProps) {
   const isEditMode = !!interaction;
-
-  // Format existing date for datetime-local input
-  const formatDateForInput = (dateString?: string) => {
-    if (!dateString) return format(new Date(), "yyyy-MM-dd'T'HH:mm");
-    return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm");
-  };
 
   // Form state
   const [formData, setFormData] = useState({

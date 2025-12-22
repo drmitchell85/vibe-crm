@@ -9,6 +9,7 @@ import { InteractionForm } from '../components/InteractionForm';
 import { InteractionTimeline } from '../components/InteractionTimeline';
 import { RemindersList } from '../components/RemindersList';
 import { ReminderForm } from '../components/ReminderForm';
+import { LoadingState, Spinner } from '../components/ui';
 import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput } from '../types';
 
 /**
@@ -176,9 +177,8 @@ export function ContactDetailPage() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600">Loading contact...</p>
+        <div className="bg-white rounded-lg shadow">
+          <LoadingState message="Loading contact..." size="lg" />
         </div>
       </div>
     );
@@ -273,9 +273,7 @@ export function ContactDetailPage() {
               disabled={deleteMutation.isPending}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 flex items-center gap-2"
             >
-              {deleteMutation.isPending && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              )}
+              {deleteMutation.isPending && <Spinner size="xs" color="white" />}
               Delete Contact
             </button>
           </div>

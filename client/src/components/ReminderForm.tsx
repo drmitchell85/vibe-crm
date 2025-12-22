@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
-import { format } from 'date-fns';
 import { Reminder, CreateReminderInput, UpdateReminderInput } from '../types';
+import { formatDateForInput } from '../lib/dateUtils';
 
 interface ReminderFormProps {
   reminder?: Reminder; // If provided, form is in "edit" mode
@@ -24,23 +24,11 @@ export function ReminderForm({
 }: ReminderFormProps) {
   const isEditMode = !!reminder;
 
-  // Format existing date for datetime-local input
-  const formatDateForInput = (dateString?: string) => {
-    if (!dateString) {
-      // Default to tomorrow at 9 AM
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-      return format(tomorrow, "yyyy-MM-dd'T'HH:mm");
-    }
-    return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm");
-  };
-
-  // Form state
+  // Form state - use defaultToTomorrow for new reminders
   const [formData, setFormData] = useState({
     title: reminder?.title || '',
     description: reminder?.description || '',
-    dueDate: formatDateForInput(reminder?.dueDate),
+    dueDate: formatDateForInput(reminder?.dueDate, true), // Default to tomorrow at 9 AM
   });
 
   const [error, setError] = useState<string | null>(null);
