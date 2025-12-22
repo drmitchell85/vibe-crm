@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-server dev-client build build-server build-client lint format db-migrate db-generate db-studio clean
+.PHONY: help install dev dev-server dev-client build build-server build-client lint format test test-watch test-coverage db-migrate db-generate db-studio clean
 
 # Default target
 .DEFAULT_GOAL := help
@@ -50,6 +50,18 @@ lint: ## Run linting
 ## format: Format code with Prettier
 format: ## Format code with Prettier
 	npm run format
+
+## test: Run all tests
+test: ## Run all tests
+	cd server && npm test
+
+## test-watch: Run tests in watch mode
+test-watch: ## Run tests in watch mode
+	cd server && npm run test:watch
+
+## test-coverage: Run tests with coverage report
+test-coverage: ## Run tests with coverage
+	cd server && npm run test:coverage
 
 ## db-migrate: Run Prisma database migrations
 db-migrate: ## Run database migrations

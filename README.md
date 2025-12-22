@@ -43,270 +43,15 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - ✅ Loading, error, and empty states throughout UI
 
 ### Planned Features
-- Interaction Tracking
-- Reminders & Follow-ups
+- ✅ Interaction Tracking
+- ✅ Reminders & Follow-ups
+- API Testing (Unit & Integration) — *In Progress*
 - Notes & Tagging
 - Advanced Search & Filtering
 - Data Import/Export
 - Dashboard with Analytics
 
-## Implementation Progress
-
-### Phase 1: Foundation & Basic Contact Management ✅ COMPLETED
-**Started**: 2025-12-18 | **Completed**: 2025-12-19
-
-**Chunk 1.1: Database Setup** ✅ Completed
-- [x] Project setup (monorepo, dependencies)
-- [x] Database schema for contacts (PostgreSQL + Prisma migration)
-- [x] Migrated from twitterUsername to flexible socialMedia JSON field
-
-**Chunk 1.2: Service Layer** ✅ Completed
-- [x] Zod validation schemas
-- [x] Contact service with business logic (CRUD + search)
-
-**Chunk 1.3: API Endpoints & Documentation** ✅ Completed
-- [x] Contact controller (request handlers)
-- [x] REST API routes (GET, POST, PUT, DELETE, search)
-- [x] Swagger/OpenAPI documentation at /api-docs
-- [x] Postman collection and environment
-
-**Chunk 1.4: Frontend Foundation & API Client** ✅ Completed
-- [x] API client with axios wrapper
-- [x] React Query configuration
-- [x] Layout component with navigation
-- [x] HomePage with API connection test
-- [x] Verified frontend <-> backend communication
-
-**Chunk 1.5: Contact List Page** ✅ Completed
-- [x] ContactsPage component with table display
-- [x] Search functionality with debouncing (400ms)
-- [x] Loading and error states
-- [x] Empty state (no contacts and no search results variants)
-- [x] Social media badges display
-- [x] useDebounce custom hook
-
-**Chunk 1.6: Contact Forms & Detail View** ✅ Completed
-- [x] ContactDetailPage with formatted display (email/phone links, date formatting)
-- [x] Reusable ContactForm component (works for create and edit)
-- [x] Modal component (backdrop, ESC key, scroll lock)
-- [x] Create contact modal with validation
-- [x] Edit contact modal with pre-populated data
-- [x] Delete confirmation dialog
-- [x] Dynamic social media fields (add/remove platforms)
-- [x] React Query mutations with cache invalidation
-- [x] Full CRUD operations tested
-
-**Deliverable:** ✅ Working contact CRUD system with database - COMPLETE!
-
----
-
-### Phase 2: Interaction Tracking ✅ COMPLETED
-
-**Chunk 2.1: Backend — Interaction Service Layer** ✅ Completed
-- [x] Create Zod validation schemas (`server/src/schemas/interactionSchema.ts`)
-  - `createInteractionSchema` (type, contactId required; subject, notes, date, duration, location optional)
-  - `updateInteractionSchema` (all fields optional)
-- [x] Create interaction service (`server/src/services/interactionService.ts`)
-  - `getInteractionsForContact(contactId)` with optional filtering (type, date range)
-  - `getInteractionById(id)`
-  - `createInteraction(data)`
-  - `updateInteraction(id, data)`
-  - `deleteInteraction(id)`
-
-**Chunk 2.2: Backend — API Routes & Swagger Docs** ✅ Completed
-- [x] Create interaction controller (`server/src/controllers/interactionController.ts`)
-- [x] Create interaction routes (`server/src/routes/interactions.ts`)
-  - `GET /api/contacts/:contactId/interactions` — list all for a contact (with type/date filters)
-  - `GET /api/interactions/:id` — get single interaction
-  - `POST /api/contacts/:contactId/interactions` — create new
-  - `PUT /api/interactions/:id` — update
-  - `DELETE /api/interactions/:id` — delete
-- [x] Add Swagger/OpenAPI documentation
-- [x] Register routes in main `index.ts`
-
-**Chunk 2.3: Frontend — API Client & Types** ✅ Completed
-- [x] Add `CreateInteractionInput`, `UpdateInteractionInput`, and `InteractionFilters` types (`client/src/types/index.ts`)
-- [x] Add interaction methods to API client (`client/src/lib/api.ts`)
-  - `getInteractionsForContact(contactId, filters?)`
-  - `getInteractionById(id)`
-  - `createInteraction(contactId, data)`
-  - `updateInteraction(id, data)`
-  - `deleteInteraction(id)`
-
-**Chunk 2.4: Frontend — Interaction Timeline UI** ✅ Completed
-- [x] Create `InteractionTimeline` component (`client/src/components/InteractionTimeline.tsx`)
-  - Chronological list view with smart date grouping (Today, Yesterday, weekday, date)
-  - Type icons/badges with color coding for all 8 interaction types
-  - Duration and location display with icons
-  - Loading, error, and empty states
-- [x] Replace placeholder in `ContactDetailPage` with `InteractionTimeline`
-- [x] Add "Add Interaction" button in header (modal placeholder for Chunk 2.5)
-
-**Chunk 2.5: Frontend — Interaction Form (Create/Edit/Delete)** ✅ Completed
-- [x] Create `InteractionForm` component (`client/src/components/InteractionForm.tsx`)
-  - Type dropdown with all 8 interaction types (with emoji icons)
-  - Date/time picker, subject, notes, duration, location fields
-  - Inline delete confirmation dialog
-- [x] Add create interaction modal (triggered from "Add Interaction" button)
-- [x] Add edit functionality (click on timeline item → edit modal)
-- [x] Add delete confirmation dialog (inline within form)
-- [x] React Query mutations with cache invalidation for create/update/delete
-
-**Chunk 2.6: Frontend — Filtering & Sorting** ✅ Completed
-- [x] Add type filter dropdown (all 8 interaction types with emoji icons)
-- [x] Add date range filter (From/To date pickers)
-- [x] Add sort toggle (Newest First / Oldest First)
-- [x] Persist filter state in URL search params (shareable filtered views)
-- [x] Collapsible filter panel with active filter badges
-- [x] "No results" state when filters return empty
-
-**Deliverable:** ✅ Full interaction logging with timeline view, CRUD operations, and filtering - COMPLETE!
-
----
-
-### Phase 3: Reminders & Follow-ups ✅ COMPLETED
-**Started**: 2025-12-21 | **Completed**: 2025-12-21
-
-**Chunk 3.1: Backend — Reminder Service Layer** ✅ Completed
-- [x] Create Zod validation schemas (`server/src/schemas/reminderSchema.ts`)
-  - `createReminderSchema` (title, dueDate, contactId required; description optional)
-  - `updateReminderSchema` (all fields optional)
-- [x] Create reminder service (`server/src/services/reminderService.ts`)
-  - `getRemindersForContact(contactId)` with optional filtering (completed, date range)
-  - `getReminderById(id)`
-  - `createReminder(data)`
-  - `updateReminder(id, data)`
-  - `deleteReminder(id)`
-  - `markAsComplete(id)` / `markAsIncomplete(id)`
-  - `getUpcomingReminders(limit?)` — for dashboard widget
-  - `getOverdueReminders()`
-  - `getAllReminders(filters?)` — for reminders page
-
-**Chunk 3.2: Backend — API Routes & Swagger Docs** ✅ Completed
-- [x] Create reminder controller (`server/src/controllers/reminderController.ts`)
-- [x] Create reminder routes (`server/src/routes/reminders.ts`)
-  - `GET /api/contacts/:contactId/reminders` — list all for a contact
-  - `GET /api/reminders` — list all reminders (for reminders page)
-  - `GET /api/reminders/upcoming` — get upcoming reminders
-  - `GET /api/reminders/overdue` — get overdue reminders
-  - `GET /api/reminders/:id` — get single reminder
-  - `POST /api/contacts/:contactId/reminders` — create new
-  - `PUT /api/reminders/:id` — update
-  - `PATCH /api/reminders/:id/complete` — mark as complete/incomplete
-  - `DELETE /api/reminders/:id` — delete
-- [x] Add Swagger/OpenAPI documentation
-- [x] Register routes in main `index.ts`
-- [x] Update Postman collection with all 9 reminder endpoints
-
-**Chunk 3.3: Frontend — API Client & Types** ✅ Completed
-- [x] Add `CreateReminderInput`, `UpdateReminderInput`, `ReminderFilters`, and `ReminderWithContact` types (`client/src/types/index.ts`)
-- [x] Add reminder methods to API client (`client/src/lib/api.ts`)
-  - `getRemindersForContact(contactId, filters?)`
-  - `getAllReminders(filters?)`
-  - `getUpcomingReminders(limit?)`
-  - `getOverdueReminders()`
-  - `getReminderById(id)`
-  - `createReminder(contactId, data)`
-  - `updateReminder(id, data)`
-  - `markReminderComplete(id)` / `markReminderIncomplete(id)`
-  - `deleteReminder(id)`
-
-**Chunk 3.4: Frontend — Reminders Page UI** ✅ Completed
-- [x] Create `RemindersPage` component (`client/src/pages/RemindersPage.tsx`)
-  - Tab-based views: Upcoming / Overdue / Completed / All
-  - Overdue count badge on tab
-  - Due date formatting with relative time ("in 2 days", "3 days overdue")
-  - Color-coded cards (red for overdue, gray for completed)
-  - Loading, error, and empty states for each tab
-- [x] Add route to `App.tsx` (`/reminders`)
-- [x] Add navigation link to Layout
-
-**Chunk 3.5: Frontend — Reminder Form (Create/Edit/Delete)** ✅ Completed
-- [x] Create `ReminderForm` component (`client/src/components/ReminderForm.tsx`)
-  - Title input (required), description textarea
-  - Due date/time picker (defaults to tomorrow 9 AM)
-  - Inline delete confirmation dialog
-- [x] Add create reminder modal with contact selector dropdown
-- [x] Add edit functionality (click on reminder title → edit modal)
-- [x] Add delete confirmation dialog (inline in form)
-- [x] Add mark complete/incomplete checkbox on each reminder card
-- [x] React Query mutations with cache invalidation (create, update, delete, toggle complete)
-
-**Chunk 3.6: Frontend — Contact Detail Integration & Mark Complete** ✅ Completed
-- [x] Create `RemindersList` component for ContactDetailPage
-- [x] Add "Add Reminder" button on contact detail page
-- [x] Mark as complete functionality (checkbox/button with animation)
-- [x] Overdue visual indicators (red styling, warning badge)
-- [x] Update `ContactDetailPage` to display reminders section
-
-**Chunk 3.7: Frontend — Dashboard Widget** ✅ Completed
-- [x] Create `UpcomingRemindersWidget` component
-- [x] Display next 5 upcoming reminders with quick actions
-- [x] Show overdue count as alert/badge
-- [x] Link to full Reminders page
-- [x] Add widget to Dashboard/HomePage
-
-**Deliverable:** ✅ Complete reminder system with CRUD, completion tracking, and dashboard integration - COMPLETE!
-
----
-
-### Phase 4: Notes & Tagging ⏳ PENDING
-
-**Tasks:**
-- [ ] Notes and tags database models
-- [ ] Backend APIs for notes and tags
-- [ ] Notes UI on contact pages
-- [ ] Tag management interface
-- [ ] Tag-based filtering
-- [ ] Tag color coding
-
-**Deliverable:** Note-taking and tag-based organization system
-
----
-
-### Phase 5: Enhanced UI/UX & Search ⏳ PENDING
-
-**Tasks:**
-- [ ] Global search implementation
-- [ ] Advanced filtering (by tag, company, date)
-- [ ] Sorting options
-- [ ] Dashboard page with stats and widgets
-- [ ] Dark mode support
-- [ ] Keyboard shortcuts
-- [ ] Performance optimization
-
-**Deliverable:** Polished, fast UI with comprehensive search
-
----
-
-### Phase 6: Data Management & Export ⏳ PENDING
-
-**Tasks:**
-- [ ] CSV import/export functionality
-- [ ] Bulk operations (delete, tag multiple contacts)
-- [ ] Settings page
-- [ ] Production configuration
-- [ ] Rate limiting
-- [ ] Error logging
-
-**Deliverable:** Import/export and production-ready configuration
-
----
-
-### Phase 7: Deployment & Polish ⏳ PENDING
-
-**Tasks:**
-- [ ] Database deployment (Railway/Supabase)
-- [ ] Backend deployment (Railway/Render)
-- [ ] Frontend deployment (Vercel/Netlify)
-- [ ] Complete documentation
-- [ ] Accessibility improvements (ARIA, keyboard nav)
-- [ ] Loading states and empty states
-- [ ] Toast notifications
-
-**Deliverable:** Live, publicly accessible application with complete docs
-
----
+> **Development Progress**: See [ROADMAP.md](./ROADMAP.md) for detailed phase-by-phase implementation tracking.
 
 ## Database Schema
 
@@ -365,6 +110,7 @@ fph-crm/
 ├── shared/                      # Shared TypeScript types
 ├── Makefile                     # Make commands for common tasks
 ├── README.md                    # This file
+├── ROADMAP.md                   # Development progress tracking
 └── package.json                 # Root package.json
 ```
 
@@ -437,6 +183,9 @@ This project includes a Makefile for convenient command shortcuts. Run `make hel
 | `make build` | Build for production |
 | `make lint` | Run linting |
 | `make format` | Format code with Prettier |
+| `make test` | Run all tests |
+| `make test-watch` | Run tests in watch mode |
+| `make test-coverage` | Run tests with coverage |
 | `make db-migrate` | Run database migrations |
 | `make db-generate` | Generate Prisma client |
 | `make db-studio` | Open Prisma Studio |
@@ -503,7 +252,4 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-21
-**Current Phase**: Phase 4 - Notes & Tagging ⏳ PENDING
-**Next Up**: Phase 4 - Notes and tag-based organization
-**Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ✅ Phase 3 Complete
+**Last Updated**: 2025-12-22 | **Current Phase**: 4 - API Testing | See [ROADMAP.md](./ROADMAP.md) for details
