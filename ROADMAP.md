@@ -241,13 +241,14 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Test `updateInteraction(id, data)` — updates and returns interaction, partial updates, empty strings → null
 - [x] Test `deleteInteraction(id)` — deletes interaction, throws 404 on not found
 
-**Chunk 4.4: Interactions API — Integration Tests** ⏳ Pending
-- [ ] Create `server/src/controllers/__tests__/interactionController.test.ts`
-- [ ] Test `GET /api/contacts/:contactId/interactions` — 200 with array
-- [ ] Test `GET /api/interactions/:id` — 200 with interaction, 404 on not found
-- [ ] Test `POST /api/contacts/:contactId/interactions` — 201 on success, 400 on validation error
-- [ ] Test `PUT /api/interactions/:id` — 200 on success, 404 on not found
-- [ ] Test `DELETE /api/interactions/:id` — 200 on success, 404 on not found
+**Chunk 4.4: Interactions API — Integration Tests** ✅ Completed
+- [x] Create `server/src/controllers/__tests__/interactionController.test.ts`
+- [x] Test `GET /api/contacts/:contactId/interactions` — 200 with array, filter support (type, date range), 400 on invalid type, 404 on contact not found
+- [x] Test `GET /api/interactions/:id` — 200 with interaction, 404 on not found, 500 on error
+- [x] Test `POST /api/contacts/:contactId/interactions` — 201 on success, 201 with minimal data, 400 on validation errors (missing type, invalid enum, invalid duration), 404 on contact not found
+- [x] Test `PUT /api/interactions/:id` — 200 on success, partial updates, type changes, 404 on not found, 400 on validation
+- [x] Test `DELETE /api/interactions/:id` — 200 on success, 404 on not found, 500 on error
+- [x] Edge cases: All 8 interaction types, combined filters, malformed JSON
 
 **Chunk 4.5: Reminders API — Unit Tests** ⏳ Pending
 - [ ] Create `server/src/services/__tests__/reminderService.test.ts`
@@ -336,4 +337,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 4.4 - Interactions API Integration Tests
+**Next Up**: Chunk 4.5 - Reminders API Unit Tests
