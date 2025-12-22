@@ -260,14 +260,14 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 - [x] Add test scripts to `package.json` (`test`, `test:watch`, `test:coverage`)
 - [x] Verify Jest runs successfully
 
-**Chunk 4.1: Contacts API — Unit Tests** ⏳ Pending
-- [ ] Create `server/src/services/__tests__/contactService.test.ts`
-- [ ] Test `getAllContacts()` — returns array of contacts
-- [ ] Test `getContactById(id)` — returns contact, throws on not found
-- [ ] Test `createContact(data)` — creates and returns contact, validates required fields
-- [ ] Test `updateContact(id, data)` — updates and returns contact, throws on not found
-- [ ] Test `deleteContact(id)` — deletes contact, throws on not found
-- [ ] Test `searchContacts(query)` — searches by name, email, company
+**Chunk 4.1: Contacts API — Unit Tests** ✅ Completed
+- [x] Create `server/src/services/__tests__/contactService.test.ts`
+- [x] Test `getAllContacts()` — returns array of contacts, handles empty state, throws on DB error
+- [x] Test `getContactById(id)` — returns contact with relations, throws 404 on not found
+- [x] Test `createContact(data)` — creates contact, validates required fields, handles duplicate email (409)
+- [x] Test `updateContact(id, data)` — updates contact, partial updates, throws 404 on not found
+- [x] Test `deleteContact(id)` — deletes contact, throws 404 on not found
+- [x] Test `searchContacts(query)` — searches by firstName, lastName, email, company
 
 **Chunk 4.2: Contacts API — Integration Tests** ⏳ Pending
 - [ ] Create `server/src/controllers/__tests__/contactController.test.ts`
@@ -509,6 +509,9 @@ This project includes a Makefile for convenient command shortcuts. Run `make hel
 | `make build` | Build for production |
 | `make lint` | Run linting |
 | `make format` | Format code with Prettier |
+| `make test` | Run all tests |
+| `make test-watch` | Run tests in watch mode |
+| `make test-coverage` | Run tests with coverage |
 | `make db-migrate` | Run database migrations |
 | `make db-generate` | Generate Prisma client |
 | `make db-studio` | Open Prisma Studio |
@@ -577,5 +580,5 @@ MIT
 
 **Last Updated**: 2025-12-22
 **Current Phase**: Phase 4 - API Testing ⏳ IN PROGRESS
-**Next Up**: Chunk 4.1 - Contacts API Unit Tests
+**Next Up**: Chunk 4.2 - Contacts API Integration Tests
 **Status**: ✅ Phase 1 Complete | ✅ Phase 2 Complete | ✅ Phase 3 Complete
