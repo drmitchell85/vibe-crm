@@ -135,6 +135,25 @@ export interface Note {
 export interface Tag {
   id: string;
   name: string;
-  color?: string;
+  color: string;
   createdAt: string;
+  contactCount?: number;
+}
+
+export interface TagWithContacts extends Tag {
+  contacts: Contact[];
+}
+
+export interface CreateTagInput {
+  name: string;
+  color?: string;
+}
+
+export interface UpdateTagInput {
+  name?: string;
+  color?: string;
+}
+
+export interface ContactWithTags extends Contact {
+  tags?: Tag[];
 }

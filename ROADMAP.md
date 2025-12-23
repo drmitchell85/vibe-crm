@@ -166,18 +166,27 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Update README.md with new API endpoints (Tags, Notes, Contact-Tag linking)
 - [x] Run full test suite to ensure no regressions (358 tests passing)
 
-**Chunk 5.7: Notes & Tags Frontend** ⏳ PENDING
+**Chunk 5.7: Notes & Tags Frontend** ⏳ IN PROGRESS
 
-**Tags UI:**
-- [ ] TagBadge component (colored pill with tag name)
-- [ ] TagSelector component (multi-select for adding/removing tags)
-- [ ] Tags management page (`/tags`) — list, create, edit, delete tags
-- [ ] Tag color picker in create/edit modal
-- [ ] Display tags on Contact detail page
-- [ ] Display tags on Contact list (as badges)
-- [ ] Tag filter on Contact list page (filter by one or more tags)
+**Tags UI:** ✅ COMPLETED
+- [x] TagBadge component (colored pill with tag name, auto-contrast text)
+- [x] TagBadgeList component (displays multiple tags with overflow indicator)
+- [x] TagSelector component (dropdown for adding/removing tags from contacts)
+- [x] TagFilter component (multi-select filter for contact list)
+- [x] TagForm component (create/edit with color picker)
+- [x] Tags management page (`/tags`) — list, create, edit, delete tags
+- [x] Tag color picker with 17 predefined colors + custom hex input
+- [x] Display tags on Contact detail page with inline editing
+- [x] Display tags on Contact list (as badges, max 3 shown)
+- [x] Tag filter on Contact list page (URL-persisted, AND logic)
+- [x] Navigation link added to header
 
-**Notes UI:**
+**Tags API Integration:** ✅ COMPLETED
+- [x] TypeScript types: `Tag`, `TagWithContacts`, `CreateTagInput`, `UpdateTagInput`, `ContactWithTags`
+- [x] API methods: `getAllTags`, `getTagById`, `createTag`, `updateTag`, `deleteTag`
+- [x] API methods: `getContactsByTag`, `addTagToContact`, `removeTagFromContact`, `getContactsWithTags`
+
+**Notes UI:** ⏳ PENDING
 - [ ] NotesList component on Contact detail page (pinned first, then by date)
 - [ ] NoteCard component with pin indicator and timestamps
 - [ ] Create note modal with content textarea
@@ -185,11 +194,9 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [ ] Delete note confirmation
 - [ ] Pin/unpin toggle button on each note
 
-**API Integration:**
-- [ ] React Query hooks for tags (`useTags`, `useCreateTag`, `useUpdateTag`, `useDeleteTag`)
-- [ ] React Query hooks for notes (`useNotes`, `useCreateNote`, `useUpdateNote`, `useDeleteNote`, `useTogglePin`)
-- [ ] React Query hooks for contact-tag linking (`useAddTagToContact`, `useRemoveTagFromContact`)
-- [ ] TypeScript types for Tag and Note entities
+**Notes API Integration:** ⏳ PENDING
+- [ ] TypeScript types for Note entity (CreateNoteInput, UpdateNoteInput)
+- [ ] API methods: `getNotesForContact`, `getNoteById`, `createNote`, `updateNote`, `deleteNote`, `toggleNotePin`
 
 **Deliverable:** Complete notes and tag-based organization system with full frontend UI
 
@@ -240,4 +247,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-23
-**Next Up**: Chunk 5.7 - Notes & Tags Frontend
+**Next Up**: Chunk 5.7 - Notes UI (Tags UI complete)
