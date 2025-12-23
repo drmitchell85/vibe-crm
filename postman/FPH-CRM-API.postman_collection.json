@@ -532,6 +532,113 @@
       ]
     },
     {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Get Notes for Contact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/notes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "notes"]
+            },
+            "description": "Get all notes for a specific contact. Ordered by pinned status (pinned first), then by creation date (newest first)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Note by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Get a single note by its ID, includes contact info"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Met at the tech conference. Very knowledgeable about AI and machine learning.\",\n  \"isPinned\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/notes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "notes"]
+            },
+            "description": "Create a new note for a contact. Content is required. isPinned is optional (defaults to false)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated note with additional details from our follow-up conversation.\",\n  \"isPinned\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Update an existing note. All fields are optional (partial update)."
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Note Pin",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}/pin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}", "pin"]
+            },
+            "description": "Toggle the pin status of a note. Pinned notes appear at the top of the list."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Permanently delete a note"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Health Check",
       "request": {
         "method": "GET",
@@ -569,6 +676,11 @@
     },
     {
       "key": "tag_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "note_id",
       "value": "",
       "type": "string"
     }

@@ -79,12 +79,12 @@ This document tracks the implementation progress of the FPH CRM application, org
 - Refactored Express app into `app.ts` for testability (separate from server startup)
 - Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
-**Test Coverage (328 tests total):**
+**Test Coverage (358 tests total):**
 - **Contact API**: Unit tests (service layer) + Integration tests (HTTP endpoints) + Tag linking tests
 - **Tag API**: Unit tests + Integration tests including contact-by-tag lookup
 - **Interaction API**: Unit tests + Integration tests with filter validation
 - **Reminder API**: Unit tests + Integration tests including upcoming/overdue endpoints
-- **Note API**: Unit tests for service layer (26 tests)
+- **Note API**: Unit tests (26 tests) + Integration tests (30 tests)
 - Edge cases: Validation errors, 404s, duplicate handling, malformed JSON
 
 ---
@@ -146,24 +146,25 @@ This document tracks the implementation progress of the FPH CRM application, org
   - `togglePin(id)` — toggle isPinned status
 - [x] Unit tests for note service (`server/src/services/__tests__/noteService.test.ts`) — 26 tests
 
-**Chunk 5.5: Note API (Controller & Routes)** ⏳ Pending
-- [ ] Create note controller (`server/src/controllers/noteController.ts`)
-- [ ] Create note routes (`server/src/routes/notes.ts`)
-  - `GET /api/contacts/:contactId/notes` — list notes for a contact
-  - `GET /api/notes/:id` — get single note
+**Chunk 5.5: Note API (Controller & Routes)** ✅ COMPLETED
+- [x] Created note controller (`server/src/controllers/noteController.ts`)
+- [x] Created note routes (`server/src/routes/notes.ts`)
+  - `GET /api/contacts/:contactId/notes` — list notes for a contact (pinned first)
+  - `GET /api/notes/:id` — get single note with contact info
   - `POST /api/contacts/:contactId/notes` — create note
-  - `PUT /api/notes/:id` — update note
+  - `PUT /api/notes/:id` — update note (partial updates allowed)
   - `PATCH /api/notes/:id/pin` — toggle pin status
   - `DELETE /api/notes/:id` — delete note
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Register routes in main `index.ts`
-- [ ] Integration tests for note API (`server/src/controllers/__tests__/noteController.test.ts`)
+- [x] Added Swagger/OpenAPI documentation with schema definitions
+- [x] Registered routes in `app.ts`
+- [x] Integration tests for note API (`server/src/controllers/__tests__/noteController.test.ts`) — 30 tests
+- [x] Updated Postman collection with Notes folder
 
 **Chunk 5.6: Documentation & Cleanup** ⏳ Pending
-- [ ] Update Swagger/OpenAPI docs with all new endpoints
-- [ ] Update Postman collection with tag and note endpoints
+- [x] Swagger/OpenAPI docs updated (tags, notes routes include full documentation)
+- [x] Postman collection updated with Tags and Notes folders
 - [ ] Update README.md with new API endpoints
-- [ ] Run full test suite to ensure no regressions
+- [ ] Run full test suite to ensure no regressions (358 tests currently passing)
 
 **Deliverable:** Complete notes and tag-based organization system with full test coverage
 
@@ -214,4 +215,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-22
-**Next Up**: Chunk 5.5 - Note API (Controller & Routes)
+**Next Up**: Chunk 5.6 - Documentation & Cleanup (README update)
