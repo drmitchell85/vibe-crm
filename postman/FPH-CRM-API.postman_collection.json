@@ -439,6 +439,206 @@
       ]
     },
     {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags"]
+            },
+            "description": "Get all tags with contact counts, ordered by name"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tag by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags", "{{tag_id}}"]
+            },
+            "description": "Get a single tag with contact count"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Tag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backgammon\",\n  \"color\": \"#FF5733\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags"]
+            },
+            "description": "Create a new tag. Name is required. Color is optional (defaults to #6B7280)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Board Games\",\n  \"color\": \"#10B981\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags", "{{tag_id}}"]
+            },
+            "description": "Update an existing tag. All fields are optional (partial update)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags", "{{tag_id}}"]
+            },
+            "description": "Delete a tag. Removes the tag from all contacts but does not delete the contacts."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Get Notes for Contact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/notes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "notes"]
+            },
+            "description": "Get all notes for a specific contact. Ordered by pinned status (pinned first), then by creation date (newest first)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Note by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Get a single note by its ID, includes contact info"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Met at the tech conference. Very knowledgeable about AI and machine learning.\",\n  \"isPinned\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacts/{{contact_id}}/notes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "{{contact_id}}", "notes"]
+            },
+            "description": "Create a new note for a contact. Content is required. isPinned is optional (defaults to false)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated note with additional details from our follow-up conversation.\",\n  \"isPinned\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Update an existing note. All fields are optional (partial update)."
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Note Pin",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}/pin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}", "pin"]
+            },
+            "description": "Toggle the pin status of a note. Pinned notes appear at the top of the list."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/notes/{{note_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notes", "{{note_id}}"]
+            },
+            "description": "Permanently delete a note"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Health Check",
       "request": {
         "method": "GET",
@@ -471,6 +671,16 @@
     },
     {
       "key": "reminder_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tag_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "note_id",
       "value": "",
       "type": "string"
     }

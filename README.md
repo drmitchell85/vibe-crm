@@ -45,8 +45,8 @@ A full-stack personal CRM application for managing contacts, tracking interactio
 ### Planned Features
 - ✅ Interaction Tracking
 - ✅ Reminders & Follow-ups
-- API Testing (Unit & Integration) — *In Progress*
-- Notes & Tagging
+- ✅ API Testing (Unit & Integration)
+- ✅ Notes & Tagging
 - Advanced Search & Filtering
 - Data Import/Export
 - Dashboard with Analytics
@@ -202,12 +202,14 @@ This project includes a Makefile for convenient command shortcuts. Run `make hel
 Full interactive API documentation is available at **http://localhost:3001/api-docs** (Swagger UI)
 
 ### Contacts
-- `GET /api/contacts` - List all contacts
+- `GET /api/contacts` - List all contacts (supports `?tags=id1,id2` filter with AND logic)
 - `GET /api/contacts/search?q={query}` - Search contacts by name, email, twitter, or company
 - `GET /api/contacts/:id` - Get single contact with related data
 - `POST /api/contacts` - Create contact
 - `PUT /api/contacts/:id` - Update contact
 - `DELETE /api/contacts/:id` - Delete contact
+- `POST /api/contacts/:id/tags` - Add a tag to contact (idempotent)
+- `DELETE /api/contacts/:id/tags/:tagId` - Remove a tag from contact
 
 ### Interactions
 - `GET /api/contacts/:contactId/interactions` - List interactions for a contact (supports `type`, `startDate`, `endDate` filters)
@@ -227,20 +229,49 @@ Full interactive API documentation is available at **http://localhost:3001/api-d
 - `PATCH /api/reminders/:id/complete` - Toggle reminder completion
 - `DELETE /api/reminders/:id` - Delete reminder
 
+### Tags
+- `GET /api/tags` - List all tags with contact counts
+- `GET /api/tags/:id` - Get single tag with contact count
+- `POST /api/tags` - Create tag (returns 409 on duplicate name)
+- `PUT /api/tags/:id` - Update tag (partial updates allowed)
+- `DELETE /api/tags/:id` - Delete tag (removes from all contacts)
+- `GET /api/tags/:id/contacts` - List all contacts with specific tag
+
+### Notes
+- `GET /api/contacts/:contactId/notes` - List notes for contact (pinned first)
+- `GET /api/notes/:id` - Get single note with contact info
+- `POST /api/contacts/:contactId/notes` - Create note
+- `PUT /api/notes/:id` - Update note (partial updates allowed)
+- `PATCH /api/notes/:id/pin` - Toggle pin status
+- `DELETE /api/notes/:id` - Delete note
+
 ### Health
 - `GET /health` - API health check
 
-More endpoints will be added in subsequent phases (notes, tags).
-
 ## Testing
 
-```bash
-# Run frontend tests
-cd client && npm test
+The backend includes comprehensive unit and integration tests using Jest and Supertest.
 
+```bash
 # Run backend tests
 cd server && npm test
+
+# Run tests in watch mode
+cd server && npm run test:watch
+
+# Run tests with coverage report
+cd server && npm run test:coverage
+
+# Run frontend tests
+cd client && npm test
 ```
+
+**Test Coverage:** 358 tests across 11 test suites covering:
+- Contact API (CRUD, search, tag linking)
+- Tag API (CRUD, contact lookup)
+- Interaction API (CRUD, filtering)
+- Reminder API (CRUD, upcoming/overdue)
+- Note API (CRUD, pinning)
 
 ## Contributing
 
@@ -252,4 +283,4 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-22 | **Current Phase**: 4 - API Testing | See [ROADMAP.md](./ROADMAP.md) for details
+**Last Updated**: 2025-12-23 | **Current Phase**: 5 - Notes & Tagging (Complete) | See [ROADMAP.md](./ROADMAP.md) for details

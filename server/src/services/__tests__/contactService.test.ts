@@ -16,9 +16,21 @@ const mockPrismaContact = {
   delete: jest.fn(),
 };
 
+const mockPrismaTag = {
+  findUnique: jest.fn(),
+};
+
+const mockPrismaContactTag = {
+  findUnique: jest.fn(),
+  upsert: jest.fn(),
+  delete: jest.fn(),
+};
+
 jest.mock('@prisma/client', () => ({
   PrismaClient: jest.fn().mockImplementation(() => ({
     contact: mockPrismaContact,
+    tag: mockPrismaTag,
+    contactTag: mockPrismaContactTag,
   })),
   Prisma: {
     JsonNull: 'JsonNull',
@@ -429,6 +441,281 @@ describe('contactService', () => {
       await expect(contactService.searchContacts('test')).rejects.toMatchObject({
         statusCode: 500,
         code: 'SEARCH_CONTACTS_ERROR',
+      });
+    });
+  });
+
+  // ============================================
+  // getContactsWithTagFilter Tests
+  // ============================================
+  describe('getContactsWithTagFilter', () => {
+    it('should return all contacts when no tags provided', async () => {
+      const contacts = [
+        { ...mockContact, id: '1', tags: [] },
+        { ...mockContact, id: '2', tags: [] },
+      ];
+      mockPrismaContact.findMany.mockResolvedValue(contacts);
+
+      const result = await contactService.getContactsWithTagFilter();
+
+      expect(result).toEqual(contacts);
+      expect(mockPrismaContact.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        include: {
+          tags: { include: { tag: true } },
+        },
+      });
+    });
+
+    it('should return all contacts when empty tag array provided', async () => {
+      const contacts = [{ ...mockContact, tags: [] }];
+      mockPrismaContact.findMany.mockResolvedValue(contacts);
+
+      const result = await contactService.getContactsWithTagFilter([]);
+
+      expect(result).toEqual(contacts);
+      expect(mockPrismaContact.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        include: {
+          tags: { include: { tag: true } },
+        },
+      });
+    });
+
+    it('should filter contacts by single tag', async () => {
+      const contacts = [{ ...mockContact, tags: [{ tagId: 'tag-1', tag: { id: 'tag-1', name: 'Tech' } }] }];
+      mockPrismaContact.findMany.mockResolvedValue(contacts);
+
+      const result = await contactService.getContactsWithTagFilter(['tag-1']);
+
+      expect(result).toEqual(contacts);
+      expect(mockPrismaContact.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ tags: { some: { tagId: 'tag-1' } } }],
+        },
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        include: {
+          tags: { include: { tag: true } },
+        },
+      });
+    });
+
+    it('should filter contacts by multiple tags (AND logic)', async () => {
+      mockPrismaContact.findMany.mockResolvedValue([]);
+
+      await contactService.getContactsWithTagFilter(['tag-1', 'tag-2']);
+
+      expect(mockPrismaContact.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            { tags: { some: { tagId: 'tag-1' } } },
+            { tags: { some: { tagId: 'tag-2' } } },
+          ],
+        },
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        include: {
+          tags: { include: { tag: true } },
+        },
+      });
+    });
+
+    it('should throw AppError on database failure', async () => {
+      mockPrismaContact.findMany.mockRejectedValue(new Error('Database error'));
+
+      await expect(contactService.getContactsWithTagFilter(['tag-1'])).rejects.toThrow(AppError);
+      await expect(contactService.getContactsWithTagFilter(['tag-1'])).rejects.toMatchObject({
+        statusCode: 500,
+        code: 'FETCH_CONTACTS_ERROR',
+      });
+    });
+  });
+
+  // ============================================
+  // addTagToContact Tests
+  // ============================================
+  describe('addTagToContact', () => {
+    const mockTag = { id: 'tag-1', name: 'Backgammon', color: '#FF5733' };
+    const contactWithTags = {
+      ...mockContact,
+      tags: [{ tagId: 'tag-1', tag: mockTag }],
+    };
+
+    beforeEach(() => {
+      mockPrismaContact.findUnique
+        .mockResolvedValueOnce(mockContact) // First call: check contact exists
+        .mockResolvedValueOnce(contactWithTags); // Second call: return updated contact
+      mockPrismaTag.findUnique.mockResolvedValue(mockTag);
+      mockPrismaContactTag.upsert.mockResolvedValue({ contactId: 'contact-1', tagId: 'tag-1' });
+    });
+
+    it('should add tag to contact and return updated contact', async () => {
+      const result = await contactService.addTagToContact('contact-1', 'tag-1');
+
+      expect(result).toEqual(contactWithTags);
+      expect(mockPrismaContactTag.upsert).toHaveBeenCalledWith({
+        where: { contactId_tagId: { contactId: 'contact-1', tagId: 'tag-1' } },
+        update: {},
+        create: { contactId: 'contact-1', tagId: 'tag-1' },
+      });
+    });
+
+    it('should throw 404 when contact not found', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(null);
+
+      await expect(contactService.addTagToContact('non-existent', 'tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.addTagToContact('non-existent', 'tag-1')).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'CONTACT_NOT_FOUND',
+      });
+    });
+
+    it('should throw 404 when tag not found', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(mockContact);
+      mockPrismaTag.findUnique.mockResolvedValue(null);
+
+      await expect(contactService.addTagToContact('contact-1', 'non-existent')).rejects.toThrow(AppError);
+      await expect(contactService.addTagToContact('contact-1', 'non-existent')).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'TAG_NOT_FOUND',
+      });
+    });
+
+    it('should be idempotent (not error if tag already assigned)', async () => {
+      // upsert handles this gracefully
+      const result = await contactService.addTagToContact('contact-1', 'tag-1');
+
+      expect(result).toEqual(contactWithTags);
+    });
+
+    it('should throw AppError on database failure', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(mockContact);
+      mockPrismaTag.findUnique.mockResolvedValue(mockTag);
+      mockPrismaContactTag.upsert.mockRejectedValue(new Error('Database error'));
+
+      await expect(contactService.addTagToContact('contact-1', 'tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.addTagToContact('contact-1', 'tag-1')).rejects.toMatchObject({
+        statusCode: 500,
+        code: 'ADD_TAG_ERROR',
+      });
+    });
+  });
+
+  // ============================================
+  // removeTagFromContact Tests
+  // ============================================
+  describe('removeTagFromContact', () => {
+    const contactWithoutTags = { ...mockContact, tags: [] };
+
+    beforeEach(() => {
+      mockPrismaContact.findUnique
+        .mockResolvedValueOnce(mockContact) // First call: check contact exists
+        .mockResolvedValueOnce(contactWithoutTags); // Second call: return updated contact
+      mockPrismaContactTag.findUnique.mockResolvedValue({ contactId: 'contact-1', tagId: 'tag-1' });
+      mockPrismaContactTag.delete.mockResolvedValue({ contactId: 'contact-1', tagId: 'tag-1' });
+    });
+
+    it('should remove tag from contact and return updated contact', async () => {
+      const result = await contactService.removeTagFromContact('contact-1', 'tag-1');
+
+      expect(result).toEqual(contactWithoutTags);
+      expect(mockPrismaContactTag.delete).toHaveBeenCalledWith({
+        where: { contactId_tagId: { contactId: 'contact-1', tagId: 'tag-1' } },
+      });
+    });
+
+    it('should throw 404 when contact not found', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(null);
+
+      await expect(contactService.removeTagFromContact('non-existent', 'tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.removeTagFromContact('non-existent', 'tag-1')).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'CONTACT_NOT_FOUND',
+      });
+    });
+
+    it('should throw 404 when tag not assigned to contact', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(mockContact);
+      mockPrismaContactTag.findUnique.mockResolvedValue(null);
+
+      await expect(contactService.removeTagFromContact('contact-1', 'tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.removeTagFromContact('contact-1', 'tag-1')).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'TAG_NOT_ASSIGNED',
+      });
+    });
+
+    it('should throw AppError on database failure', async () => {
+      mockPrismaContact.findUnique.mockReset();
+      mockPrismaContact.findUnique.mockResolvedValue(mockContact);
+      mockPrismaContactTag.findUnique.mockResolvedValue({ contactId: 'contact-1', tagId: 'tag-1' });
+      mockPrismaContactTag.delete.mockRejectedValue(new Error('Database error'));
+
+      await expect(contactService.removeTagFromContact('contact-1', 'tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.removeTagFromContact('contact-1', 'tag-1')).rejects.toMatchObject({
+        statusCode: 500,
+        code: 'REMOVE_TAG_ERROR',
+      });
+    });
+  });
+
+  // ============================================
+  // getContactsByTag Tests
+  // ============================================
+  describe('getContactsByTag', () => {
+    const mockTag = { id: 'tag-1', name: 'Backgammon', color: '#FF5733' };
+    const contactsWithTag = [
+      { ...mockContact, id: '1', tags: [{ tagId: 'tag-1', tag: mockTag }] },
+      { ...mockContact, id: '2', tags: [{ tagId: 'tag-1', tag: mockTag }] },
+    ];
+
+    beforeEach(() => {
+      mockPrismaTag.findUnique.mockResolvedValue(mockTag);
+      mockPrismaContact.findMany.mockResolvedValue(contactsWithTag);
+    });
+
+    it('should return contacts with the specified tag', async () => {
+      const result = await contactService.getContactsByTag('tag-1');
+
+      expect(result).toEqual(contactsWithTag);
+      expect(mockPrismaContact.findMany).toHaveBeenCalledWith({
+        where: { tags: { some: { tagId: 'tag-1' } } },
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        include: { tags: { include: { tag: true } } },
+      });
+    });
+
+    it('should return empty array when no contacts have the tag', async () => {
+      mockPrismaContact.findMany.mockResolvedValue([]);
+
+      const result = await contactService.getContactsByTag('tag-1');
+
+      expect(result).toEqual([]);
+    });
+
+    it('should throw 404 when tag not found', async () => {
+      mockPrismaTag.findUnique.mockResolvedValue(null);
+
+      await expect(contactService.getContactsByTag('non-existent')).rejects.toThrow(AppError);
+      await expect(contactService.getContactsByTag('non-existent')).rejects.toMatchObject({
+        statusCode: 404,
+        code: 'TAG_NOT_FOUND',
+      });
+    });
+
+    it('should throw AppError on database failure', async () => {
+      mockPrismaContact.findMany.mockRejectedValue(new Error('Database error'));
+
+      await expect(contactService.getContactsByTag('tag-1')).rejects.toThrow(AppError);
+      await expect(contactService.getContactsByTag('tag-1')).rejects.toMatchObject({
+        statusCode: 500,
+        code: 'FETCH_CONTACTS_BY_TAG_ERROR',
       });
     });
   });

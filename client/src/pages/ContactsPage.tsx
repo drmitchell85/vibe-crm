@@ -1,31 +1,52 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
+import { TagFilter } from '../components/TagSelector';
+import { TagBadgeList } from '../components/TagBadge';
 import { LoadingState, ErrorState, EmptyState } from '../components/ui';
-import type { Contact, CreateContactInput } from '../types';
+import type { ContactWithTags, CreateContactInput } from '../types';
 
 /**
- * Contacts list page - displays all contacts with search functionality
+ * Contacts list page - displays all contacts with search and tag filtering
  */
 export function ContactsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // Get tag filter from URL
+  const tagFilterParam = searchParams.get('tags');
+  const selectedTagIds = tagFilterParam ? tagFilterParam.split(',').filter(Boolean) : [];
+
   const queryClient = useQueryClient();
 
-  // Fetch contacts based on debounced search query
+  // Handle tag filter changes
+  const handleTagFilterChange = (tagIds: string[]) => {
+    if (tagIds.length > 0) {
+      setSearchParams({ tags: tagIds.join(',') });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  // Fetch contacts based on search and tag filters
   const { data: contacts, isLoading, error } = useQuery({
-    queryKey: ['contacts', debouncedSearch],
-    queryFn: async () => {
+    queryKey: ['contacts', debouncedSearch, selectedTagIds],
+    queryFn: async (): Promise<ContactWithTags[]> => {
       if (debouncedSearch.trim()) {
-        return api.searchContacts(debouncedSearch);
+        // Search doesn't support tag filtering yet, return search results
+        return api.searchContacts(debouncedSearch) as Promise<ContactWithTags[]>;
       }
-      return api.getAllContacts();
+      // Use tag filtering if tags are selected
+      if (selectedTagIds.length > 0) {
+        return api.getContactsWithTags(selectedTagIds);
+      }
+      return api.getContactsWithTags();
     },
   });
 
@@ -68,15 +89,23 @@ export function ContactsPage() {
         />
       </Modal>
 
-      {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <input
-          type="text"
-          placeholder="Search contacts by name, email, or company..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        />
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-lg shadow p-4 space-y-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search contacts by name, email, or company..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            />
+          </div>
+          <TagFilter
+            selectedTagIds={selectedTagIds}
+            onChange={handleTagFilterChange}
+          />
+        </div>
       </div>
 
       {/* Loading State */}
@@ -132,13 +161,10 @@ export function ContactsPage() {
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phone
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Company
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Social
+                  Tags
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -168,11 +194,7 @@ export function ContactsPage() {
 /**
  * Individual contact row component
  */
-function ContactRow({ contact }: { contact: Contact }) {
-  const socialPlatforms = contact.socialMedia
-    ? Object.keys(contact.socialMedia).slice(0, 2) // Show first 2 platforms
-    : [];
-
+function ContactRow({ contact }: { contact: ContactWithTags }) {
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
@@ -187,31 +209,13 @@ function ContactRow({ contact }: { contact: Contact }) {
         <span className="text-sm text-gray-900">{contact.email || '-'}</span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className="text-sm text-gray-900">{contact.phone || '-'}</span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
         <span className="text-sm text-gray-900">{contact.company || '-'}</span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        {socialPlatforms.length > 0 ? (
-          <div className="flex gap-1">
-            {socialPlatforms.map((platform) => (
-              <span
-                key={platform}
-                className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700"
-                title={`${platform}: ${contact.socialMedia![platform]}`}
-              >
-                {platform}
-              </span>
-            ))}
-            {contact.socialMedia && Object.keys(contact.socialMedia).length > 2 && (
-              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                +{Object.keys(contact.socialMedia).length - 2}
-              </span>
-            )}
-          </div>
+      <td className="px-6 py-4">
+        {contact.tags && contact.tags.length > 0 ? (
+          <TagBadgeList tags={contact.tags} size="sm" maxDisplay={3} />
         ) : (
-          <span className="text-sm text-gray-400">-</span>
+          <span className="text-sm text-gray-400">—</span>
         )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

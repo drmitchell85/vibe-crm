@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage';
 import { ContactsPage } from './pages/ContactsPage';
 import { ContactDetailPage } from './pages/ContactDetailPage';
 import { RemindersPage } from './pages/RemindersPage';
+import { TagsPage } from './pages/TagsPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/contacts" element={<ContactsPage />} />
         <Route path="/contacts/:id" element={<ContactDetailPage />} />
         <Route path="/reminders" element={<RemindersPage />} />
+        <Route path="/tags" element={<TagsPage />} />
       </Routes>
     </Layout>
   );

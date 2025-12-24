@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import type {
   Contact,
+  ContactWithTags,
   CreateContactInput,
   UpdateContactInput,
   Interaction,
@@ -12,6 +13,13 @@ import type {
   CreateReminderInput,
   UpdateReminderInput,
   ReminderFilters,
+  Tag,
+  CreateTagInput,
+  UpdateTagInput,
+  Note,
+  NoteWithContact,
+  CreateNoteInput,
+  UpdateNoteInput,
 } from '../types';
 
 /**
@@ -76,11 +84,11 @@ class ApiClient {
   }
 
   /**
-   * Get a single contact by ID
+   * Get a single contact by ID (with tags normalized)
    */
-  async getContactById(id: string): Promise<Contact> {
-    const response = await this.client.get<ApiResponse<Contact>>(`/contacts/${id}`);
-    return response.data.data;
+  async getContactById(id: string): Promise<ContactWithTags> {
+    const response = await this.client.get<ApiResponse<any>>(`/contacts/${id}`);
+    return normalizeContactTags(response.data.data);
   }
 
   /**
@@ -315,6 +323,153 @@ class ApiClient {
   }
 
   // ============================================
+  // Tag Endpoints
+  // ============================================
+
+  /**
+   * Get all tags with contact counts
+   */
+  async getAllTags(): Promise<Tag[]> {
+    const response = await this.client.get<ApiResponse<Tag[]>>('/tags');
+    return response.data.data;
+  }
+
+  /**
+   * Get a single tag by ID
+   */
+  async getTagById(id: string): Promise<Tag> {
+    const response = await this.client.get<ApiResponse<Tag>>(`/tags/${id}`);
+    return response.data.data;
+  }
+
+  /**
+   * Create a new tag
+   */
+  async createTag(data: CreateTagInput): Promise<Tag> {
+    const response = await this.client.post<ApiResponse<Tag>>('/tags', data);
+    return response.data.data;
+  }
+
+  /**
+   * Update an existing tag
+   */
+  async updateTag(id: string, data: UpdateTagInput): Promise<Tag> {
+    const response = await this.client.put<ApiResponse<Tag>>(`/tags/${id}`, data);
+    return response.data.data;
+  }
+
+  /**
+   * Delete a tag
+   */
+  async deleteTag(id: string): Promise<void> {
+    await this.client.delete(`/tags/${id}`);
+  }
+
+  /**
+   * Get all contacts with a specific tag
+   */
+  async getContactsByTag(tagId: string): Promise<Contact[]> {
+    const response = await this.client.get<ApiResponse<Contact[]>>(`/tags/${tagId}/contacts`);
+    return response.data.data;
+  }
+
+  /**
+   * Add a tag to a contact (returns normalized contact with tags)
+   */
+  async addTagToContact(contactId: string, tagId: string): Promise<ContactWithTags> {
+    const response = await this.client.post<ApiResponse<any>>(
+      `/contacts/${contactId}/tags`,
+      { tagId }
+    );
+    return normalizeContactTags(response.data.data);
+  }
+
+  /**
+   * Remove a tag from a contact (returns normalized contact with tags)
+   */
+  async removeTagFromContact(contactId: string, tagId: string): Promise<ContactWithTags> {
+    const response = await this.client.delete<ApiResponse<any>>(
+      `/contacts/${contactId}/tags/${tagId}`
+    );
+    return normalizeContactTags(response.data.data);
+  }
+
+  /**
+   * Get all contacts with optional tag filter (returns normalized contacts with tags)
+   */
+  async getContactsWithTags(tagIds?: string[]): Promise<ContactWithTags[]> {
+    const params: Record<string, string> = {};
+    if (tagIds && tagIds.length > 0) {
+      params.tags = tagIds.join(',');
+    }
+    const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
+    return normalizeContactsArray(response.data.data);
+  }
+
+  // ============================================
+  // Note Endpoints
+  // ============================================
+
+  /**
+   * Get all notes for a contact (pinned first, then by date)
+   */
+  async getNotesForContact(contactId: string): Promise<Note[]> {
+    const response = await this.client.get<ApiResponse<Note[]>>(
+      `/contacts/${contactId}/notes`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get a single note by ID (with contact info)
+   */
+  async getNoteById(id: string): Promise<NoteWithContact> {
+    const response = await this.client.get<ApiResponse<NoteWithContact>>(
+      `/notes/${id}`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Create a new note for a contact
+   */
+  async createNote(contactId: string, data: CreateNoteInput): Promise<Note> {
+    const response = await this.client.post<ApiResponse<Note>>(
+      `/contacts/${contactId}/notes`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Update an existing note
+   */
+  async updateNote(id: string, data: UpdateNoteInput): Promise<Note> {
+    const response = await this.client.put<ApiResponse<Note>>(
+      `/notes/${id}`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Toggle pin status of a note
+   */
+  async toggleNotePin(id: string): Promise<Note> {
+    const response = await this.client.patch<ApiResponse<Note>>(
+      `/notes/${id}/pin`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Delete a note
+   */
+  async deleteNote(id: string): Promise<void> {
+    await this.client.delete(`/notes/${id}`);
+  }
+
+  // ============================================
   // Health Check
   // ============================================
 
@@ -325,6 +480,48 @@ class ApiClient {
     const response = await this.client.get('/../health'); // Goes up to root
     return response.data;
   }
+}
+
+// ============================================
+// Helper Functions
+// ============================================
+
+/**
+ * Transform contact data from API format to frontend format.
+ * Prisma returns tags as nested join table objects:
+ *   { tags: [{ contactId, tagId, tag: { id, name, color } }] }
+ * Frontend expects flat tag objects:
+ *   { tags: [{ id, name, color }] }
+ */
+interface RawContactTag {
+  contactId: string;
+  tagId: string;
+  tag: Tag;
+}
+
+interface RawContact extends Omit<ContactWithTags, 'tags'> {
+  tags?: RawContactTag[] | Tag[];
+}
+
+function normalizeContactTags<T extends RawContact>(contact: T): ContactWithTags {
+  if (!contact.tags || contact.tags.length === 0) {
+    return { ...contact, tags: [] } as ContactWithTags;
+  }
+
+  // Check if tags are already flattened (have 'name' property directly)
+  const firstTag = contact.tags[0];
+  if ('name' in firstTag) {
+    // Already flat format
+    return contact as unknown as ContactWithTags;
+  }
+
+  // Transform nested format to flat format
+  const flatTags = (contact.tags as RawContactTag[]).map(ct => ct.tag);
+  return { ...contact, tags: flatTags } as ContactWithTags;
+}
+
+function normalizeContactsArray(contacts: RawContact[]): ContactWithTags[] {
+  return contacts.map(normalizeContactTags);
 }
 
 // Export singleton instance

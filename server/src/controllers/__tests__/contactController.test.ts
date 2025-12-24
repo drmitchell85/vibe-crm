@@ -16,6 +16,10 @@ const mockContactService = {
   updateContact: jest.fn(),
   deleteContact: jest.fn(),
   searchContacts: jest.fn(),
+  getContactsWithTagFilter: jest.fn(),
+  addTagToContact: jest.fn(),
+  removeTagFromContact: jest.fn(),
+  getContactsByTag: jest.fn(),
 };
 
 jest.mock('../../services/contactService', () => ({
@@ -55,12 +59,12 @@ describe('Contact Controller - Integration Tests', () => {
   });
 
   // ============================================
-  // GET /api/contacts
+  // GET /api/contacts (with optional tag filtering)
   // ============================================
   describe('GET /api/contacts', () => {
     it('should return 200 with array of contacts', async () => {
       const contacts = [mockContact, { ...mockContact, id: 'contact-456', firstName: 'Jane' }];
-      mockContactService.getAllContacts.mockResolvedValue(contacts);
+      mockContactService.getContactsWithTagFilter.mockResolvedValue(contacts);
 
       const response = await request(app).get('/api/contacts');
 
@@ -69,11 +73,11 @@ describe('Contact Controller - Integration Tests', () => {
         success: true,
         data: contacts,
       });
-      expect(mockContactService.getAllContacts).toHaveBeenCalledTimes(1);
+      expect(mockContactService.getContactsWithTagFilter).toHaveBeenCalledWith(undefined);
     });
 
     it('should return 200 with empty array when no contacts exist', async () => {
-      mockContactService.getAllContacts.mockResolvedValue([]);
+      mockContactService.getContactsWithTagFilter.mockResolvedValue([]);
 
       const response = await request(app).get('/api/contacts');
 
@@ -84,8 +88,39 @@ describe('Contact Controller - Integration Tests', () => {
       });
     });
 
+    it('should filter contacts by single tag ID', async () => {
+      const filteredContacts = [mockContact];
+      mockContactService.getContactsWithTagFilter.mockResolvedValue(filteredContacts);
+
+      const response = await request(app).get('/api/contacts?tags=tag-123');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual(filteredContacts);
+      expect(mockContactService.getContactsWithTagFilter).toHaveBeenCalledWith(['tag-123']);
+    });
+
+    it('should filter contacts by multiple tag IDs', async () => {
+      const filteredContacts = [mockContact];
+      mockContactService.getContactsWithTagFilter.mockResolvedValue(filteredContacts);
+
+      const response = await request(app).get('/api/contacts?tags=tag-123,tag-456');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual(filteredContacts);
+      expect(mockContactService.getContactsWithTagFilter).toHaveBeenCalledWith(['tag-123', 'tag-456']);
+    });
+
+    it('should handle empty tags parameter', async () => {
+      mockContactService.getContactsWithTagFilter.mockResolvedValue([mockContact]);
+
+      const response = await request(app).get('/api/contacts?tags=');
+
+      expect(response.status).toBe(200);
+      expect(mockContactService.getContactsWithTagFilter).toHaveBeenCalledWith(undefined);
+    });
+
     it('should return 500 when service throws error', async () => {
-      mockContactService.getAllContacts.mockRejectedValue(
+      mockContactService.getContactsWithTagFilter.mockRejectedValue(
         new AppError('Database error', 500, 'FETCH_CONTACTS_ERROR')
       );
 
@@ -437,6 +472,168 @@ describe('Contact Controller - Integration Tests', () => {
       );
 
       const response = await request(app).get('/api/contacts/search?q=test');
+
+      expect(response.status).toBe(500);
+      expect(response.body.success).toBe(false);
+    });
+  });
+
+  // ============================================
+  // POST /api/contacts/:id/tags
+  // ============================================
+  describe('POST /api/contacts/:id/tags', () => {
+    const mockContactWithTags = {
+      ...mockContact,
+      tags: [{ tag: { id: 'tag-123', name: 'Backgammon', color: '#FF5733' } }],
+    };
+
+    it('should return 201 when tag is added successfully', async () => {
+      mockContactService.addTagToContact.mockResolvedValue(mockContactWithTags);
+
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({ tagId: 'tag-123' })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual({
+        success: true,
+        data: mockContactWithTags,
+      });
+      expect(mockContactService.addTagToContact).toHaveBeenCalledWith('contact-123', 'tag-123');
+    });
+
+    it('should return 400 when tagId is missing', async () => {
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({})
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('MISSING_TAG_ID');
+    });
+
+    it('should return 400 when tagId is not a string', async () => {
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({ tagId: 123 })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('MISSING_TAG_ID');
+    });
+
+    it('should return 404 when contact not found', async () => {
+      mockContactService.addTagToContact.mockRejectedValue(
+        new AppError('Contact not found', 404, 'CONTACT_NOT_FOUND')
+      );
+
+      const response = await request(app)
+        .post('/api/contacts/non-existent/tags')
+        .send({ tagId: 'tag-123' })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('CONTACT_NOT_FOUND');
+    });
+
+    it('should return 404 when tag not found', async () => {
+      mockContactService.addTagToContact.mockRejectedValue(
+        new AppError('Tag not found', 404, 'TAG_NOT_FOUND')
+      );
+
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({ tagId: 'non-existent-tag' })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('TAG_NOT_FOUND');
+    });
+
+    it('should return 201 when tag is already assigned (idempotent)', async () => {
+      mockContactService.addTagToContact.mockResolvedValue(mockContactWithTags);
+
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({ tagId: 'tag-123' })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(201);
+      expect(response.body.success).toBe(true);
+    });
+
+    it('should return 500 on database error', async () => {
+      mockContactService.addTagToContact.mockRejectedValue(
+        new AppError('Database error', 500, 'ADD_TAG_ERROR')
+      );
+
+      const response = await request(app)
+        .post('/api/contacts/contact-123/tags')
+        .send({ tagId: 'tag-123' })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(500);
+      expect(response.body.success).toBe(false);
+    });
+  });
+
+  // ============================================
+  // DELETE /api/contacts/:id/tags/:tagId
+  // ============================================
+  describe('DELETE /api/contacts/:id/tags/:tagId', () => {
+    const mockContactWithoutTags = {
+      ...mockContact,
+      tags: [],
+    };
+
+    it('should return 200 when tag is removed successfully', async () => {
+      mockContactService.removeTagFromContact.mockResolvedValue(mockContactWithoutTags);
+
+      const response = await request(app).delete('/api/contacts/contact-123/tags/tag-123');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        success: true,
+        data: mockContactWithoutTags,
+      });
+      expect(mockContactService.removeTagFromContact).toHaveBeenCalledWith('contact-123', 'tag-123');
+    });
+
+    it('should return 404 when contact not found', async () => {
+      mockContactService.removeTagFromContact.mockRejectedValue(
+        new AppError('Contact not found', 404, 'CONTACT_NOT_FOUND')
+      );
+
+      const response = await request(app).delete('/api/contacts/non-existent/tags/tag-123');
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('CONTACT_NOT_FOUND');
+    });
+
+    it('should return 404 when tag is not assigned to contact', async () => {
+      mockContactService.removeTagFromContact.mockRejectedValue(
+        new AppError('Tag is not assigned to this contact', 404, 'TAG_NOT_ASSIGNED')
+      );
+
+      const response = await request(app).delete('/api/contacts/contact-123/tags/tag-456');
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('TAG_NOT_ASSIGNED');
+    });
+
+    it('should return 500 on database error', async () => {
+      mockContactService.removeTagFromContact.mockRejectedValue(
+        new AppError('Database error', 500, 'REMOVE_TAG_ERROR')
+      );
+
+      const response = await request(app).delete('/api/contacts/contact-123/tags/tag-123');
 
       expect(response.status).toBe(500);
       expect(response.body.success).toBe(false);

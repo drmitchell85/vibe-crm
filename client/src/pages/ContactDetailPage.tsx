@@ -9,8 +9,11 @@ import { InteractionForm } from '../components/InteractionForm';
 import { InteractionTimeline } from '../components/InteractionTimeline';
 import { RemindersList } from '../components/RemindersList';
 import { ReminderForm } from '../components/ReminderForm';
+import { NotesList } from '../components/NotesList';
+import { NoteForm } from '../components/NoteForm';
+import { TagSelector } from '../components/TagSelector';
 import { LoadingState, Spinner } from '../components/ui';
-import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput } from '../types';
+import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput, Note, CreateNoteInput, UpdateNoteInput } from '../types';
 
 /**
  * Contact detail page - displays full information for a single contact
@@ -26,6 +29,8 @@ export function ContactDetailPage() {
   const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -108,6 +113,34 @@ export function ContactDetailPage() {
     },
   });
 
+  // Create note mutation
+  const createNoteMutation = useMutation({
+    mutationFn: (data: CreateNoteInput) => api.createNote(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
+  // Update note mutation
+  const updateNoteMutation = useMutation({
+    mutationFn: ({ noteId, data }: { noteId: string; data: UpdateNoteInput }) =>
+      api.updateNote(noteId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
+  // Delete note mutation
+  const deleteNoteMutation = useMutation({
+    mutationFn: (noteId: string) => api.deleteNote(noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
   // Handlers for interaction modal
   const openAddInteractionModal = () => {
     setEditingInteraction(null);
@@ -171,6 +204,39 @@ export function ContactDetailPage() {
   const handleReminderDelete = () => {
     if (editingReminder) {
       deleteReminderMutation.mutate(editingReminder.id);
+    }
+  };
+
+  // Handlers for note modal
+  const openAddNoteModal = () => {
+    setEditingNote(null);
+    setIsNoteModalOpen(true);
+  };
+
+  const openEditNoteModal = (note: Note) => {
+    setEditingNote(note);
+    setIsNoteModalOpen(true);
+  };
+
+  const closeNoteModal = () => {
+    setIsNoteModalOpen(false);
+    setEditingNote(null);
+  };
+
+  const handleNoteSubmit = async (data: CreateNoteInput | UpdateNoteInput) => {
+    if (editingNote) {
+      await updateNoteMutation.mutateAsync({
+        noteId: editingNote.id,
+        data: data as UpdateNoteInput,
+      });
+    } else {
+      await createNoteMutation.mutateAsync(data as CreateNoteInput);
+    }
+  };
+
+  const handleNoteDelete = () => {
+    if (editingNote) {
+      deleteNoteMutation.mutate(editingNote.id);
     }
   };
 
@@ -282,6 +348,15 @@ export function ContactDetailPage() {
 
       {/* Contact Information */}
       <div className="bg-white rounded-lg shadow divide-y divide-gray-200">
+        {/* Tags Section */}
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tags</h2>
+          <TagSelector
+            contactId={id!}
+            selectedTags={contact.tags || []}
+          />
+        </div>
+
         {/* Basic Info Section */}
         <div className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
@@ -291,9 +366,9 @@ export function ContactDetailPage() {
             <InfoField label="Company" value={contact.company} />
             <InfoField label="Job Title" value={contact.jobTitle} />
             <InfoField label="Address" value={contact.address} />
-            <InfoField 
-              label="Birthday" 
-              value={contact.birthday ? format(new Date(contact.birthday), 'MMMM d, yyyy') : undefined} 
+            <InfoField
+              label="Birthday"
+              value={contact.birthday ? format(new Date(contact.birthday), 'MMMM d, yyyy') : undefined}
             />
           </div>
         </div>
@@ -380,12 +455,29 @@ export function ContactDetailPage() {
         />
       </Modal>
 
-      {/* Future: Notes section will go here */}
-      <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <p className="text-gray-600">
-          Notes will appear here in Phase 4
-        </p>
-      </div>
+      {/* Notes Section */}
+      <NotesList
+        contactId={id!}
+        onAddNote={openAddNoteModal}
+        onEditNote={openEditNoteModal}
+      />
+
+      {/* Create/Edit Note Modal */}
+      <Modal
+        isOpen={isNoteModalOpen}
+        onClose={closeNoteModal}
+        title={editingNote ? 'Edit Note' : 'Add Note'}
+        size="lg"
+      >
+        <NoteForm
+          note={editingNote || undefined}
+          onSubmit={handleNoteSubmit}
+          onCancel={closeNoteModal}
+          onDelete={editingNote ? handleNoteDelete : undefined}
+          isLoading={createNoteMutation.isPending || updateNoteMutation.isPending}
+          isDeleting={deleteNoteMutation.isPending}
+        />
+      </Modal>
     </div>
   );
 }
