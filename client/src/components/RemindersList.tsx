@@ -54,7 +54,7 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
   const overdueCount = reminders?.filter(r => !r.isCompleted && isPast(new Date(r.dueDate))).length || 0;
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
