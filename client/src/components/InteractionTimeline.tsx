@@ -115,6 +115,19 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
           )}
         </div>
         <div className="flex items-center gap-2">
+          {/* Clear Filters button - shown when filters are active */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear
+            </button>
+          )}
+
           {/* Filter toggle button */}
           <button
             onClick={() => setFiltersExpanded(!filtersExpanded)}
@@ -221,16 +234,6 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
                 <option value="oldest">Oldest First</option>
               </select>
             </div>
-
-            {/* Clear Filters */}
-            {hasActiveFilters && (
-              <button
-                onClick={clearAllFilters}
-                className="px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors font-medium"
-              >
-                Clear Filters
-              </button>
-            )}
           </div>
         </div>
       )}
