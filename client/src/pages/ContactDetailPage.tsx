@@ -15,6 +15,9 @@ import { TagSelector } from '../components/TagSelector';
 import { LoadingState, Spinner } from '../components/ui';
 import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput, Note, CreateNoteInput, UpdateNoteInput } from '../types';
 
+// Tab type for the activity sections
+type ActivityTab = 'interactions' | 'reminders' | 'notes';
+
 /**
  * Contact detail page - displays full information for a single contact
  */
@@ -31,6 +34,7 @@ export function ContactDetailPage() {
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [activeTab, setActiveTab] = useState<ActivityTab>('interactions');
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -407,12 +411,69 @@ export function ContactDetailPage() {
         </div>
       </div>
 
-      {/* Interactions Timeline */}
-      <InteractionTimeline
-        contactId={id!}
-        onAddInteraction={openAddInteractionModal}
-        onEditInteraction={openEditInteractionModal}
-      />
+      {/* Activity Tabs */}
+      <div className="bg-white rounded-lg shadow">
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px" aria-label="Activity tabs">
+            <TabButton
+              active={activeTab === 'interactions'}
+              onClick={() => setActiveTab('interactions')}
+              icon={
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              }
+              label="Interactions"
+            />
+            <TabButton
+              active={activeTab === 'reminders'}
+              onClick={() => setActiveTab('reminders')}
+              icon={
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              }
+              label="Reminders"
+            />
+            <TabButton
+              active={activeTab === 'notes'}
+              onClick={() => setActiveTab('notes')}
+              icon={
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              }
+              label="Notes"
+            />
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div>
+          {activeTab === 'interactions' && (
+            <InteractionTimeline
+              contactId={id!}
+              onAddInteraction={openAddInteractionModal}
+              onEditInteraction={openEditInteractionModal}
+            />
+          )}
+          {activeTab === 'reminders' && (
+            <RemindersList
+              contactId={id!}
+              onAddReminder={openAddReminderModal}
+              onEditReminder={openEditReminderModal}
+            />
+          )}
+          {activeTab === 'notes' && (
+            <NotesList
+              contactId={id!}
+              onAddNote={openAddNoteModal}
+              onEditNote={openEditNoteModal}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Create/Edit Interaction Modal */}
       <Modal
@@ -431,13 +492,6 @@ export function ContactDetailPage() {
         />
       </Modal>
 
-      {/* Reminders Section */}
-      <RemindersList
-        contactId={id!}
-        onAddReminder={openAddReminderModal}
-        onEditReminder={openEditReminderModal}
-      />
-
       {/* Create/Edit Reminder Modal */}
       <Modal
         isOpen={isReminderModalOpen}
@@ -454,13 +508,6 @@ export function ContactDetailPage() {
           isDeleting={deleteReminderMutation.isPending}
         />
       </Modal>
-
-      {/* Notes Section */}
-      <NotesList
-        contactId={id!}
-        onAddNote={openAddNoteModal}
-        onEditNote={openEditNoteModal}
-      />
 
       {/* Create/Edit Note Modal */}
       <Modal
@@ -518,8 +565,8 @@ function InfoField({
     <div>
       <label className="block text-sm font-medium text-gray-500 mb-1">{label}</label>
       {href ? (
-        <a 
-          href={href} 
+        <a
+          href={href}
           className="text-blue-600 hover:text-blue-800 font-medium"
         >
           {displayValue}
@@ -530,5 +577,35 @@ function InfoField({
         </p>
       )}
     </div>
+  );
+}
+
+/**
+ * Tab button component for activity section navigation
+ */
+function TabButton({
+  active,
+  onClick,
+  icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+        active
+          ? 'border-blue-500 text-blue-600'
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }
