@@ -9,9 +9,11 @@ import { InteractionForm } from '../components/InteractionForm';
 import { InteractionTimeline } from '../components/InteractionTimeline';
 import { RemindersList } from '../components/RemindersList';
 import { ReminderForm } from '../components/ReminderForm';
+import { NotesList } from '../components/NotesList';
+import { NoteForm } from '../components/NoteForm';
 import { TagSelector } from '../components/TagSelector';
 import { LoadingState, Spinner } from '../components/ui';
-import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput, ContactWithTags } from '../types';
+import type { UpdateContactInput, Interaction, CreateInteractionInput, UpdateInteractionInput, Reminder, CreateReminderInput, UpdateReminderInput, Note, CreateNoteInput, UpdateNoteInput } from '../types';
 
 /**
  * Contact detail page - displays full information for a single contact
@@ -27,6 +29,8 @@ export function ContactDetailPage() {
   const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   const { data: contact, isLoading, error } = useQuery({
     queryKey: ['contact', id],
@@ -109,6 +113,34 @@ export function ContactDetailPage() {
     },
   });
 
+  // Create note mutation
+  const createNoteMutation = useMutation({
+    mutationFn: (data: CreateNoteInput) => api.createNote(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
+  // Update note mutation
+  const updateNoteMutation = useMutation({
+    mutationFn: ({ noteId, data }: { noteId: string; data: UpdateNoteInput }) =>
+      api.updateNote(noteId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
+  // Delete note mutation
+  const deleteNoteMutation = useMutation({
+    mutationFn: (noteId: string) => api.deleteNote(noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes', id] });
+      closeNoteModal();
+    },
+  });
+
   // Handlers for interaction modal
   const openAddInteractionModal = () => {
     setEditingInteraction(null);
@@ -172,6 +204,39 @@ export function ContactDetailPage() {
   const handleReminderDelete = () => {
     if (editingReminder) {
       deleteReminderMutation.mutate(editingReminder.id);
+    }
+  };
+
+  // Handlers for note modal
+  const openAddNoteModal = () => {
+    setEditingNote(null);
+    setIsNoteModalOpen(true);
+  };
+
+  const openEditNoteModal = (note: Note) => {
+    setEditingNote(note);
+    setIsNoteModalOpen(true);
+  };
+
+  const closeNoteModal = () => {
+    setIsNoteModalOpen(false);
+    setEditingNote(null);
+  };
+
+  const handleNoteSubmit = async (data: CreateNoteInput | UpdateNoteInput) => {
+    if (editingNote) {
+      await updateNoteMutation.mutateAsync({
+        noteId: editingNote.id,
+        data: data as UpdateNoteInput,
+      });
+    } else {
+      await createNoteMutation.mutateAsync(data as CreateNoteInput);
+    }
+  };
+
+  const handleNoteDelete = () => {
+    if (editingNote) {
+      deleteNoteMutation.mutate(editingNote.id);
     }
   };
 
@@ -387,6 +452,30 @@ export function ContactDetailPage() {
           onDelete={editingReminder ? handleReminderDelete : undefined}
           isLoading={createReminderMutation.isPending || updateReminderMutation.isPending}
           isDeleting={deleteReminderMutation.isPending}
+        />
+      </Modal>
+
+      {/* Notes Section */}
+      <NotesList
+        contactId={id!}
+        onAddNote={openAddNoteModal}
+        onEditNote={openEditNoteModal}
+      />
+
+      {/* Create/Edit Note Modal */}
+      <Modal
+        isOpen={isNoteModalOpen}
+        onClose={closeNoteModal}
+        title={editingNote ? 'Edit Note' : 'Add Note'}
+        size="lg"
+      >
+        <NoteForm
+          note={editingNote || undefined}
+          onSubmit={handleNoteSubmit}
+          onCancel={closeNoteModal}
+          onDelete={editingNote ? handleNoteDelete : undefined}
+          isLoading={createNoteMutation.isPending || updateNoteMutation.isPending}
+          isDeleting={deleteNoteMutation.isPending}
         />
       </Modal>
     </div>

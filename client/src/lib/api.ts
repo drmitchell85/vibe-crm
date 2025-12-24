@@ -16,6 +16,10 @@ import type {
   Tag,
   CreateTagInput,
   UpdateTagInput,
+  Note,
+  NoteWithContact,
+  CreateNoteInput,
+  UpdateNoteInput,
 } from '../types';
 
 /**
@@ -400,6 +404,69 @@ class ApiClient {
     }
     const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
     return normalizeContactsArray(response.data.data);
+  }
+
+  // ============================================
+  // Note Endpoints
+  // ============================================
+
+  /**
+   * Get all notes for a contact (pinned first, then by date)
+   */
+  async getNotesForContact(contactId: string): Promise<Note[]> {
+    const response = await this.client.get<ApiResponse<Note[]>>(
+      `/contacts/${contactId}/notes`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get a single note by ID (with contact info)
+   */
+  async getNoteById(id: string): Promise<NoteWithContact> {
+    const response = await this.client.get<ApiResponse<NoteWithContact>>(
+      `/notes/${id}`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Create a new note for a contact
+   */
+  async createNote(contactId: string, data: CreateNoteInput): Promise<Note> {
+    const response = await this.client.post<ApiResponse<Note>>(
+      `/contacts/${contactId}/notes`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Update an existing note
+   */
+  async updateNote(id: string, data: UpdateNoteInput): Promise<Note> {
+    const response = await this.client.put<ApiResponse<Note>>(
+      `/notes/${id}`,
+      data
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Toggle pin status of a note
+   */
+  async toggleNotePin(id: string): Promise<Note> {
+    const response = await this.client.patch<ApiResponse<Note>>(
+      `/notes/${id}/pin`
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Delete a note
+   */
+  async deleteNote(id: string): Promise<void> {
+    await this.client.delete(`/notes/${id}`);
   }
 
   // ============================================

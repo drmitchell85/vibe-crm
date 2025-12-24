@@ -132,6 +132,24 @@ export interface Note {
   updatedAt: string;
 }
 
+export interface NoteWithContact extends Note {
+  contact: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface CreateNoteInput {
+  content: string;
+  isPinned?: boolean;
+}
+
+export interface UpdateNoteInput {
+  content?: string;
+  isPinned?: boolean;
+}
+
 export interface Tag {
   id: string;
   name: string;
