@@ -212,24 +212,88 @@ export const contactService = {
   },
 
   /**
-   * Get all contacts with optional tag filtering
-   * @param tagIds - Optional array of tag IDs to filter by (contacts must have ALL tags)
-   * @returns Array of contacts matching the filter
+   * Advanced contact filter options
    */
-  async getContactsWithTagFilter(tagIds?: string[]) {
-    try {
-      const whereClause: Prisma.ContactWhereInput = {};
 
-      // If tag IDs provided, filter contacts that have ALL specified tags
+  /**
+   * Get all contacts with optional advanced filtering
+   * @param filters - Filter options for contacts
+   * @returns Array of contacts matching the filters
+   */
+  async getContactsWithFilters(filters: {
+    tagIds?: string[];
+    company?: string;
+    createdAfter?: Date;
+    createdBefore?: Date;
+    hasReminders?: boolean;
+    hasOverdueReminders?: boolean;
+  } = {}) {
+    try {
+      const { tagIds, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders } = filters;
+      const conditions: Prisma.ContactWhereInput[] = [];
+
+      // Tag filter - contacts must have ALL specified tags
       if (tagIds && tagIds.length > 0) {
-        whereClause.AND = tagIds.map(tagId => ({
-          tags: {
+        tagIds.forEach(tagId => {
+          conditions.push({
+            tags: {
+              some: {
+                tagId: tagId
+              }
+            }
+          });
+        });
+      }
+
+      // Company filter - case insensitive contains
+      if (company) {
+        conditions.push({
+          company: {
+            contains: company,
+            mode: 'insensitive'
+          }
+        });
+      }
+
+      // Created date range filter
+      if (createdAfter || createdBefore) {
+        const createdAtFilter: Prisma.DateTimeFilter = {};
+        if (createdAfter) {
+          createdAtFilter.gte = createdAfter;
+        }
+        if (createdBefore) {
+          createdAtFilter.lte = createdBefore;
+        }
+        conditions.push({ createdAt: createdAtFilter });
+      }
+
+      // Has overdue reminders filter (incomplete + past due date)
+      if (hasOverdueReminders === true) {
+        conditions.push({
+          reminders: {
             some: {
-              tagId: tagId
+              isCompleted: false,
+              dueDate: {
+                lt: new Date()
+              }
             }
           }
-        }));
+        });
       }
+      // Has any pending reminders filter (incomplete, any due date)
+      else if (hasReminders === true) {
+        conditions.push({
+          reminders: {
+            some: {
+              isCompleted: false
+            }
+          }
+        });
+      }
+
+      const whereClause: Prisma.ContactWhereInput = conditions.length > 0
+        ? { AND: conditions }
+        : {};
 
       const contacts = await prisma.contact.findMany({
         where: whereClause,
@@ -250,6 +314,45 @@ export const contactService = {
     } catch (error) {
       throw new AppError('Failed to fetch contacts', 500, 'FETCH_CONTACTS_ERROR');
     }
+  },
+
+  /**
+   * Get all distinct company names for filter dropdown
+   * @returns Array of unique company names
+   */
+  async getDistinctCompanies() {
+    try {
+      const contacts = await prisma.contact.findMany({
+        where: {
+          company: {
+            not: null
+          }
+        },
+        select: {
+          company: true
+        },
+        distinct: ['company'],
+        orderBy: {
+          company: 'asc'
+        }
+      });
+
+      // Filter out nulls and return unique company names
+      return contacts
+        .map(c => c.company)
+        .filter((company): company is string => company !== null);
+    } catch (error) {
+      throw new AppError('Failed to fetch companies', 500, 'FETCH_COMPANIES_ERROR');
+    }
+  },
+
+  /**
+   * Get all contacts with optional tag filtering (legacy method for backwards compatibility)
+   * @param tagIds - Optional array of tag IDs to filter by (contacts must have ALL tags)
+   * @returns Array of contacts matching the filter
+   */
+  async getContactsWithTagFilter(tagIds?: string[]) {
+    return this.getContactsWithFilters({ tagIds });
   },
 
   /**

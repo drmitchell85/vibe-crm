@@ -150,9 +150,9 @@ const router = Router();
  * @swagger
  * /api/contacts:
  *   get:
- *     summary: Get all contacts
+ *     summary: Get all contacts with optional filtering
  *     tags: [Contacts]
- *     description: Retrieve a list of all contacts, sorted by name. Supports filtering by tags.
+ *     description: Retrieve a list of all contacts, sorted by name. Supports advanced filtering by tags, company, created date, and reminder status.
  *     parameters:
  *       - in: query
  *         name: tags
@@ -160,6 +160,40 @@ const router = Router();
  *           type: string
  *         description: Comma-separated list of tag IDs to filter by (contacts must have ALL specified tags)
  *         example: "tag-uuid-1,tag-uuid-2"
+ *       - in: query
+ *         name: company
+ *         schema:
+ *           type: string
+ *         description: Filter by company name (case-insensitive partial match)
+ *         example: "Acme"
+ *       - in: query
+ *         name: createdAfter
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Filter contacts created on or after this date (ISO 8601 format)
+ *         example: "2024-01-01T00:00:00.000Z"
+ *       - in: query
+ *         name: createdBefore
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Filter contacts created on or before this date (ISO 8601 format)
+ *         example: "2024-12-31T23:59:59.999Z"
+ *       - in: query
+ *         name: hasReminders
+ *         schema:
+ *           type: string
+ *           enum: ["true"]
+ *         description: Filter contacts that have pending (incomplete) reminders
+ *         example: "true"
+ *       - in: query
+ *         name: hasOverdueReminders
+ *         schema:
+ *           type: string
+ *           enum: ["true"]
+ *         description: Filter contacts that have overdue incomplete reminders
+ *         example: "true"
  *     responses:
  *       200:
  *         description: List of contacts retrieved successfully
@@ -175,10 +209,40 @@ const router = Router();
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Invalid date format
  *       500:
  *         description: Server error
  */
-router.get('/', contactController.getContactsWithTagFilter);
+router.get('/', contactController.getContactsWithFilters);
+
+/**
+ * @swagger
+ * /api/contacts/companies:
+ *   get:
+ *     summary: Get all distinct company names
+ *     tags: [Contacts]
+ *     description: Retrieve a list of all unique company names for filter dropdowns
+ *     responses:
+ *       200:
+ *         description: List of company names retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Acme Corp", "Tech Solutions", "Global Industries"]
+ *       500:
+ *         description: Server error
+ */
+router.get('/companies', contactController.getDistinctCompanies);
 
 /**
  * @swagger

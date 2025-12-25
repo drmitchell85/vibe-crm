@@ -1,17 +1,82 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
-import { TagFilter } from '../components/TagSelector';
+import { ContactFilters } from '../components/ContactFilters';
 import { TagBadgeList } from '../components/TagBadge';
 import { LoadingState, ErrorState, EmptyState } from '../components/ui';
-import type { ContactWithTags, CreateContactInput } from '../types';
+import type { ContactWithTags, CreateContactInput, ContactFilters as ContactFiltersType } from '../types';
 
 /**
- * Contacts list page - displays all contacts with search and tag filtering
+ * Parse URL search params into ContactFilters object
+ */
+function parseFiltersFromUrl(searchParams: URLSearchParams): ContactFiltersType {
+  const filters: ContactFiltersType = {};
+
+  const tags = searchParams.get('tags');
+  if (tags) {
+    filters.tags = tags.split(',').filter(Boolean);
+  }
+
+  const company = searchParams.get('company');
+  if (company) {
+    filters.company = company;
+  }
+
+  const createdAfter = searchParams.get('createdAfter');
+  if (createdAfter) {
+    filters.createdAfter = createdAfter;
+  }
+
+  const createdBefore = searchParams.get('createdBefore');
+  if (createdBefore) {
+    filters.createdBefore = createdBefore;
+  }
+
+  if (searchParams.get('hasReminders') === 'true') {
+    filters.hasReminders = true;
+  }
+
+  if (searchParams.get('hasOverdueReminders') === 'true') {
+    filters.hasOverdueReminders = true;
+  }
+
+  return filters;
+}
+
+/**
+ * Convert ContactFilters object to URL search params
+ */
+function filtersToSearchParams(filters: ContactFiltersType): Record<string, string> {
+  const params: Record<string, string> = {};
+
+  if (filters.tags && filters.tags.length > 0) {
+    params.tags = filters.tags.join(',');
+  }
+  if (filters.company) {
+    params.company = filters.company;
+  }
+  if (filters.createdAfter) {
+    params.createdAfter = filters.createdAfter;
+  }
+  if (filters.createdBefore) {
+    params.createdBefore = filters.createdBefore;
+  }
+  if (filters.hasReminders) {
+    params.hasReminders = 'true';
+  }
+  if (filters.hasOverdueReminders) {
+    params.hasOverdueReminders = 'true';
+  }
+
+  return params;
+}
+
+/**
+ * Contacts list page - displays all contacts with search and advanced filtering
  */
 export function ContactsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,34 +84,26 @@ export function ContactsPage() {
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  // Get tag filter from URL
-  const tagFilterParam = searchParams.get('tags');
-  const selectedTagIds = tagFilterParam ? tagFilterParam.split(',').filter(Boolean) : [];
+  // Parse all filters from URL
+  const filters = useMemo(() => parseFiltersFromUrl(searchParams), [searchParams]);
 
   const queryClient = useQueryClient();
 
-  // Handle tag filter changes
-  const handleTagFilterChange = (tagIds: string[]) => {
-    if (tagIds.length > 0) {
-      setSearchParams({ tags: tagIds.join(',') });
-    } else {
-      setSearchParams({});
-    }
+  // Handle filter changes - update URL params
+  const handleFilterChange = (newFilters: ContactFiltersType) => {
+    setSearchParams(filtersToSearchParams(newFilters));
   };
 
-  // Fetch contacts based on search and tag filters
+  // Fetch contacts based on search and filters
   const { data: contacts, isLoading, error } = useQuery({
-    queryKey: ['contacts', debouncedSearch, selectedTagIds],
+    queryKey: ['contacts', debouncedSearch, filters],
     queryFn: async (): Promise<ContactWithTags[]> => {
       if (debouncedSearch.trim()) {
-        // Search doesn't support tag filtering yet, return search results
+        // Search doesn't support advanced filtering yet, return search results
         return api.searchContacts(debouncedSearch) as Promise<ContactWithTags[]>;
       }
-      // Use tag filtering if tags are selected
-      if (selectedTagIds.length > 0) {
-        return api.getContactsWithTags(selectedTagIds);
-      }
-      return api.getContactsWithTags();
+      // Use advanced filtering
+      return api.getContactsWithFilters(filters);
     },
   });
 
@@ -91,21 +148,22 @@ export function ContactsPage() {
 
       {/* Search and Filter Bar */}
       <div className="bg-white rounded-lg shadow p-4 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search contacts by name, email, or company..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            />
-          </div>
-          <TagFilter
-            selectedTagIds={selectedTagIds}
-            onChange={handleTagFilterChange}
+        {/* Search input */}
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Search contacts by name, email, or company..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           />
         </div>
+
+        {/* Advanced filters */}
+        <ContactFilters
+          filters={filters}
+          onChange={handleFilterChange}
+        />
       </div>
 
       {/* Loading State */}
@@ -185,6 +243,7 @@ export function ContactsPage() {
         <p className="text-sm text-gray-600 text-center">
           Showing {contacts.length} contact{contacts.length !== 1 ? 's' : ''}
           {searchQuery && ` for "${searchQuery}"`}
+          {!searchQuery && Object.keys(filters).length > 0 && ' (filtered)'}
         </p>
       )}
     </div>

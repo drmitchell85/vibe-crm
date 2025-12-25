@@ -139,13 +139,15 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Recent searches stored in localStorage
 - [x] Debounced API calls (300ms)
 
-**Chunk 6.3: Advanced Contact Filtering** ⏳ PENDING
-- [ ] Company filter dropdown on contact list
-- [ ] Date range filter (created date, last interaction date)
-- [ ] "Has reminders" / "Has overdue reminders" filter toggles
-- [ ] Combine with existing tag filter (all filters work together)
-- [ ] URL parameter persistence for all filters
-- [ ] Filter summary chip/badge showing active filter count
+**Chunk 6.3: Advanced Contact Filtering** ✅ COMPLETED
+- [x] Company filter dropdown on contact list (populated from distinct companies via `/api/contacts/companies`)
+- [x] Date range filter (created date with createdAfter/createdBefore)
+- [x] "Has reminders" / "Has overdue reminders" filter toggles
+- [x] Combine with existing tag filter (all filters work together via AND logic)
+- [x] URL parameter persistence for all filters
+- [x] Filter summary chip/badge showing active filter count
+- [x] Collapsible filter panel with expand/collapse toggle
+- [x] Active filter chips with individual remove buttons
 
 **Chunk 6.4: Sorting Options** ⏳ PENDING
 - [ ] Sortable column headers on contact list table
@@ -223,4 +225,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-25
-**Next Up**: Phase 6, Chunk 6.3 - Advanced Contact Filtering
+**Next Up**: Phase 6, Chunk 6.4 - Sorting Options

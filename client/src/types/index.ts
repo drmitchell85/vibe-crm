@@ -177,6 +177,19 @@ export interface ContactWithTags extends Contact {
 }
 
 // ============================================
+// Contact Filters Types
+// ============================================
+
+export interface ContactFilters {
+  tags?: string[];
+  company?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+  hasReminders?: boolean;
+  hasOverdueReminders?: boolean;
+}
+
+// ============================================
 // Search Types
 // ============================================
 

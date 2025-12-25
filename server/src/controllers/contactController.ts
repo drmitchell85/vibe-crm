@@ -118,11 +118,11 @@ export const contactController = {
   },
 
   /**
-   * Get all contacts with optional tag filtering
+   * Get all contacts with optional advanced filtering
    */
-  async getContactsWithTagFilter(req: Request, res: Response, next: NextFunction) {
+  async getContactsWithFilters(req: Request, res: Response, next: NextFunction) {
     try {
-      const { tags } = req.query;
+      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders } = req.query;
 
       // Parse tags query parameter (comma-separated tag IDs)
       let tagIds: string[] | undefined;
@@ -130,11 +130,57 @@ export const contactController = {
         tagIds = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
       }
 
-      const contacts = await contactService.getContactsWithTagFilter(tagIds);
+      // Parse company filter
+      const companyFilter = company && typeof company === 'string' ? company : undefined;
+
+      // Parse date filters
+      let createdAfterDate: Date | undefined;
+      let createdBeforeDate: Date | undefined;
+      if (createdAfter && typeof createdAfter === 'string') {
+        createdAfterDate = new Date(createdAfter);
+        if (isNaN(createdAfterDate.getTime())) {
+          throw new AppError('Invalid createdAfter date format', 400, 'INVALID_DATE');
+        }
+      }
+      if (createdBefore && typeof createdBefore === 'string') {
+        createdBeforeDate = new Date(createdBefore);
+        if (isNaN(createdBeforeDate.getTime())) {
+          throw new AppError('Invalid createdBefore date format', 400, 'INVALID_DATE');
+        }
+      }
+
+      // Parse boolean filters
+      const hasRemindersFilter = hasReminders === 'true' ? true : undefined;
+      const hasOverdueRemindersFilter = hasOverdueReminders === 'true' ? true : undefined;
+
+      const contacts = await contactService.getContactsWithFilters({
+        tagIds,
+        company: companyFilter,
+        createdAfter: createdAfterDate,
+        createdBefore: createdBeforeDate,
+        hasReminders: hasRemindersFilter,
+        hasOverdueReminders: hasOverdueRemindersFilter,
+      });
 
       res.json({
         success: true,
         data: contacts
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Get all distinct company names for filter dropdown
+   */
+  async getDistinctCompanies(req: Request, res: Response, next: NextFunction) {
+    try {
+      const companies = await contactService.getDistinctCompanies();
+
+      res.json({
+        success: true,
+        data: companies
       });
     } catch (error) {
       next(error);

@@ -4,6 +4,7 @@ import type {
   ContactWithTags,
   CreateContactInput,
   UpdateContactInput,
+  ContactFilters,
   Interaction,
   CreateInteractionInput,
   UpdateInteractionInput,
@@ -396,15 +397,49 @@ class ApiClient {
   }
 
   /**
-   * Get all contacts with optional tag filter (returns normalized contacts with tags)
+   * Get all contacts with optional filters (returns normalized contacts with tags)
    */
-  async getContactsWithTags(tagIds?: string[]): Promise<ContactWithTags[]> {
+  async getContactsWithFilters(filters?: ContactFilters): Promise<ContactWithTags[]> {
     const params: Record<string, string> = {};
-    if (tagIds && tagIds.length > 0) {
-      params.tags = tagIds.join(',');
+
+    if (filters) {
+      if (filters.tags && filters.tags.length > 0) {
+        params.tags = filters.tags.join(',');
+      }
+      if (filters.company) {
+        params.company = filters.company;
+      }
+      if (filters.createdAfter) {
+        params.createdAfter = filters.createdAfter;
+      }
+      if (filters.createdBefore) {
+        params.createdBefore = filters.createdBefore;
+      }
+      if (filters.hasReminders) {
+        params.hasReminders = 'true';
+      }
+      if (filters.hasOverdueReminders) {
+        params.hasOverdueReminders = 'true';
+      }
     }
+
     const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
     return normalizeContactsArray(response.data.data);
+  }
+
+  /**
+   * Get all contacts with optional tag filter (legacy method, use getContactsWithFilters instead)
+   */
+  async getContactsWithTags(tagIds?: string[]): Promise<ContactWithTags[]> {
+    return this.getContactsWithFilters({ tags: tagIds });
+  }
+
+  /**
+   * Get all distinct company names for filter dropdown
+   */
+  async getDistinctCompanies(): Promise<string[]> {
+    const response = await this.client.get<ApiResponse<string[]>>('/contacts/companies');
+    return response.data.data;
   }
 
   // ============================================
