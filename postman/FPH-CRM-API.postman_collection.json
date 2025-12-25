@@ -639,6 +639,38 @@
       ]
     },
     {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Global Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/search?q=john&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "john",
+                  "description": "Search query (minimum 2 characters)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum results per entity type (1-50, default: 10)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Global search across contacts, notes, interactions, and reminders. Results are sorted by relevance score (higher = more relevant).\n\n**Searched fields by entity type:**\n- **Contacts**: firstName, lastName, email, company, jobTitle\n- **Notes**: content\n- **Interactions**: subject, notes, location\n- **Reminders**: title, description"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Health Check",
       "request": {
         "method": "GET",

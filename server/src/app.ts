@@ -8,6 +8,7 @@ import interactionRoutes from './routes/interactions';
 import reminderRoutes from './routes/reminders';
 import tagRoutes from './routes/tags';
 import noteRoutes from './routes/notes';
+import searchRoutes from './routes/search';
 
 const app: Express = express();
 
@@ -42,6 +43,7 @@ app.use('/api', interactionRoutes);
 app.use('/api', reminderRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api', noteRoutes);
+app.use('/api/search', searchRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

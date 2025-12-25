@@ -92,129 +92,104 @@ This document tracks the implementation progress of the FPH CRM application, org
 ## Phase 5: Notes & Tagging ✅ COMPLETED
 **Completed**: 2025-12-23
 
-**Chunk 5.1: Tag Service & Validation** ✅ COMPLETED
-- [x] Created Zod validation schemas (`server/src/schemas/tagSchema.ts`)
-  - `createTagSchema` (name required, color optional with default `#6B7280`)
-  - `updateTagSchema` (all fields optional)
-  - Hex color validation regex, 50 char name limit
-- [x] Created tag service (`server/src/services/tagService.ts`)
-  - `getAllTags()` — list all tags with contact count
-  - `getTagById(id)` — get single tag with contact count
-  - `createTag(data)` — create new tag (unique name validation, P2002 handling)
-  - `updateTag(id, data)` — update tag
-  - `deleteTag(id)` — delete tag (cascade removes from contacts)
-- [x] Unit tests for tag service (`server/src/services/__tests__/tagService.test.ts`) — 26 tests
+**Backend:**
+- Tag model with name and hex color fields (default `#6B7280`)
+- Tag service with CRUD operations and contact count aggregation
+- Note model with content, isPinned, and timestamps
+- Note service with CRUD, pin toggle, and pinned-first ordering
+- Contact-Tag many-to-many relationship with linking endpoints
+- REST API: `GET/POST/PUT/DELETE /api/tags`, `GET /api/tags/:id/contacts`
+- REST API: `GET/POST /api/contacts/:id/notes`, `GET/PUT/PATCH/DELETE /api/notes/:id`
+- REST API: `POST/DELETE /api/contacts/:id/tags/:tagId`, tag filtering via `?tags=id1,id2`
+- Zod validation schemas with hex color regex and character limits
+- Swagger documentation and Postman collection updated
+- Unit tests (70+) and integration tests (76+) — 358 tests total
 
-**Chunk 5.2: Tag API (Controller & Routes)** ✅ COMPLETED
-- [x] Created tag controller (`server/src/controllers/tagController.ts`)
-- [x] Created tag routes (`server/src/routes/tags.ts`)
-  - `GET /api/tags` — list all tags with contact counts
-  - `GET /api/tags/:id` — get single tag
-  - `POST /api/tags` — create tag (returns 409 on duplicate name)
-  - `PUT /api/tags/:id` — update tag (partial updates allowed)
-  - `DELETE /api/tags/:id` — delete tag (cascade removes from contacts)
-- [x] Added Swagger/OpenAPI documentation with schema definitions
-- [x] Registered routes in `app.ts`
-- [x] Integration tests for tag API — 27 tests
-- [x] Updated Postman collection with Tags folder
-
-**Chunk 5.3: Contact-Tag Linking** ✅ COMPLETED
-- [x] Added service methods to contactService (`server/src/services/contactService.ts`)
-  - `getContactsWithTagFilter(tagIds?)` — filter contacts by multiple tag IDs (AND logic)
-  - `addTagToContact(contactId, tagId)` — idempotent tag assignment using Prisma upsert
-  - `removeTagFromContact(contactId, tagId)` — remove tag from contact
-  - `getContactsByTag(tagId)` — get all contacts with specific tag
-- [x] Added API endpoints
-  - `GET /api/contacts?tags=tag1,tag2` — enhanced to support tag filtering (AND logic)
-  - `POST /api/contacts/:id/tags` — add tag to contact (idempotent, returns 201)
-  - `DELETE /api/contacts/:id/tags/:tagId` — remove tag from contact
-  - `GET /api/tags/:tagId/contacts` — list all contacts with specific tag
-- [x] Added Swagger/OpenAPI documentation for all endpoints
-- [x] Unit tests for service methods — 18 tests
-- [x] Integration tests for API endpoints — 19 tests
-
-**Chunk 5.4: Note Service & Validation** ✅ COMPLETED
-- [x] Created Zod validation schemas (`server/src/schemas/noteSchema.ts`)
-  - `createNoteSchema` (content required; isPinned optional)
-  - `updateNoteSchema` (all fields optional for partial updates)
-- [x] Created note service (`server/src/services/noteService.ts`)
-  - `getNotesForContact(contactId)` — list notes for a contact (pinned first, then by date)
-  - `getNoteById(id)` — get single note with contact info
-  - `createNote(contactId, data)` — create note for a contact
-  - `updateNote(id, data)` — update note (partial updates allowed)
-  - `deleteNote(id)` — delete note
-  - `togglePin(id)` — toggle isPinned status
-- [x] Unit tests for note service (`server/src/services/__tests__/noteService.test.ts`) — 26 tests
-
-**Chunk 5.5: Note API (Controller & Routes)** ✅ COMPLETED
-- [x] Created note controller (`server/src/controllers/noteController.ts`)
-- [x] Created note routes (`server/src/routes/notes.ts`)
-  - `GET /api/contacts/:contactId/notes` — list notes for a contact (pinned first)
-  - `GET /api/notes/:id` — get single note with contact info
-  - `POST /api/contacts/:contactId/notes` — create note
-  - `PUT /api/notes/:id` — update note (partial updates allowed)
-  - `PATCH /api/notes/:id/pin` — toggle pin status
-  - `DELETE /api/notes/:id` — delete note
-- [x] Added Swagger/OpenAPI documentation with schema definitions
-- [x] Registered routes in `app.ts`
-- [x] Integration tests for note API (`server/src/controllers/__tests__/noteController.test.ts`) — 30 tests
-- [x] Updated Postman collection with Notes folder
-
-**Chunk 5.6: Documentation & Cleanup** ✅ COMPLETED
-- [x] Swagger/OpenAPI docs updated (tags, notes routes include full documentation)
-- [x] Postman collection updated with Tags and Notes folders
-- [x] Update README.md with new API endpoints (Tags, Notes, Contact-Tag linking)
-- [x] Run full test suite to ensure no regressions (358 tests passing)
-
-**Chunk 5.7: Notes & Tags Frontend** ✅ COMPLETED
-**Completed**: 2025-12-23
-
-**Tags UI:** ✅ COMPLETED
-- [x] TagBadge component (colored pill with tag name, auto-contrast text)
-- [x] TagBadgeList component (displays multiple tags with overflow indicator)
-- [x] TagSelector component (dropdown for adding/removing tags from contacts)
-- [x] TagFilter component (multi-select filter for contact list)
-- [x] TagForm component (create/edit with color picker)
-- [x] Tags management page (`/tags`) — list, create, edit, delete tags
-- [x] Tag color picker with 17 predefined colors + custom hex input
-- [x] Display tags on Contact detail page with inline editing
-- [x] Display tags on Contact list (as badges, max 3 shown)
-- [x] Tag filter on Contact list page (URL-persisted, AND logic)
-- [x] Navigation link added to header
-
-**Tags API Integration:** ✅ COMPLETED
-- [x] TypeScript types: `Tag`, `TagWithContacts`, `CreateTagInput`, `UpdateTagInput`, `ContactWithTags`
-- [x] API methods: `getAllTags`, `getTagById`, `createTag`, `updateTag`, `deleteTag`
-- [x] API methods: `getContactsByTag`, `addTagToContact`, `removeTagFromContact`, `getContactsWithTags`
-
-**Notes UI:** ✅ COMPLETED
-- [x] NotesList component on Contact detail page (pinned first, then by date)
-- [x] NoteCard component with pin indicator and timestamps
-- [x] Create note modal with content textarea
-- [x] Edit note modal
-- [x] Delete note confirmation
-- [x] Pin/unpin toggle button on each note
-
-**Notes API Integration:** ✅ COMPLETED
-- [x] TypeScript types for Note entity (`Note`, `NoteWithContact`, `CreateNoteInput`, `UpdateNoteInput`)
-- [x] API methods: `getNotesForContact`, `getNoteById`, `createNote`, `updateNote`, `deleteNote`, `toggleNotePin`
-
-**Deliverable:** Complete notes and tag-based organization system with full frontend UI
+**Frontend:**
+- Tags management page (`/tags`) with create, edit, delete functionality
+- TagBadge component with auto-contrast text based on background color
+- TagSelector dropdown for adding/removing tags from contacts
+- TagFilter multi-select on contact list (URL-persisted, AND logic)
+- Color picker with 17 predefined colors + custom hex input
+- Tags displayed on contact list (max 3 shown) and detail page
+- NotesList component on Contact detail page (pinned first, then by date)
+- NoteCard component with pin indicator, timestamps, and actions
+- Create/Edit note modals and delete confirmation
+- Pin/unpin toggle with optimistic updates
 
 ---
 
 ## Phase 6: Enhanced UI/UX & Search ⏳ PENDING
 
-**Tasks:**
-- [ ] Global search implementation
-- [ ] Advanced filtering (by tag, company, date)
-- [ ] Sorting options
-- [ ] Dashboard page with stats and widgets
-- [ ] Dark mode support
-- [ ] Keyboard shortcuts
-- [ ] Performance optimization
+**Chunk 6.1: Global Search Backend** ✅ COMPLETED
+- [x] Create search service (`server/src/services/searchService.ts`)
+  - `globalSearch(query)` — search across contacts, notes, interactions, reminders
+  - Return unified results with entity type, relevance score, and preview text
+  - Case-insensitive matching with Prisma `contains` + `mode: 'insensitive'`
+- [x] Create search controller and routes (`GET /api/search?q=query&limit=10`)
+- [x] Swagger documentation for search endpoint
+- [x] Unit tests (30) and integration tests (21) for search service
 
-**Deliverable:** Polished, fast UI with comprehensive search
+**Chunk 6.2: Global Search Frontend** ⏳ PENDING
+- [ ] SearchInput component in header (persistent across pages)
+- [ ] Command palette modal (Cmd/Ctrl+K to open)
+- [ ] Search results with type badges (Contact, Note, Interaction, Reminder)
+- [ ] Keyboard navigation in results (arrow keys, Enter to select)
+- [ ] Click/select navigates to relevant page
+- [ ] Recent searches stored in localStorage
+- [ ] Debounced API calls (300ms)
+
+**Chunk 6.3: Advanced Contact Filtering** ⏳ PENDING
+- [ ] Company filter dropdown on contact list
+- [ ] Date range filter (created date, last interaction date)
+- [ ] "Has reminders" / "Has overdue reminders" filter toggles
+- [ ] Combine with existing tag filter (all filters work together)
+- [ ] URL parameter persistence for all filters
+- [ ] Filter summary chip/badge showing active filter count
+
+**Chunk 6.4: Sorting Options** ⏳ PENDING
+- [ ] Sortable column headers on contact list table
+- [ ] Sort options: Name (A-Z, Z-A), Company, Last Interaction, Created Date, Updated Date
+- [ ] Sort direction toggle (ascending/descending)
+- [ ] URL parameter persistence (`?sort=name&order=asc`)
+- [ ] Visual indicator on active sort column
+
+**Chunk 6.5: Dashboard & Analytics** ⏳ PENDING
+- [ ] Dashboard stats API endpoint (`GET /api/stats`)
+  - Total contacts, interactions this week/month, pending reminders, overdue count
+- [ ] Dashboard page layout with stat cards
+- [ ] Contact growth chart (contacts added over time)
+- [ ] Interaction breakdown by type (pie/bar chart)
+- [ ] Recent activity feed (latest interactions, notes, reminders)
+- [ ] Quick action buttons (Add Contact, Add Reminder)
+
+**Chunk 6.6: Dark Mode** ⏳ PENDING
+- [ ] ThemeContext provider with light/dark/system modes
+- [ ] CSS variables for all colors (backgrounds, text, borders, accents)
+- [ ] Theme toggle button in header
+- [ ] LocalStorage persistence of theme preference
+- [ ] Respect system preference with `prefers-color-scheme` media query
+- [ ] Update Tailwind config for dark mode classes
+- [ ] Test all components in dark mode
+
+**Chunk 6.7: Keyboard Shortcuts** ⏳ PENDING
+- [ ] Global keyboard shortcut handler (useHotkeys or custom hook)
+- [ ] Navigation shortcuts: `g+c` → Contacts, `g+r` → Reminders, `g+t` → Tags, `g+h` → Home
+- [ ] Action shortcuts: `n` → New Contact, `?` → Help modal
+- [ ] Modal shortcuts: `Escape` → Close, `Cmd+Enter` → Submit form
+- [ ] Keyboard shortcuts help modal (show all available shortcuts)
+- [ ] Visual hints in UI (show shortcuts in tooltips)
+
+**Chunk 6.8: Performance Optimization** ⏳ PENDING
+- [ ] React Query caching strategy review and optimization
+- [ ] Virtualized lists for large datasets (react-window or similar)
+- [ ] Code splitting with React.lazy for route-based chunks
+- [ ] Bundle size analysis with `vite-bundle-visualizer`
+- [ ] Image optimization and lazy loading
+- [ ] API response pagination for large result sets
+- [ ] Lighthouse audit and performance metrics
+
+**Deliverable:** Polished, fast UI with comprehensive search, dark mode, and keyboard shortcuts
 
 ---
 
@@ -247,5 +222,5 @@ This document tracks the implementation progress of the FPH CRM application, org
 
 ---
 
-**Last Updated**: 2025-12-23
-**Next Up**: Phase 6 - Enhanced UI/UX & Search (Global search, dashboard, dark mode)
+**Last Updated**: 2025-12-24
+**Next Up**: Phase 6, Chunk 6.2 - Global Search Frontend
