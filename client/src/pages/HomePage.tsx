@@ -272,54 +272,21 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Activity Feed and Quick Links */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity Feed (takes 2 columns) */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow">
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-          </div>
-          <div className="p-4">
-            {activityLoading ? (
-              <LoadingState message="Loading activity..." size="sm" />
-            ) : activityData && activityData.length > 0 ? (
-              <ActivityFeed activities={activityData} />
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                No recent activity. Start by adding a contact!
-              </div>
-            )}
-          </div>
+      {/* Recent Activity Feed */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
         </div>
-
-        {/* Quick Links */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Quick Links</h3>
-          </div>
-          <div className="p-4 space-y-3">
-            <QuickLink
-              to="/contacts"
-              icon="👥"
-              title="View All Contacts"
-              description="Browse and search your contacts"
-              color="blue"
-            />
-            <QuickLink
-              to="/reminders"
-              icon="🔔"
-              title="Manage Reminders"
-              description="View upcoming follow-ups"
-              color="amber"
-            />
-            <QuickLink
-              to="/tags"
-              icon="🏷️"
-              title="Manage Tags"
-              description="Organize with color-coded tags"
-              color="purple"
-            />
-          </div>
+        <div className="p-4">
+          {activityLoading ? (
+            <LoadingState message="Loading activity..." size="sm" />
+          ) : activityData && activityData.length > 0 ? (
+            <ActivityFeed activities={activityData} />
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              No recent activity. Start by adding a contact!
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -546,36 +513,3 @@ function ActivityFeed({ activities }: { activities: RecentActivityItem[] }) {
   );
 }
 
-// ============================================
-// Quick Link Component
-// ============================================
-
-interface QuickLinkProps {
-  to: string;
-  icon: string;
-  title: string;
-  description: string;
-  color: 'blue' | 'amber' | 'purple' | 'green';
-}
-
-function QuickLink({ to, icon, title, description, color }: QuickLinkProps) {
-  const colorClasses = {
-    blue: 'bg-blue-50 hover:bg-blue-100',
-    amber: 'bg-amber-50 hover:bg-amber-100',
-    purple: 'bg-purple-50 hover:bg-purple-100',
-    green: 'bg-green-50 hover:bg-green-100',
-  };
-
-  return (
-    <Link
-      to={to}
-      className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${colorClasses[color]}`}
-    >
-      <span className="text-xl">{icon}</span>
-      <div>
-        <p className="font-medium text-gray-900">{title}</p>
-        <p className="text-sm text-gray-500">{description}</p>
-      </div>
-    </Link>
-  );
-}
