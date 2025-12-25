@@ -4,7 +4,7 @@ import type {
   ContactWithTags,
   CreateContactInput,
   UpdateContactInput,
-  ContactFilters,
+  ContactQueryOptions,
   Interaction,
   CreateInteractionInput,
   UpdateInteractionInput,
@@ -397,29 +397,35 @@ class ApiClient {
   }
 
   /**
-   * Get all contacts with optional filters (returns normalized contacts with tags)
+   * Get all contacts with optional filters and sorting (returns normalized contacts with tags)
    */
-  async getContactsWithFilters(filters?: ContactFilters): Promise<ContactWithTags[]> {
+  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[]> {
     const params: Record<string, string> = {};
 
-    if (filters) {
-      if (filters.tags && filters.tags.length > 0) {
-        params.tags = filters.tags.join(',');
+    if (options) {
+      if (options.tags && options.tags.length > 0) {
+        params.tags = options.tags.join(',');
       }
-      if (filters.company) {
-        params.company = filters.company;
+      if (options.company) {
+        params.company = options.company;
       }
-      if (filters.createdAfter) {
-        params.createdAfter = filters.createdAfter;
+      if (options.createdAfter) {
+        params.createdAfter = options.createdAfter;
       }
-      if (filters.createdBefore) {
-        params.createdBefore = filters.createdBefore;
+      if (options.createdBefore) {
+        params.createdBefore = options.createdBefore;
       }
-      if (filters.hasReminders) {
+      if (options.hasReminders) {
         params.hasReminders = 'true';
       }
-      if (filters.hasOverdueReminders) {
+      if (options.hasOverdueReminders) {
         params.hasOverdueReminders = 'true';
+      }
+      if (options.sortBy) {
+        params.sortBy = options.sortBy;
+      }
+      if (options.sortOrder) {
+        params.sortOrder = options.sortOrder;
       }
     }
 

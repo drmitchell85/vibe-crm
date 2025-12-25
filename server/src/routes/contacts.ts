@@ -150,9 +150,9 @@ const router = Router();
  * @swagger
  * /api/contacts:
  *   get:
- *     summary: Get all contacts with optional filtering
+ *     summary: Get all contacts with optional filtering and sorting
  *     tags: [Contacts]
- *     description: Retrieve a list of all contacts, sorted by name. Supports advanced filtering by tags, company, created date, and reminder status.
+ *     description: Retrieve a list of all contacts with advanced filtering and sorting options. Supports filtering by tags, company, created date, and reminder status. Supports sorting by name, email, company, created date, or updated date.
  *     parameters:
  *       - in: query
  *         name: tags
@@ -194,6 +194,22 @@ const router = Router();
  *           enum: ["true"]
  *         description: Filter contacts that have overdue incomplete reminders
  *         example: "true"
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, email, company, createdAt, updatedAt]
+ *           default: name
+ *         description: Field to sort by. "name" sorts by lastName then firstName.
+ *         example: "name"
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort direction (ascending or descending)
+ *         example: "asc"
  *     responses:
  *       200:
  *         description: List of contacts retrieved successfully

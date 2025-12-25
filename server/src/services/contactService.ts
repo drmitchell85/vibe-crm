@@ -212,24 +212,36 @@ export const contactService = {
   },
 
   /**
-   * Advanced contact filter options
+   * Valid sort fields for contacts
    */
 
   /**
-   * Get all contacts with optional advanced filtering
-   * @param filters - Filter options for contacts
-   * @returns Array of contacts matching the filters
+   * Get all contacts with optional advanced filtering and sorting
+   * @param options - Filter and sort options for contacts
+   * @returns Array of contacts matching the filters, sorted as specified
    */
-  async getContactsWithFilters(filters: {
+  async getContactsWithFilters(options: {
     tagIds?: string[];
     company?: string;
     createdAfter?: Date;
     createdBefore?: Date;
     hasReminders?: boolean;
     hasOverdueReminders?: boolean;
+    sortBy?: 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+    sortOrder?: 'asc' | 'desc';
   } = {}) {
     try {
-      const { tagIds, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders } = filters;
+      const {
+        tagIds,
+        company,
+        createdAfter,
+        createdBefore,
+        hasReminders,
+        hasOverdueReminders,
+        sortBy = 'name',
+        sortOrder = 'asc'
+      } = options;
+
       const conditions: Prisma.ContactWhereInput[] = [];
 
       // Tag filter - contacts must have ALL specified tags
@@ -295,12 +307,37 @@ export const contactService = {
         ? { AND: conditions }
         : {};
 
+      // Build orderBy clause based on sortBy field
+      let orderBy: Prisma.ContactOrderByWithRelationInput[];
+      switch (sortBy) {
+        case 'name':
+          // Sort by lastName then firstName
+          orderBy = [
+            { lastName: sortOrder },
+            { firstName: sortOrder }
+          ];
+          break;
+        case 'email':
+          // Nulls last for email sorting
+          orderBy = [{ email: { sort: sortOrder, nulls: 'last' } }];
+          break;
+        case 'company':
+          // Nulls last for company sorting
+          orderBy = [{ company: { sort: sortOrder, nulls: 'last' } }];
+          break;
+        case 'createdAt':
+          orderBy = [{ createdAt: sortOrder }];
+          break;
+        case 'updatedAt':
+          orderBy = [{ updatedAt: sortOrder }];
+          break;
+        default:
+          orderBy = [{ lastName: 'asc' }, { firstName: 'asc' }];
+      }
+
       const contacts = await prisma.contact.findMany({
         where: whereClause,
-        orderBy: [
-          { lastName: 'asc' },
-          { firstName: 'asc' }
-        ],
+        orderBy,
         include: {
           tags: {
             include: {

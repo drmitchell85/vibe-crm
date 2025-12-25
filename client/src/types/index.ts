@@ -177,8 +177,11 @@ export interface ContactWithTags extends Contact {
 }
 
 // ============================================
-// Contact Filters Types
+// Contact Filters & Sorting Types
 // ============================================
+
+export type ContactSortField = 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+export type SortOrder = 'asc' | 'desc';
 
 export interface ContactFilters {
   tags?: string[];
@@ -187,6 +190,16 @@ export interface ContactFilters {
   createdBefore?: string;
   hasReminders?: boolean;
   hasOverdueReminders?: boolean;
+}
+
+export interface ContactSort {
+  sortBy: ContactSortField;
+  sortOrder: SortOrder;
+}
+
+export interface ContactQueryOptions extends ContactFilters {
+  sortBy?: ContactSortField;
+  sortOrder?: SortOrder;
 }
 
 // ============================================

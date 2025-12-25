@@ -149,12 +149,13 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Collapsible filter panel with expand/collapse toggle
 - [x] Active filter chips with individual remove buttons
 
-**Chunk 6.4: Sorting Options** ⏳ PENDING
-- [ ] Sortable column headers on contact list table
-- [ ] Sort options: Name (A-Z, Z-A), Company, Last Interaction, Created Date, Updated Date
-- [ ] Sort direction toggle (ascending/descending)
-- [ ] URL parameter persistence (`?sort=name&order=asc`)
-- [ ] Visual indicator on active sort column
+**Chunk 6.4: Sorting Options** ✅ COMPLETED
+- [x] Sortable column headers on contact list table (Name, Email, Company)
+- [x] Sort options: Name (A-Z, Z-A), Email, Company, Created Date, Updated Date
+- [x] Sort direction toggle (ascending/descending) - click same column to toggle
+- [x] URL parameter persistence (`?sortBy=name&sortOrder=asc`)
+- [x] Visual indicator on active sort column (blue arrows)
+- [x] Null values sorted last for email/company columns
 
 **Chunk 6.5: Dashboard & Analytics** ⏳ PENDING
 - [ ] Dashboard stats API endpoint (`GET /api/stats`)
@@ -225,4 +226,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-25
-**Next Up**: Phase 6, Chunk 6.4 - Sorting Options
+**Next Up**: Phase 6, Chunk 6.5 - Dashboard & Analytics

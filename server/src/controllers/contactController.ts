@@ -118,11 +118,11 @@ export const contactController = {
   },
 
   /**
-   * Get all contacts with optional advanced filtering
+   * Get all contacts with optional advanced filtering and sorting
    */
   async getContactsWithFilters(req: Request, res: Response, next: NextFunction) {
     try {
-      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders } = req.query;
+      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders, sortBy, sortOrder } = req.query;
 
       // Parse tags query parameter (comma-separated tag IDs)
       let tagIds: string[] | undefined;
@@ -153,6 +153,20 @@ export const contactController = {
       const hasRemindersFilter = hasReminders === 'true' ? true : undefined;
       const hasOverdueRemindersFilter = hasOverdueReminders === 'true' ? true : undefined;
 
+      // Parse sort parameters
+      const validSortFields = ['name', 'email', 'company', 'createdAt', 'updatedAt'];
+      const validSortOrders = ['asc', 'desc'];
+
+      let sortByField: 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt' | undefined;
+      if (sortBy && typeof sortBy === 'string' && validSortFields.includes(sortBy)) {
+        sortByField = sortBy as 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+      }
+
+      let sortOrderValue: 'asc' | 'desc' | undefined;
+      if (sortOrder && typeof sortOrder === 'string' && validSortOrders.includes(sortOrder)) {
+        sortOrderValue = sortOrder as 'asc' | 'desc';
+      }
+
       const contacts = await contactService.getContactsWithFilters({
         tagIds,
         company: companyFilter,
@@ -160,6 +174,8 @@ export const contactController = {
         createdBefore: createdBeforeDate,
         hasReminders: hasRemindersFilter,
         hasOverdueReminders: hasOverdueRemindersFilter,
+        sortBy: sortByField,
+        sortOrder: sortOrderValue,
       });
 
       res.json({

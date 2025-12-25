@@ -54,10 +54,22 @@
                   "value": "true",
                   "description": "Filter contacts that have overdue incomplete reminders",
                   "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name",
+                  "description": "Field to sort by: name, email, company, createdAt, updatedAt (default: name)",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc",
+                  "description": "Sort direction: asc or desc (default: asc)",
+                  "disabled": true
                 }
               ]
             },
-            "description": "Retrieve all contacts with optional advanced filtering. Supports filtering by tags (AND logic), company name, created date range, and reminder status. Includes tags for each contact."
+            "description": "Retrieve all contacts with optional advanced filtering and sorting. Supports filtering by tags (AND logic), company name, created date range, and reminder status. Supports sorting by name, email, company, createdAt, or updatedAt. Includes tags for each contact."
           },
           "response": []
         },
