@@ -22,6 +22,10 @@ import type {
   CreateNoteInput,
   UpdateNoteInput,
   GlobalSearchResponse,
+  DashboardStats,
+  ContactGrowthData,
+  InteractionBreakdown,
+  RecentActivityItem,
 } from '../types';
 
 /**
@@ -521,6 +525,44 @@ class ApiClient {
   async globalSearch(query: string, limit: number = 10): Promise<GlobalSearchResponse> {
     const response = await this.client.get<ApiResponse<GlobalSearchResponse>>('/search', {
       params: { q: query, limit },
+    });
+    return response.data.data;
+  }
+
+  // ============================================
+  // Stats Endpoints
+  // ============================================
+
+  /**
+   * Get dashboard statistics
+   */
+  async getDashboardStats(): Promise<DashboardStats> {
+    const response = await this.client.get<ApiResponse<DashboardStats>>('/stats');
+    return response.data.data;
+  }
+
+  /**
+   * Get contact growth data for the last 12 months
+   */
+  async getContactGrowth(): Promise<ContactGrowthData[]> {
+    const response = await this.client.get<ApiResponse<ContactGrowthData[]>>('/stats/growth');
+    return response.data.data;
+  }
+
+  /**
+   * Get interaction breakdown by type
+   */
+  async getInteractionBreakdown(): Promise<InteractionBreakdown[]> {
+    const response = await this.client.get<ApiResponse<InteractionBreakdown[]>>('/stats/interactions');
+    return response.data.data;
+  }
+
+  /**
+   * Get recent activity feed
+   */
+  async getRecentActivity(limit: number = 10): Promise<RecentActivityItem[]> {
+    const response = await this.client.get<ApiResponse<RecentActivityItem[]>>('/stats/activity', {
+      params: { limit },
     });
     return response.data.data;
   }

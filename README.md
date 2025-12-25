@@ -137,4 +137,4 @@ MIT
 
 ---
 
-**Current Phase**: 6 - Enhanced UI/UX & Search (6.1-6.4 Complete) | See [ROADMAP.md](./ROADMAP.md)
+**Current Phase**: 6 - Enhanced UI/UX & Search (6.1-6.5 Complete) | See [ROADMAP.md](./ROADMAP.md)

@@ -735,6 +735,75 @@
       ]
     },
     {
+      "name": "Stats",
+      "description": "Dashboard statistics and analytics endpoints",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats"]
+            },
+            "description": "Get main dashboard statistics including total contacts, interactions, and reminder counts."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact Growth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/growth",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "growth"]
+            },
+            "description": "Get contact growth data for the last 12 months, showing monthly additions and cumulative totals."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Interaction Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/interactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "interactions"]
+            },
+            "description": "Get a breakdown of all interactions grouped by type (CALL, MEETING, EMAIL, etc.)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/activity?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "activity"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of activity items to return (1-50, default: 10)"
+                }
+              ]
+            },
+            "description": "Get a feed of recent activities (interactions, notes, reminders) across all contacts."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Health Check",
       "request": {
         "method": "GET",

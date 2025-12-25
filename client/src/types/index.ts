@@ -224,3 +224,42 @@ export interface GlobalSearchResponse {
   totalResults: number;
   results: SearchResult[];
 }
+
+// ============================================
+// Dashboard & Stats Types
+// ============================================
+
+export interface DashboardStats {
+  totalContacts: number;
+  contactsThisMonth: number;
+  contactsLastMonth: number;
+  totalInteractions: number;
+  interactionsThisWeek: number;
+  interactionsThisMonth: number;
+  pendingReminders: number;
+  overdueReminders: number;
+}
+
+export interface ContactGrowthData {
+  month: string; // YYYY-MM format
+  count: number;
+  cumulative: number;
+}
+
+export interface InteractionBreakdown {
+  type: string;
+  count: number;
+  label: string;
+}
+
+export type ActivityType = 'interaction' | 'note' | 'reminder';
+
+export interface RecentActivityItem {
+  id: string;
+  type: ActivityType;
+  title: string;
+  description: string;
+  contactId: string;
+  contactName: string;
+  timestamp: string;
+}

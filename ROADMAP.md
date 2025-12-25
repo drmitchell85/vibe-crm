@@ -157,14 +157,17 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Visual indicator on active sort column (blue arrows)
 - [x] Null values sorted last for email/company columns
 
-**Chunk 6.5: Dashboard & Analytics** ⏳ PENDING
-- [ ] Dashboard stats API endpoint (`GET /api/stats`)
+**Chunk 6.5: Dashboard & Analytics** ✅ COMPLETED
+- [x] Dashboard stats API endpoint (`GET /api/stats`, `/stats/growth`, `/stats/interactions`, `/stats/activity`)
   - Total contacts, interactions this week/month, pending reminders, overdue count
-- [ ] Dashboard page layout with stat cards
-- [ ] Contact growth chart (contacts added over time)
-- [ ] Interaction breakdown by type (pie/bar chart)
-- [ ] Recent activity feed (latest interactions, notes, reminders)
-- [ ] Quick action buttons (Add Contact, Add Reminder)
+  - Contact growth over 12 months with cumulative totals
+  - Interaction breakdown by type with labels
+  - Recent activity feed with activity type, contact info, and timestamps
+- [x] Dashboard page layout with stat cards (4 cards: Contacts, Interactions, Reminders, Tags)
+- [x] Contact growth chart (area chart with cumulative line, 12-month view)
+- [x] Interaction breakdown by type (horizontal bar chart with color coding)
+- [x] Recent activity feed (interactions, notes, reminders with relative timestamps)
+- [x] Quick action buttons (Add Contact, Add Reminder in header)
 
 **Chunk 6.6: Dark Mode** ⏳ PENDING
 - [ ] ThemeContext provider with light/dark/system modes
@@ -226,4 +229,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-25
-**Next Up**: Phase 6, Chunk 6.5 - Dashboard & Analytics
+**Next Up**: Phase 6, Chunk 6.6 - Dark Mode
