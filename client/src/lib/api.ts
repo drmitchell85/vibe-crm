@@ -20,6 +20,7 @@ import type {
   NoteWithContact,
   CreateNoteInput,
   UpdateNoteInput,
+  GlobalSearchResponse,
 } from '../types';
 
 /**
@@ -467,6 +468,20 @@ class ApiClient {
    */
   async deleteNote(id: string): Promise<void> {
     await this.client.delete(`/notes/${id}`);
+  }
+
+  // ============================================
+  // Search Endpoints
+  // ============================================
+
+  /**
+   * Global search across contacts, notes, interactions, and reminders
+   */
+  async globalSearch(query: string, limit: number = 10): Promise<GlobalSearchResponse> {
+    const response = await this.client.get<ApiResponse<GlobalSearchResponse>>('/search', {
+      params: { q: query, limit },
+    });
+    return response.data.data;
   }
 
   // ============================================

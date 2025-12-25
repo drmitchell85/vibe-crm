@@ -175,3 +175,26 @@ export interface UpdateTagInput {
 export interface ContactWithTags extends Contact {
   tags?: Tag[];
 }
+
+// ============================================
+// Search Types
+// ============================================
+
+export type SearchEntityType = 'contact' | 'note' | 'interaction' | 'reminder';
+
+export interface SearchResult {
+  id: string;
+  entityType: SearchEntityType;
+  title: string;
+  preview: string;
+  relevanceScore: number;
+  contactId?: string;
+  contactName?: string;
+  createdAt: string;
+}
+
+export interface GlobalSearchResponse {
+  query: string;
+  totalResults: number;
+  results: SearchResult[];
+}
