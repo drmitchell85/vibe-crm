@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useCallback } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -6,29 +6,45 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Optional callback for Cmd/Ctrl+Enter to submit forms */
+  onSubmit?: () => void;
 }
 
 /**
  * Reusable modal component with backdrop and animations
+ *
+ * Keyboard shortcuts:
+ * - Escape: Close modal
+ * - Cmd/Ctrl+Enter: Submit form (if onSubmit provided)
  */
-export function Modal({ isOpen, onClose, title, children, size = 'lg' }: ModalProps) {
-  // Close on Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+export function Modal({ isOpen, onClose, title, children, size = 'lg', onSubmit }: ModalProps) {
+  // Handle keyboard shortcuts
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Close on Escape
+    if (e.key === 'Escape') {
+      onClose();
+      return;
+    }
 
+    // Submit on Cmd/Ctrl + Enter
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && onSubmit) {
+      e.preventDefault();
+      onSubmit();
+    }
+  }, [onClose, onSubmit]);
+
+  useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleKeyDown);
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 

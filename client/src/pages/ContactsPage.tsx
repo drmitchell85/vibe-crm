@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { Modal } from '../components/Modal';
@@ -124,9 +124,21 @@ function optionsToSearchParams(
  */
 export function ContactsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Check for ?new=true param to open create modal (from keyboard shortcut)
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setIsCreateModalOpen(true);
+      // Remove the param from URL without affecting other params
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('new');
+      navigate({ search: newParams.toString() }, { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   // Parse all filters and sort options from URL
   const filters = useMemo(() => parseFiltersFromUrl(searchParams), [searchParams]);
@@ -186,9 +198,13 @@ export function ContactsPage() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Contacts</h1>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
+          title="Add Contact (n)"
+          className="group bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
         >
-          + Add Contact
+          <span>+ Add Contact</span>
+          <kbd className="hidden group-hover:inline px-1.5 py-0.5 text-xs bg-blue-500 dark:bg-blue-400 border border-blue-400 dark:border-blue-300 rounded opacity-75">
+            n
+          </kbd>
         </button>
       </div>
 

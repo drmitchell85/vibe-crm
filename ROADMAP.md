@@ -178,13 +178,13 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Update Tailwind config for dark mode (class-based strategy)
 - [x] Update all components with dark: variants (Layout, Modal, CommandPalette, pages, UI components)
 
-**Chunk 6.7: Keyboard Shortcuts** ⏳ PENDING
-- [ ] Global keyboard shortcut handler (useHotkeys or custom hook)
-- [ ] Navigation shortcuts: `g+c` → Contacts, `g+r` → Reminders, `g+t` → Tags, `g+h` → Home
-- [ ] Action shortcuts: `n` → New Contact, `?` → Help modal
-- [ ] Modal shortcuts: `Escape` → Close, `Cmd+Enter` → Submit form
-- [ ] Keyboard shortcuts help modal (show all available shortcuts)
-- [ ] Visual hints in UI (show shortcuts in tooltips)
+**Chunk 6.7: Keyboard Shortcuts** ✅ COMPLETED
+- [x] Global keyboard shortcut handler (custom `useKeyboardShortcuts` hook with sequence detection)
+- [x] Navigation shortcuts: `g+c` → Contacts, `g+r` → Reminders, `g+t` → Tags, `g+h` → Home
+- [x] Action shortcuts: `n` → New Contact, `?` → Help modal
+- [x] Modal shortcuts: `Escape` → Close, `Cmd+Enter` → Submit form
+- [x] Keyboard shortcuts help modal (show all available shortcuts)
+- [x] Visual hints in UI (show shortcuts on hover in sidebar and buttons)
 
 **Chunk 6.8: Performance Optimization** ⏳ PENDING
 - [ ] React Query caching strategy review and optimization
@@ -229,4 +229,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-25
-**Next Up**: Phase 6, Chunk 6.7 - Keyboard Shortcuts
+**Next Up**: Phase 6, Chunk 6.8 - Performance Optimization

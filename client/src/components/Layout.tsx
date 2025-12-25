@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CommandPalette } from './CommandPalette';
 import { ThemeToggle } from './ThemeToggle';
+import { useKeyboardShortcutsContext } from '../contexts/KeyboardShortcutsContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,12 +14,13 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { openHelp } = useKeyboardShortcutsContext();
 
   const navLinks = [
-    { path: '/', label: 'Home', icon: '🏠' },
-    { path: '/contacts', label: 'Contacts', icon: '👥' },
-    { path: '/reminders', label: 'Reminders', icon: '🔔' },
-    { path: '/tags', label: 'Tags', icon: '🏷️' },
+    { path: '/', label: 'Home', icon: '🏠', shortcut: 'g h' },
+    { path: '/contacts', label: 'Contacts', icon: '👥', shortcut: 'g c' },
+    { path: '/reminders', label: 'Reminders', icon: '🔔', shortcut: 'g r' },
+    { path: '/tags', label: 'Tags', icon: '🏷️', shortcut: 'g t' },
   ];
 
   const isActive = (path: string) => {
@@ -84,20 +86,41 @@ export function Layout({ children }: LayoutProps) {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              title={`${link.label} (${link.shortcut})`}
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(link.path)
                   ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <span className="text-lg">{link.icon}</span>
-              {link.label}
+              <span className="flex-1">{link.label}</span>
+              <span className="hidden group-hover:flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500">
+                {link.shortcut.split(' ').map((key, i) => (
+                  <kbd key={i} className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-[10px]">
+                    {key}
+                  </kbd>
+                ))}
+              </span>
             </Link>
           ))}
         </nav>
 
-        {/* Theme Toggle */}
-        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700">
+        {/* Footer Actions */}
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+          {/* Keyboard Shortcuts Help */}
+          <button
+            onClick={openHelp}
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors"
+          >
+            <span className="text-lg">⌨️</span>
+            <span className="flex-1 text-left">Shortcuts</span>
+            <kbd className="px-1.5 py-0.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">
+              ?
+            </kbd>
+          </button>
+
+          {/* Theme Toggle */}
           <ThemeToggle />
         </div>
       </aside>
