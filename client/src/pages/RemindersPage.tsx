@@ -107,10 +107,10 @@ export function RemindersPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Reminders</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Reminders</h1>
         <button
           onClick={handleOpenCreateModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
         >
           + Add Reminder
         </button>
@@ -126,14 +126,14 @@ export function RemindersPage() {
         <div className="space-y-6">
           {/* Contact Selector */}
           <div>
-            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contact <span className="text-red-500">*</span>
             </label>
             <select
               id="contact"
               value={selectedContactId}
               onChange={(e) => setSelectedContactId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">Select a contact...</option>
               {contacts?.map((contact) => (
@@ -155,7 +155,7 @@ export function RemindersPage() {
               isLoading={createMutation.isPending}
             />
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
               Please select a contact to create a reminder.
             </p>
           )}
@@ -187,8 +187,8 @@ export function RemindersPage() {
       </Modal>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px">
             {tabs.map((tab) => (
               <button
@@ -197,8 +197,8 @@ export function RemindersPage() {
                 className={`
                   flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors
                   ${activeTab === tab.key
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }
                 `}
               >
@@ -251,7 +251,7 @@ export function RemindersPage() {
               action={activeTab === 'all' && (
                 <button
                   onClick={handleOpenCreateModal}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
                 >
                   + Create Your First Reminder
                 </button>
@@ -280,7 +280,7 @@ export function RemindersPage() {
 
       {/* Results Count */}
       {!isLoading && reminders && reminders.length > 0 && (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
           Showing {reminders.length} reminder{reminders.length !== 1 ? 's' : ''}
         </p>
       )}
@@ -309,10 +309,10 @@ function ReminderCard({
       className={`
         border rounded-lg p-4 transition-colors
         ${reminder.isCompleted
-          ? 'bg-gray-50 border-gray-200'
+          ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600'
           : isOverdue
-            ? 'bg-red-50 border-red-200'
-            : 'bg-white border-gray-200 hover:border-blue-300'
+            ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800'
+            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
         }
       `}
     >
@@ -325,7 +325,7 @@ function ReminderCard({
             mt-1 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors
             ${reminder.isCompleted
               ? 'bg-green-500 border-green-500 text-white'
-              : 'border-gray-300 hover:border-blue-500'
+              : 'border-gray-300 dark:border-gray-500 hover:border-blue-500'
             }
             ${isToggling ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           `}
@@ -350,8 +350,8 @@ function ReminderCard({
               <span className="text-red-500">⚠️</span>
             )}
             <h3
-              className={`font-medium truncate cursor-pointer hover:text-blue-600 ${
-                reminder.isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
+              className={`font-medium truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 ${
+                reminder.isCompleted ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-gray-100'
               }`}
               onClick={onEdit}
             >
@@ -361,7 +361,7 @@ function ReminderCard({
 
           {/* Description */}
           {reminder.description && (
-            <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
               {reminder.description}
             </p>
           )}
@@ -370,13 +370,13 @@ function ReminderCard({
           <div className="mt-2 flex items-center gap-4 text-sm">
             <Link
               to={`/contacts/${reminder.contact.id}`}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
             >
               {reminder.contact.firstName} {reminder.contact.lastName}
             </Link>
             <button
               onClick={onEdit}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             >
               Edit
             </button>
@@ -388,10 +388,10 @@ function ReminderCard({
           <div
             className={`text-sm font-medium ${
               reminder.isCompleted
-                ? 'text-gray-500'
+                ? 'text-gray-500 dark:text-gray-400'
                 : isOverdue
-                  ? 'text-red-600'
-                  : 'text-gray-900'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-900 dark:text-gray-100'
             }`}
           >
             {formatDisplayDate(reminder.dueDate)}
@@ -399,10 +399,10 @@ function ReminderCard({
           <div
             className={`text-xs mt-1 ${
               reminder.isCompleted
-                ? 'text-gray-400'
+                ? 'text-gray-400 dark:text-gray-500'
                 : isOverdue
-                  ? 'text-red-500'
-                  : 'text-gray-500'
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-gray-500 dark:text-gray-400'
             }`}
           >
             {reminder.isCompleted ? 'Completed' : relativeTime}

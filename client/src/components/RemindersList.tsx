@@ -56,16 +56,16 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-gray-900">Reminders</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Reminders</h2>
           {reminders && reminders.length > 0 && (
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               ({reminders.length})
             </span>
           )}
           {overdueCount > 0 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300">
               {overdueCount} overdue
             </span>
           )}
@@ -73,7 +73,7 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
         {onAddReminder && (
           <button
             onClick={onAddReminder}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+            className="inline-flex items-center gap-2 bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium text-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -96,7 +96,7 @@ export function RemindersList({ contactId, onAddReminder, onEditReminder }: Remi
               action={onAddReminder && (
                 <button
                   onClick={onAddReminder}
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -145,10 +145,10 @@ function ReminderCard({
 
   // Determine card styling based on status
   const cardClasses = reminder.isCompleted
-    ? 'border-gray-200 bg-gray-50'
+    ? 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50'
     : isOverdue
-    ? 'border-red-200 bg-red-50'
-    : 'border-gray-200 bg-white';
+    ? 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30'
+    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800';
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering the card click
@@ -172,8 +172,8 @@ function ReminderCard({
             reminder.isCompleted
               ? 'bg-green-500 border-green-500 text-white'
               : isOverdue
-              ? 'border-red-400 hover:border-red-500 hover:bg-red-100'
-              : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+              ? 'border-red-400 dark:border-red-500 hover:border-red-500 hover:bg-red-100 dark:hover:bg-red-900/50'
+              : 'border-gray-300 dark:border-gray-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50'
           } ${isToggling ? 'opacity-50' : ''}`}
           aria-label={reminder.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
         >
@@ -190,13 +190,13 @@ function ReminderCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Title */}
-          <h4 className={`font-medium ${reminder.isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+          <h4 className={`font-medium ${reminder.isCompleted ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>
             {reminder.title}
           </h4>
 
           {/* Description */}
           {reminder.description && (
-            <p className={`text-sm mt-1 line-clamp-2 ${reminder.isCompleted ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-sm mt-1 line-clamp-2 ${reminder.isCompleted ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300'}`}>
               {reminder.description}
             </p>
           )}
@@ -206,10 +206,10 @@ function ReminderCard({
             <span
               className={`inline-flex items-center gap-1 text-xs font-medium ${
                 reminder.isCompleted
-                  ? 'text-gray-400'
+                  ? 'text-gray-400 dark:text-gray-500'
                   : isOverdue
-                  ? 'text-red-600'
-                  : 'text-gray-500'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               {isOverdue && !reminder.isCompleted && (
@@ -225,7 +225,7 @@ function ReminderCard({
               {dueDateText}
             </span>
             {reminder.completedAt && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 dark:text-gray-500">
                 • Completed {format(new Date(reminder.completedAt), 'MMM d')}
               </span>
             )}

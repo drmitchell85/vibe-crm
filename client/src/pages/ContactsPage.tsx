@@ -183,10 +183,10 @@ export function ContactsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Contacts</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Contacts</h1>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
         >
           + Add Contact
         </button>
@@ -209,7 +209,7 @@ export function ContactsPage() {
       </Modal>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow p-4 space-y-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
         {/* Search input */}
         <div className="flex-1">
           <input
@@ -217,7 +217,7 @@ export function ContactsPage() {
             placeholder="Search contacts by name, email, or company..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           />
         </div>
 
@@ -230,7 +230,7 @@ export function ContactsPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <LoadingState message="Loading contacts..." size="lg" />
         </div>
       )}
@@ -246,7 +246,7 @@ export function ContactsPage() {
 
       {/* Empty State */}
       {!isLoading && !error && contacts && contacts.length === 0 && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <EmptyState
             icon="👥"
             title={searchQuery ? 'No contacts found' : 'No contacts yet'}
@@ -259,7 +259,7 @@ export function ContactsPage() {
             action={!searchQuery && (
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
               >
                 + Add Your First Contact
               </button>
@@ -270,9 +270,9 @@ export function ContactsPage() {
 
       {/* Contacts List */}
       {!isLoading && !error && contacts && contacts.length > 0 && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <SortableHeader
                   field="name"
@@ -295,15 +295,15 @@ export function ContactsPage() {
                   currentSortOrder={sortOrder}
                   onSort={handleSortChange}
                 />
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Tags
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {contacts.map((contact) => (
                 <ContactRow key={contact.id} contact={contact} />
               ))}
@@ -314,7 +314,7 @@ export function ContactsPage() {
 
       {/* Results Count */}
       {!isLoading && contacts && contacts.length > 0 && (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
           Showing {contacts.length} contact{contacts.length !== 1 ? 's' : ''}
           {searchQuery && ` for "${searchQuery}"`}
           {!searchQuery && Object.keys(filters).length > 0 && ' (filtered)'}
@@ -329,32 +329,32 @@ export function ContactsPage() {
  */
 function ContactRow({ contact }: { contact: ContactWithTags }) {
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
         <Link
           to={`/contacts/${contact.id}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
         >
           {contact.firstName} {contact.lastName}
         </Link>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className="text-sm text-gray-900">{contact.email || '-'}</span>
+        <span className="text-sm text-gray-900 dark:text-gray-100">{contact.email || '-'}</span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className="text-sm text-gray-900">{contact.company || '-'}</span>
+        <span className="text-sm text-gray-900 dark:text-gray-100">{contact.company || '-'}</span>
       </td>
       <td className="px-6 py-4">
         {contact.tags && contact.tags.length > 0 ? (
           <TagBadgeList tags={contact.tags} size="sm" maxDisplay={3} />
         ) : (
-          <span className="text-sm text-gray-400">—</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <Link
           to={`/contacts/${contact.id}`}
-          className="text-blue-600 hover:text-blue-900"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
         >
           View
         </Link>
@@ -389,7 +389,7 @@ function SortableHeader({
 
   return (
     <th
-      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <div className="flex items-center gap-1">
@@ -399,8 +399,8 @@ function SortableHeader({
           <svg
             className={`w-3 h-3 -mb-1 ${
               isActive && currentSortOrder === 'asc'
-                ? 'text-blue-600'
-                : 'text-gray-300'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-300 dark:text-gray-600'
             }`}
             fill="currentColor"
             viewBox="0 0 20 20"
@@ -415,8 +415,8 @@ function SortableHeader({
           <svg
             className={`w-3 h-3 -mt-1 ${
               isActive && currentSortOrder === 'desc'
-                ? 'text-blue-600'
-                : 'text-gray-300'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-300 dark:text-gray-600'
             }`}
             fill="currentColor"
             viewBox="0 0 20 20"

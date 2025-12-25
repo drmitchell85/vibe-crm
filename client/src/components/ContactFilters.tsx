@@ -96,7 +96,7 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
         >
           <svg
             className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -130,7 +130,7 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
           <button
             type="button"
             onClick={clearAllFilters}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             Clear all
           </button>
@@ -139,20 +139,20 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
 
       {/* Expanded filter panel */}
       {isExpanded && (
-        <div className="bg-gray-50 rounded-lg p-4 space-y-4 border border-gray-200">
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-4 border border-gray-200 dark:border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Company filter */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Company
               </label>
               <div className="relative" ref={companyDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-left bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-left bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
-                  <span className={filters.company ? 'text-gray-900' : 'text-gray-400'}>
+                  <span className={filters.company ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}>
                     {filters.company || 'All companies'}
                   </span>
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
                 </button>
 
                 {isCompanyDropdownOpen && (
-                  <div className="absolute z-10 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
+                  <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-48 overflow-y-auto">
                     {isLoadingCompanies ? (
                       <div className="px-3 py-4 text-center">
                         <Spinner size="sm" />
@@ -171,8 +171,8 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
                         <button
                           type="button"
                           onClick={() => handleCompanyChange(undefined)}
-                          className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 ${
-                            !filters.company ? 'bg-blue-50 text-blue-700' : ''
+                          className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                            !filters.company ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'
                           }`}
                         >
                           All companies
@@ -182,15 +182,15 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
                             key={company}
                             type="button"
                             onClick={() => handleCompanyChange(company)}
-                            className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 ${
-                              filters.company === company ? 'bg-blue-50 text-blue-700' : ''
+                            className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                              filters.company === company ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'
                             }`}
                           >
                             {company}
                           </button>
                         ))}
                         {companies.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-gray-500">
+                          <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                             No companies found
                           </div>
                         )}
@@ -203,33 +203,33 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
 
             {/* Created after date */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Created after
               </label>
               <input
                 type="date"
                 value={filters.createdAfter ? filters.createdAfter.split('T')[0] : ''}
                 onChange={(e) => handleDateChange('createdAfter', e.target.value ? `${e.target.value}T00:00:00.000Z` : '')}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
 
             {/* Created before date */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Created before
               </label>
               <input
                 type="date"
                 value={filters.createdBefore ? filters.createdBefore.split('T')[0] : ''}
                 onChange={(e) => handleDateChange('createdBefore', e.target.value ? `${e.target.value}T23:59:59.999Z` : '')}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
 
             {/* Reminder toggles */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Reminders
               </label>
               <div className="flex flex-col gap-2">
@@ -238,18 +238,18 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
                     type="checkbox"
                     checked={!!filters.hasReminders}
                     onChange={() => handleReminderToggle('hasReminders')}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700">Has reminders</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Has reminders</span>
                 </label>
                 <label className="inline-flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={!!filters.hasOverdueReminders}
                     onChange={() => handleReminderToggle('hasOverdueReminders')}
-                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    className="w-4 h-4 text-red-600 border-gray-300 dark:border-gray-600 rounded focus:ring-red-500"
                   />
-                  <span className="text-sm text-gray-700">Has overdue</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Has overdue</span>
                 </label>
               </div>
             </div>
@@ -257,7 +257,7 @@ export function ContactFilters({ filters, onChange }: ContactFiltersProps) {
 
           {/* Active filters summary */}
           {activeFilterCount > 0 && (
-            <div className="pt-3 border-t border-gray-200">
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
               <ActiveFiltersSummary filters={filters} onRemove={onChange} />
             </div>
           )}
@@ -325,17 +325,17 @@ function ActiveFiltersSummary({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <span className="text-xs text-gray-500 py-1">Active filters:</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 py-1">Active filters:</span>
       {chips.map((chip) => (
         <span
           key={chip.key}
-          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
+          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/50 rounded-full"
         >
           {chip.label}
           <button
             type="button"
             onClick={() => removeFilter(chip.key)}
-            className="hover:text-blue-900"
+            className="hover:text-blue-900 dark:hover:text-blue-100"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

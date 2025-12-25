@@ -24,26 +24,26 @@ const entityConfig: Record<SearchEntityType, EntityConfig> = {
   contact: {
     icon: '👤',
     label: 'Contact',
-    color: 'text-blue-700',
-    bgColor: 'bg-blue-100',
+    color: 'text-blue-700 dark:text-blue-300',
+    bgColor: 'bg-blue-100 dark:bg-blue-900/50',
   },
   note: {
     icon: '📝',
     label: 'Note',
-    color: 'text-amber-700',
-    bgColor: 'bg-amber-100',
+    color: 'text-amber-700 dark:text-amber-300',
+    bgColor: 'bg-amber-100 dark:bg-amber-900/50',
   },
   interaction: {
     icon: '💬',
     label: 'Interaction',
-    color: 'text-green-700',
-    bgColor: 'bg-green-100',
+    color: 'text-green-700 dark:text-green-300',
+    bgColor: 'bg-green-100 dark:bg-green-900/50',
   },
   reminder: {
     icon: '🔔',
     label: 'Reminder',
-    color: 'text-purple-700',
-    bgColor: 'bg-purple-100',
+    color: 'text-purple-700 dark:text-purple-300',
+    bgColor: 'bg-purple-100 dark:bg-purple-900/50',
   },
 };
 
@@ -246,16 +246,16 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       onClick={handleBackdropClick}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
+      <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 transition-opacity" />
 
       {/* Modal */}
       <div className="flex min-h-screen items-start justify-center pt-16 sm:pt-24 px-4">
         <div
-          className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden"
+          className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Search Input */}
-          <div className="flex items-center gap-3 p-4 border-b border-gray-200">
+          <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700">
             <svg
               className="w-5 h-5 text-gray-400 flex-shrink-0"
               fill="none"
@@ -276,12 +276,12 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Search contacts, notes, interactions, reminders..."
-              className="flex-1 outline-none text-gray-900 placeholder-gray-400 text-lg"
+              className="flex-1 outline-none text-gray-900 dark:text-gray-100 bg-transparent placeholder-gray-400 dark:placeholder-gray-500 text-lg"
               autoComplete="off"
               spellCheck="false"
             />
             {isLoading && <Spinner size="sm" color="gray" />}
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded">
               ESC
             </kbd>
           </div>
@@ -293,7 +293,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           >
             {/* Error State */}
             {error && (
-              <div className="p-4 text-center text-red-600">
+              <div className="p-4 text-center text-red-600 dark:text-red-400">
                 <p>Search failed. Please try again.</p>
               </div>
             )}
@@ -302,12 +302,12 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
             {showRecent && !error && (
               <div className="p-2">
                 <div className="flex items-center justify-between px-3 py-2">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Recent Searches
                   </span>
                   <button
                     onClick={handleClearRecent}
-                    className="text-xs text-gray-400 hover:text-gray-600"
+                    className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     Clear
                   </button>
@@ -316,7 +316,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                   <button
                     key={recent}
                     onClick={() => handleRecentSearchClick(recent)}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                   >
                     <svg
                       className="w-4 h-4 text-gray-400"
@@ -339,14 +339,14 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
 
             {/* No Query State */}
             {query.trim().length < 2 && !showRecent && !error && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p>Type at least 2 characters to search</p>
               </div>
             )}
 
             {/* No Results State */}
             {query.trim().length >= 2 && !isLoading && !hasResults && !error && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p>No results found for "{query}"</p>
                 <p className="mt-1 text-sm">Try a different search term</p>
               </div>
@@ -356,7 +356,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
             {hasResults && (
               <div className="p-2">
                 <div className="px-3 py-2">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Results ({searchData?.totalResults})
                   </span>
                 </div>
@@ -371,7 +371,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                       onClick={() => handleSelect(result)}
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`w-full flex items-start gap-3 px-3 py-3 text-left rounded-lg transition-colors ${
-                        isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'
+                        isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                     >
                       {/* Entity Icon */}
@@ -384,7 +384,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900 truncate">
+                          <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
                             {result.title}
                           </span>
                           <span
@@ -393,11 +393,11 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                             {config.label}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-sm text-gray-500 truncate">
+                        <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400 truncate">
                           {result.preview}
                         </p>
                         {result.contactName && result.entityType !== 'contact' && (
-                          <p className="mt-0.5 text-xs text-gray-400">
+                          <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
                             Contact: {result.contactName}
                           </p>
                         )}
@@ -406,7 +406,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                       {/* Arrow indicator for selected */}
                       {isSelected && (
                         <svg
-                          className="flex-shrink-0 w-5 h-5 text-blue-600"
+                          className="flex-shrink-0 w-5 h-5 text-blue-600 dark:text-blue-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -427,19 +427,19 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           </div>
 
           {/* Footer with keyboard hints */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50 text-xs text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded">↑</kbd>
-                <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded">↓</kbd>
+                <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">↑</kbd>
+                <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">↓</kbd>
                 <span className="ml-1">Navigate</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded">Enter</kbd>
+                <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">Enter</kbd>
                 <span className="ml-1">Select</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded">Esc</kbd>
+                <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">Esc</kbd>
                 <span className="ml-1">Close</span>
               </span>
             </div>

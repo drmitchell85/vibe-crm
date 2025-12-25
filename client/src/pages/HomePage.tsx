@@ -111,13 +111,13 @@ export function HomePage() {
       {/* Header with Quick Actions */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Your CRM at a glance</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Your CRM at a glance</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setIsCreateContactModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+            className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
           >
             <span>👤</span> Add Contact
           </button>
@@ -159,14 +159,14 @@ export function HomePage() {
         <div className="space-y-6">
           {/* Contact Selector */}
           <div>
-            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contact <span className="text-red-500">*</span>
             </label>
             <select
               id="contact"
               value={selectedContactId}
               onChange={(e) => setSelectedContactId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">Select a contact...</option>
               {contacts?.map((contact) => (
@@ -191,7 +191,7 @@ export function HomePage() {
               isLoading={createReminderMutation.isPending}
             />
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
               Please select a contact to create a reminder.
             </p>
           )}
@@ -240,8 +240,8 @@ export function HomePage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Contact Growth Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Growth</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Growth</h3>
           {growthLoading ? (
             <div className="h-64 flex items-center justify-center">
               <LoadingState message="Loading chart..." size="sm" />
@@ -249,15 +249,15 @@ export function HomePage() {
           ) : growthData && growthData.length > 0 ? (
             <ContactGrowthChart data={growthData} />
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">
+            <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
               No data available yet
             </div>
           )}
         </div>
 
         {/* Interaction Breakdown Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Interactions by Type</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Interactions by Type</h3>
           {interactionLoading ? (
             <div className="h-64 flex items-center justify-center">
               <LoadingState message="Loading chart..." size="sm" />
@@ -265,7 +265,7 @@ export function HomePage() {
           ) : interactionData && interactionData.some(d => d.count > 0) ? (
             <InteractionBreakdownChart data={interactionData} />
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">
+            <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
               No interactions logged yet
             </div>
           )}
@@ -273,9 +273,9 @@ export function HomePage() {
       </div>
 
       {/* Recent Activity Feed */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
         </div>
         <div className="p-4">
           {activityLoading ? (
@@ -283,7 +283,7 @@ export function HomePage() {
           ) : activityData && activityData.length > 0 ? (
             <ActivityFeed activities={activityData} />
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               No recent activity. Start by adding a contact!
             </div>
           )}
@@ -309,27 +309,27 @@ interface StatCardProps {
 
 function StatCard({ title, value, subtitle, icon, color, href, loading }: StatCardProps) {
   const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    amber: 'bg-amber-50 text-amber-600',
-    red: 'bg-red-50 text-red-600',
-    purple: 'bg-purple-50 text-purple-600',
+    blue: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    green: 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+    amber: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+    red: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+    purple: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
   };
 
   const content = (
-    <div className={`bg-white rounded-lg shadow p-6 ${href ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 ${href ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
           {loading ? (
-            <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mt-1" />
+            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1" />
           ) : (
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
               {value !== undefined ? value : '—'}
             </p>
           )}
           {subtitle && (
-            <p className={`text-sm mt-1 ${color === 'red' ? 'text-red-600' : 'text-gray-500'}`}>
+            <p className={`text-sm mt-1 ${color === 'red' ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
               {subtitle}
             </p>
           )}
@@ -382,10 +382,11 @@ function ContactGrowthChart({ data }: { data: ContactGrowthData[] }) {
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#fff',
-            border: '1px solid #E5E7EB',
+            backgroundColor: 'var(--tooltip-bg, #fff)',
+            border: '1px solid var(--tooltip-border, #E5E7EB)',
             borderRadius: '8px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            color: 'var(--tooltip-text, #111827)',
           }}
           formatter={(value: number, name: string) => [
             value,
@@ -434,10 +435,11 @@ function InteractionBreakdownChart({ data }: { data: InteractionBreakdown[] }) {
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#fff',
-            border: '1px solid #E5E7EB',
+            backgroundColor: 'var(--tooltip-bg, #fff)',
+            border: '1px solid var(--tooltip-border, #E5E7EB)',
             borderRadius: '8px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            color: 'var(--tooltip-text, #111827)',
           }}
           formatter={(value: number) => [value, 'Count']}
         />
@@ -472,13 +474,13 @@ function ActivityFeed({ activities }: { activities: RecentActivityItem[] }) {
   const getActivityColor = (type: string) => {
     switch (type) {
       case 'interaction':
-        return 'bg-blue-100 text-blue-600';
+        return 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400';
       case 'note':
-        return 'bg-green-100 text-green-600';
+        return 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400';
       case 'reminder':
-        return 'bg-amber-100 text-amber-600';
+        return 'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -493,17 +495,17 @@ function ActivityFeed({ activities }: { activities: RecentActivityItem[] }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
               <span className="text-xs text-gray-400">•</span>
               <Link
                 to={`/contacts/${activity.contactId}`}
-                className="text-sm text-blue-600 hover:text-blue-800 truncate"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 truncate"
               >
                 {activity.contactName}
               </Link>
             </div>
-            <p className="text-sm text-gray-600 truncate">{activity.description}</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{activity.description}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
             </p>
           </div>

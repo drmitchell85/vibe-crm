@@ -1,6 +1,7 @@
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CommandPalette } from './CommandPalette';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LayoutProps {
   children: ReactNode;
@@ -41,12 +42,12 @@ export function Layout({ children }: LayoutProps) {
   }, [handleKeyDown]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Left Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col">
+      <aside className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
         {/* Logo / Brand */}
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <Link to="/" className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+        <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
+          <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
             FPH CRM
           </Link>
         </div>
@@ -55,7 +56,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="px-4 py-4">
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -71,7 +72,7 @@ export function Layout({ children }: LayoutProps) {
               />
             </svg>
             <span>Search...</span>
-            <kbd className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-gray-400 bg-white border border-gray-300 rounded">
+            <kbd className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded">
               <span className="text-xs">⌘</span>K
             </kbd>
           </button>
@@ -85,8 +86,8 @@ export function Layout({ children }: LayoutProps) {
               to={link.path}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(link.path)
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <span className="text-lg">{link.icon}</span>
@@ -94,6 +95,11 @@ export function Layout({ children }: LayoutProps) {
             </Link>
           ))}
         </nav>
+
+        {/* Theme Toggle */}
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700">
+          <ThemeToggle />
+        </div>
       </aside>
 
       {/* Main Content Area */}

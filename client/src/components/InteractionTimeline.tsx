@@ -105,11 +105,11 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-gray-900">Interactions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Interactions</h2>
           {interactions && interactions.length > 0 && (
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               ({sortedInteractions.length}{hasActiveFilters ? ' filtered' : ''})
             </span>
           )}
@@ -119,7 +119,7 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
           {hasActiveFilters && (
             <button
               onClick={clearAllFilters}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors font-medium"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -133,8 +133,8 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
             onClick={() => setFiltersExpanded(!filtersExpanded)}
             className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               hasActiveFilters
-                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/70'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +156,7 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
           {onAddInteraction && (
             <button
               onClick={onAddInteraction}
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+              className="inline-flex items-center gap-2 bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium text-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -169,18 +169,18 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
 
       {/* Filter Bar */}
       {filtersExpanded && (
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-wrap items-end gap-4">
             {/* Type Filter */}
             <div className="flex-1 min-w-[150px]">
-              <label htmlFor="type-filter" className="block text-xs font-medium text-gray-600 mb-1">
+              <label htmlFor="type-filter" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                 Type
               </label>
               <select
                 id="type-filter"
                 value={typeFilter || ''}
                 onChange={(e) => updateFilter('type', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="">All Types</option>
                 {INTERACTION_TYPES_LIST.map((config) => (
@@ -193,7 +193,7 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
 
             {/* Start Date Filter */}
             <div className="flex-1 min-w-[150px]">
-              <label htmlFor="start-date" className="block text-xs font-medium text-gray-600 mb-1">
+              <label htmlFor="start-date" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                 From
               </label>
               <input
@@ -201,13 +201,13 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
                 id="start-date"
                 value={startDate}
                 onChange={(e) => updateFilter('startDate', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             {/* End Date Filter */}
             <div className="flex-1 min-w-[150px]">
-              <label htmlFor="end-date" className="block text-xs font-medium text-gray-600 mb-1">
+              <label htmlFor="end-date" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                 To
               </label>
               <input
@@ -215,20 +215,20 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
                 id="end-date"
                 value={endDate}
                 onChange={(e) => updateFilter('endDate', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             {/* Sort Order */}
             <div className="flex-1 min-w-[150px]">
-              <label htmlFor="sort-order" className="block text-xs font-medium text-gray-600 mb-1">
+              <label htmlFor="sort-order" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                 Sort
               </label>
               <select
                 id="sort-order"
                 value={sortOrder}
                 onChange={(e) => updateFilter('sort', e.target.value === 'newest' ? null : e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -240,8 +240,8 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
 
       {/* Active Filters Summary (when collapsed) */}
       {!filtersExpanded && hasActiveFilters && (
-        <div className="px-6 py-2 bg-blue-50 border-b border-blue-100 flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-blue-700 font-medium">Active filters:</span>
+        <div className="px-6 py-2 bg-blue-50 dark:bg-blue-900/30 border-b border-blue-100 dark:border-blue-800 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">Active filters:</span>
           {typeFilter && (
             <FilterBadge
               label={`Type: ${INTERACTION_TYPE_CONFIG[typeFilter].label}`}
@@ -303,11 +303,11 @@ export function InteractionTimeline({ contactId, onAddInteraction, onEditInterac
  */
 function FilterBadge({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+    <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 rounded-full text-xs font-medium">
       {label}
       <button
         onClick={onRemove}
-        className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full p-0.5 transition-colors"
         aria-label={`Remove filter: ${label}`}
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,13 +325,13 @@ function NoResultsState({ onClearFilters }: { onClearFilters: () => void }) {
   return (
     <div className="text-center py-8">
       <div className="text-4xl mb-3">🔍</div>
-      <h3 className="text-gray-900 font-medium mb-1">No matching interactions</h3>
-      <p className="text-gray-500 text-sm mb-4">
+      <h3 className="text-gray-900 dark:text-gray-100 font-medium mb-1">No matching interactions</h3>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
         Try adjusting your filters to see more results.
       </p>
       <button
         onClick={onClearFilters}
-        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+        className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm"
       >
         Clear all filters
       </button>
@@ -356,7 +356,7 @@ function InteractionList({
       {Array.from(groupedInteractions.entries()).map(([dateLabel, dayInteractions]) => (
         <div key={dateLabel}>
           {/* Date group header */}
-          <h3 className="text-sm font-medium text-gray-500 mb-3">{dateLabel}</h3>
+          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">{dateLabel}</h3>
 
           {/* Interactions for this date */}
           <div className="space-y-3">
@@ -388,7 +388,7 @@ function InteractionCard({
 
   return (
     <div
-      className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
+      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all cursor-pointer bg-white dark:bg-gray-800"
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -407,16 +407,16 @@ function InteractionCard({
         <div className="flex-1 min-w-0">
           {/* Subject */}
           {interaction.subject && (
-            <h4 className="text-gray-900 font-medium truncate">{interaction.subject}</h4>
+            <h4 className="text-gray-900 dark:text-gray-100 font-medium truncate">{interaction.subject}</h4>
           )}
 
           {/* Notes preview */}
           {interaction.notes && (
-            <p className="text-gray-600 text-sm mt-1 line-clamp-2">{interaction.notes}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 line-clamp-2">{interaction.notes}</p>
           )}
 
           {/* Metadata row */}
-          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
             {/* Time */}
             <span>{format(new Date(interaction.date), 'h:mm a')}</span>
 

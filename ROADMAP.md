@@ -169,14 +169,14 @@ This document tracks the implementation progress of the FPH CRM application, org
 - [x] Recent activity feed (interactions, notes, reminders with relative timestamps)
 - [x] Quick action buttons (Add Contact, Add Reminder in header)
 
-**Chunk 6.6: Dark Mode** ⏳ PENDING
-- [ ] ThemeContext provider with light/dark/system modes
-- [ ] CSS variables for all colors (backgrounds, text, borders, accents)
-- [ ] Theme toggle button in header
-- [ ] LocalStorage persistence of theme preference
-- [ ] Respect system preference with `prefers-color-scheme` media query
-- [ ] Update Tailwind config for dark mode classes
-- [ ] Test all components in dark mode
+**Chunk 6.6: Dark Mode** ✅ COMPLETED
+- [x] ThemeContext provider with light/dark/system modes (`client/src/contexts/ThemeContext.tsx`)
+- [x] CSS variables for all colors (backgrounds, text, borders, accents) in `index.css`
+- [x] Theme toggle button in sidebar (cycles through light/dark/system)
+- [x] LocalStorage persistence of theme preference (`fph-crm-theme` key)
+- [x] Respect system preference with `prefers-color-scheme` media query
+- [x] Update Tailwind config for dark mode (class-based strategy)
+- [x] Update all components with dark: variants (Layout, Modal, CommandPalette, pages, UI components)
 
 **Chunk 6.7: Keyboard Shortcuts** ⏳ PENDING
 - [ ] Global keyboard shortcut handler (useHotkeys or custom hook)
@@ -229,4 +229,4 @@ This document tracks the implementation progress of the FPH CRM application, org
 ---
 
 **Last Updated**: 2025-12-25
-**Next Up**: Phase 6, Chunk 6.6 - Dark Mode
+**Next Up**: Phase 6, Chunk 6.7 - Keyboard Shortcuts

@@ -93,7 +93,7 @@ export function TagSelector({ contactId, selectedTags, onTagsChange }: TagSelect
             onRemove={handleRemoveTag}
           />
         ) : (
-          <span className="text-sm text-gray-500">No tags assigned</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">No tags assigned</span>
         )}
 
         {/* Add tag button */}
@@ -102,7 +102,7 @@ export function TagSelector({ contactId, selectedTags, onTagsChange }: TagSelect
             type="button"
             onClick={() => setIsOpen(!isOpen)}
             disabled={isPending}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
           >
             {isPending ? (
               <Spinner size="xs" />
@@ -116,15 +116,15 @@ export function TagSelector({ contactId, selectedTags, onTagsChange }: TagSelect
 
           {/* Dropdown */}
           {isOpen && (
-            <div className="absolute z-10 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+            <div className="absolute z-10 mt-1 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
               {/* Search input */}
-              <div className="px-3 py-2 border-b border-gray-100">
+              <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search tags..."
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   autoFocus
                 />
               </div>
@@ -136,7 +136,7 @@ export function TagSelector({ contactId, selectedTags, onTagsChange }: TagSelect
                     <Spinner size="sm" />
                   </div>
                 ) : availableTags.length === 0 ? (
-                  <div className="px-3 py-4 text-center text-sm text-gray-500">
+                  <div className="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                     {search ? 'No matching tags' : 'No more tags available'}
                   </div>
                 ) : (
@@ -146,11 +146,11 @@ export function TagSelector({ contactId, selectedTags, onTagsChange }: TagSelect
                       type="button"
                       onClick={() => handleAddTag(tag.id)}
                       disabled={addTagMutation.isPending}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center gap-2"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                     >
                       <TagBadge tag={tag} size="sm" />
                       {tag.contactCount !== undefined && (
-                        <span className="text-xs text-gray-400 ml-auto">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
                           {tag.contactCount} contact{tag.contactCount !== 1 ? 's' : ''}
                         </span>
                       )}
@@ -219,7 +219,7 @@ export function TagFilter({ selectedTagIds, onChange }: TagFilterProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -239,17 +239,17 @@ export function TagFilter({ selectedTagIds, onChange }: TagFilterProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+        <div className="absolute z-10 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
           {/* Header with clear button */}
           {selectedTagIds.length > 0 && (
-            <div className="px-3 py-2 border-b border-gray-100 flex justify-between items-center">
-              <span className="text-xs text-gray-500">
+            <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {selectedTagIds.length} selected
               </span>
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-xs text-blue-600 hover:text-blue-800"
+                className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
               >
                 Clear all
               </button>
@@ -263,7 +263,7 @@ export function TagFilter({ selectedTagIds, onChange }: TagFilterProps) {
                 <Spinner size="sm" />
               </div>
             ) : allTags.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm text-gray-500">
+              <div className="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                 No tags created yet
               </div>
             ) : (
@@ -274,19 +274,19 @@ export function TagFilter({ selectedTagIds, onChange }: TagFilterProps) {
                     key={tag.id}
                     type="button"
                     onClick={() => toggleTag(tag.id)}
-                    className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center gap-2 ${
-                      isSelected ? 'bg-blue-50' : ''
+                    className={`w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 ${
+                      isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : ''
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       readOnly
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                     />
                     <TagBadge tag={tag} size="sm" />
                     {tag.contactCount !== undefined && (
-                      <span className="text-xs text-gray-400 ml-auto">
+                      <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
                         {tag.contactCount}
                       </span>
                     )}
