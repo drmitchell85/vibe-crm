@@ -95,7 +95,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
 
       {/* Basic Information */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="firstName" className={labelStyles}>
@@ -216,18 +216,18 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
       {/* Social Media */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Social Media</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Social Media</h3>
           <button
             type="button"
             onClick={handleAddSocialMedia}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
           >
             + Add Platform
           </button>
         </div>
 
         {socialMedia.length === 0 ? (
-          <p className="text-gray-500 text-sm italic">No social media links yet</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm italic">No social media links yet</p>
         ) : (
           <div className="space-y-3">
             {socialMedia.map((item, index) => (
@@ -237,19 +237,19 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
                   placeholder="Platform (e.g., twitter)"
                   value={item.platform}
                   onChange={(e) => handleSocialMediaChange(index, 'platform', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className={`flex-1 ${inputStyles}`}
                 />
                 <input
                   type="text"
                   placeholder="Username (e.g., @username)"
                   value={item.username}
                   onChange={(e) => handleSocialMediaChange(index, 'username', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className={`flex-1 ${inputStyles}`}
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveSocialMedia(index)}
-                  className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                 >
                   Remove
                 </button>
@@ -260,7 +260,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading = false }: 
       </div>
 
       {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}

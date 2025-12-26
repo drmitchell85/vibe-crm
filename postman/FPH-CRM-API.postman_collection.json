@@ -17,9 +17,73 @@
             "url": {
               "raw": "{{base_url}}/api/contacts",
               "host": ["{{base_url}}"],
-              "path": ["api", "contacts"]
+              "path": ["api", "contacts"],
+              "query": [
+                {
+                  "key": "tags",
+                  "value": "",
+                  "description": "Comma-separated tag IDs to filter by (contacts must have ALL specified tags)",
+                  "disabled": true
+                },
+                {
+                  "key": "company",
+                  "value": "Acme",
+                  "description": "Filter by company name (case-insensitive partial match)",
+                  "disabled": true
+                },
+                {
+                  "key": "createdAfter",
+                  "value": "2024-01-01T00:00:00.000Z",
+                  "description": "Filter contacts created on or after this date",
+                  "disabled": true
+                },
+                {
+                  "key": "createdBefore",
+                  "value": "2024-12-31T23:59:59.999Z",
+                  "description": "Filter contacts created on or before this date",
+                  "disabled": true
+                },
+                {
+                  "key": "hasReminders",
+                  "value": "true",
+                  "description": "Filter contacts that have pending (incomplete) reminders",
+                  "disabled": true
+                },
+                {
+                  "key": "hasOverdueReminders",
+                  "value": "true",
+                  "description": "Filter contacts that have overdue incomplete reminders",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name",
+                  "description": "Field to sort by: name, email, company, createdAt, updatedAt (default: name)",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc",
+                  "description": "Sort direction: asc or desc (default: asc)",
+                  "disabled": true
+                }
+              ]
             },
-            "description": "Retrieve all contacts, sorted by name. Includes tags."
+            "description": "Retrieve all contacts with optional advanced filtering and sorting. Supports filtering by tags (AND logic), company name, created date range, and reminder status. Supports sorting by name, email, company, createdAt, or updatedAt. Includes tags for each contact."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Distinct Companies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contacts/companies",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacts", "companies"]
+            },
+            "description": "Get a list of all unique company names from contacts. Used for populating company filter dropdown."
           },
           "response": []
         },
@@ -633,6 +697,107 @@
               "path": ["api", "notes", "{{note_id}}"]
             },
             "description": "Permanently delete a note"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Global Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/search?q=john&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "john",
+                  "description": "Search query (minimum 2 characters)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum results per entity type (1-50, default: 10)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Global search across contacts, notes, interactions, and reminders. Results are sorted by relevance score (higher = more relevant).\n\n**Searched fields by entity type:**\n- **Contacts**: firstName, lastName, email, company, jobTitle\n- **Notes**: content\n- **Interactions**: subject, notes, location\n- **Reminders**: title, description"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "description": "Dashboard statistics and analytics endpoints",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats"]
+            },
+            "description": "Get main dashboard statistics including total contacts, interactions, and reminder counts."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact Growth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/growth",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "growth"]
+            },
+            "description": "Get contact growth data for the last 12 months, showing monthly additions and cumulative totals."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Interaction Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/interactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "interactions"]
+            },
+            "description": "Get a breakdown of all interactions grouped by type (CALL, MEETING, EMAIL, etc.)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/activity?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "activity"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of activity items to return (1-50, default: 10)"
+                }
+              ]
+            },
+            "description": "Get a feed of recent activities (interactions, notes, reminders) across all contacts."
           },
           "response": []
         }

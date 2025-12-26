@@ -247,7 +247,7 @@ export function ContactDetailPage() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <LoadingState message="Loading contact..." size="lg" />
         </div>
       </div>
@@ -257,12 +257,12 @@ export function ContactDetailPage() {
   if (error || !contact) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h3 className="text-red-900 font-semibold mb-2">Contact Not Found</h3>
-          <p className="text-red-700 mb-4">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6">
+          <h3 className="text-red-900 dark:text-red-300 font-semibold mb-2">Contact Not Found</h3>
+          <p className="text-red-700 dark:text-red-400 mb-4">
             {(error as any)?.error?.message || 'This contact could not be found.'}
           </p>
-          <Link to="/contacts" className="text-blue-600 hover:text-blue-800 font-medium">
+          <Link to="/contacts" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
             ← Back to Contacts
           </Link>
         </div>
@@ -277,18 +277,18 @@ export function ContactDetailPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/contacts')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {contact.firstName} {contact.lastName}
           </h1>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setIsEditModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
           >
             Edit Contact
           </button>
@@ -326,7 +326,7 @@ export function ContactDetailPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
+          <p className="text-gray-700 dark:text-gray-300">
             Are you sure you want to delete <strong>{contact?.firstName} {contact?.lastName}</strong>?
             This action cannot be undone.
           </p>
@@ -334,7 +334,7 @@ export function ContactDetailPage() {
             <button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={deleteMutation.isPending}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50"
             >
               Cancel
             </button>
@@ -351,10 +351,10 @@ export function ContactDetailPage() {
       </Modal>
 
       {/* Contact Information */}
-      <div className="bg-white rounded-lg shadow divide-y divide-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow divide-y divide-gray-200 dark:divide-gray-700">
         {/* Tags Section */}
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tags</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tags</h2>
           <TagSelector
             contactId={id!}
             selectedTags={contact.tags || []}
@@ -363,7 +363,7 @@ export function ContactDetailPage() {
 
         {/* Basic Info Section */}
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InfoField label="Email" value={contact.email} type="email" />
             <InfoField label="Phone" value={contact.phone} type="phone" />
@@ -380,14 +380,14 @@ export function ContactDetailPage() {
         {/* Social Media Section */}
         {contact.socialMedia && Object.keys(contact.socialMedia).length > 0 && (
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Social Media</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(contact.socialMedia).map(([platform, username]) => (
                 <div key={platform} className="flex items-center gap-2">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 capitalize">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 capitalize">
                     {platform}
                   </span>
-                  <span className="text-gray-900">{username}</span>
+                  <span className="text-gray-900 dark:text-gray-100">{username}</span>
                 </div>
               ))}
             </div>
@@ -395,16 +395,16 @@ export function ContactDetailPage() {
         )}
 
         {/* Metadata Section */}
-        <div className="p-6 bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Metadata</h2>
+        <div className="p-6 bg-gray-50 dark:bg-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Metadata</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InfoField 
-              label="Created" 
-              value={format(new Date(contact.createdAt), 'PPpp')} 
+            <InfoField
+              label="Created"
+              value={format(new Date(contact.createdAt), 'PPpp')}
             />
-            <InfoField 
-              label="Last Updated" 
-              value={format(new Date(contact.updatedAt), 'PPpp')} 
+            <InfoField
+              label="Last Updated"
+              value={format(new Date(contact.updatedAt), 'PPpp')}
             />
             <InfoField label="Contact ID" value={contact.id} mono />
           </div>
@@ -412,9 +412,9 @@ export function ContactDetailPage() {
       </div>
 
       {/* Activity Tabs */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px" aria-label="Activity tabs">
             <TabButton
               active={activeTab === 'interactions'}
@@ -532,22 +532,22 @@ export function ContactDetailPage() {
 /**
  * Reusable info field component
  */
-function InfoField({ 
-  label, 
-  value, 
-  type, 
-  mono = false 
-}: { 
-  label: string; 
-  value?: string | null; 
+function InfoField({
+  label,
+  value,
+  type,
+  mono = false
+}: {
+  label: string;
+  value?: string | null;
   type?: 'email' | 'phone';
   mono?: boolean;
 }) {
   if (!value) {
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-500 mb-1">{label}</label>
-        <p className="text-gray-400">—</p>
+        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
+        <p className="text-gray-400 dark:text-gray-500">—</p>
       </div>
     );
   }
@@ -563,16 +563,16 @@ function InfoField({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-500 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
       {href ? (
         <a
           href={href}
-          className="text-blue-600 hover:text-blue-800 font-medium"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
         >
           {displayValue}
         </a>
       ) : (
-        <p className={mono ? 'text-gray-900 font-mono text-xs' : 'text-gray-900'}>
+        <p className={mono ? 'text-gray-900 dark:text-gray-100 font-mono text-xs' : 'text-gray-900 dark:text-gray-100'}>
           {displayValue}
         </p>
       )}
@@ -600,8 +600,8 @@ function TabButton({
       onClick={onClick}
       className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
         active
-          ? 'border-blue-500 text-blue-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+          : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
       }`}
     >
       {icon}

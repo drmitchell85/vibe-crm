@@ -3,7 +3,41 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light mode (default) */
+  :root {
+    --color-bg-primary: 255 255 255;       /* white */
+    --color-bg-secondary: 249 250 251;     /* gray-50 */
+    --color-bg-tertiary: 243 244 246;      /* gray-100 */
+    --color-bg-hover: 243 244 246;         /* gray-100 */
+    --color-text-primary: 17 24 39;        /* gray-900 */
+    --color-text-secondary: 107 114 128;   /* gray-500 */
+    --color-text-muted: 156 163 175;       /* gray-400 */
+    --color-border: 229 231 235;           /* gray-200 */
+    --color-border-focus: 209 213 219;     /* gray-300 */
+    --tooltip-bg: #ffffff;
+    --tooltip-border: #E5E7EB;
+    --tooltip-text: #111827;
+  }
+
+  /* Dark mode */
+  html.dark {
+    --color-bg-primary: 17 24 39;          /* gray-900 */
+    --color-bg-secondary: 31 41 55;        /* gray-800 */
+    --color-bg-tertiary: 55 65 81;         /* gray-700 */
+    --color-bg-hover: 55 65 81;            /* gray-700 */
+    --color-text-primary: 249 250 251;     /* gray-50 */
+    --color-text-secondary: 209 213 219;   /* gray-300 */
+    --color-text-muted: 156 163 175;       /* gray-400 */
+    --color-border: 75 85 99;              /* gray-600 */
+    --color-border-focus: 107 114 128;     /* gray-500 */
+    --tooltip-bg: #1f2937;
+    --tooltip-border: #374151;
+    --tooltip-text: #f9fafb;
+  }
+
   body {
     @apply font-sans antialiased;
+    @apply bg-white dark:bg-gray-900;
+    @apply text-gray-900 dark:text-gray-50;
   }
 }

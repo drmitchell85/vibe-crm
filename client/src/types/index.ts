@@ -175,3 +175,110 @@ export interface UpdateTagInput {
 export interface ContactWithTags extends Contact {
   tags?: Tag[];
 }
+
+// ============================================
+// Contact Filters & Sorting Types
+// ============================================
+
+export type ContactSortField = 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+export type SortOrder = 'asc' | 'desc';
+
+export interface ContactFilters {
+  tags?: string[];
+  company?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+  hasReminders?: boolean;
+  hasOverdueReminders?: boolean;
+}
+
+export interface ContactSort {
+  sortBy: ContactSortField;
+  sortOrder: SortOrder;
+}
+
+export interface ContactQueryOptions extends ContactFilters {
+  sortBy?: ContactSortField;
+  sortOrder?: SortOrder;
+  page?: number;
+  limit?: number;
+}
+
+// ============================================
+// Pagination Types
+// ============================================
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
+
+// ============================================
+// Search Types
+// ============================================
+
+export type SearchEntityType = 'contact' | 'note' | 'interaction' | 'reminder';
+
+export interface SearchResult {
+  id: string;
+  entityType: SearchEntityType;
+  title: string;
+  preview: string;
+  relevanceScore: number;
+  contactId?: string;
+  contactName?: string;
+  createdAt: string;
+}
+
+export interface GlobalSearchResponse {
+  query: string;
+  totalResults: number;
+  results: SearchResult[];
+}
+
+// ============================================
+// Dashboard & Stats Types
+// ============================================
+
+export interface DashboardStats {
+  totalContacts: number;
+  contactsThisMonth: number;
+  contactsLastMonth: number;
+  totalInteractions: number;
+  interactionsThisWeek: number;
+  interactionsThisMonth: number;
+  pendingReminders: number;
+  overdueReminders: number;
+}
+
+export interface ContactGrowthData {
+  month: string; // YYYY-MM format
+  count: number;
+  cumulative: number;
+}
+
+export interface InteractionBreakdown {
+  type: string;
+  count: number;
+  label: string;
+}
+
+export type ActivityType = 'interaction' | 'note' | 'reminder';
+
+export interface RecentActivityItem {
+  id: string;
+  type: ActivityType;
+  title: string;
+  description: string;
+  contactId: string;
+  contactName: string;
+  timestamp: string;
+}

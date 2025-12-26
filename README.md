@@ -1,281 +1,135 @@
 # FPH CRM - Personal Contact Relationship Manager
 
-A full-stack personal CRM application for managing contacts, tracking interactions, setting reminders, and organizing relationships in your personal life.
+A full-stack personal CRM application for managing contacts, tracking interactions, setting reminders, and organizing relationships.
 
 ## Tech Stack
 
-**Frontend:**
-- React 18 + TypeScript
-- Vite (build tool)
-- Tailwind CSS + Shadcn/ui (UI components)
-- React Query (server state management)
-- React Router v6 (routing)
-
-**Backend:**
-- Node.js + Express + TypeScript
-- PostgreSQL (database)
-- Prisma ORM (type-safe database operations)
-- RESTful API
-
-**Development:**
-- npm workspaces (package manager)
-- ESLint + Prettier (code quality)
-- Monorepo structure
+| Layer | Technologies |
+|-------|--------------|
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, React Query, React Router v6 |
+| **Backend** | Node.js, Express, TypeScript, Prisma ORM, PostgreSQL |
+| **Testing** | Jest, Supertest (358 tests) |
+| **Docs** | Swagger/OpenAPI, Postman |
 
 ## Features
 
-### Current Features
-- ✅ Database setup with PostgreSQL and Prisma
-- ✅ Complete database schema (Contact, Interaction, Reminder, Note, Tag models)
-- ✅ RESTful API for contact management (CRUD operations + search)
-- ✅ API documentation with Swagger UI at /api-docs
-- ✅ Postman collection for API testing
-- ✅ Frontend foundation with React + TypeScript + Tailwind CSS
-- ✅ API client with axios and React Query
-- ✅ Responsive layout with navigation
-- ✅ Dashboard homepage with API status and contact count
-- ✅ Contact list page with table display and search (debounced)
-- ✅ Contact detail page with formatted information
-- ✅ Create contact form with validation
-- ✅ Edit contact form with pre-populated data
-- ✅ Delete contact with confirmation dialog
-- ✅ Dynamic social media fields (twitter, linkedin, github, mastodon, etc.)
-- ✅ Loading, error, and empty states throughout UI
+- **Contact Management** - Store contacts with flexible fields (name, email, phone, company, social media, etc.)
+- **Interaction Tracking** - Log calls, meetings, emails, coffees, lunches, and events
+- **Reminders** - Set follow-up reminders with due dates and completion tracking
+- **Notes** - Attach notes to contacts with pinning support
+- **Tags** - Organize contacts with color-coded tags
+- **Global Search** - Search across contacts, notes, interactions, and reminders (Cmd/Ctrl+K)
+- **Advanced Filtering** - Filter contacts by tags, company, date range, and reminder status
+- **Sorting** - Sort contacts by name, email, company, or date with URL persistence
 
-### Planned Features
-- ✅ Interaction Tracking
-- ✅ Reminders & Follow-ups
-- ✅ API Testing (Unit & Integration)
-- ✅ Notes & Tagging
-- Advanced Search & Filtering
-- Data Import/Export
-- Dashboard with Analytics
+> **Development Progress**: See [ROADMAP.md](./ROADMAP.md) for phase-by-phase tracking.
 
-> **Development Progress**: See [ROADMAP.md](./ROADMAP.md) for detailed phase-by-phase implementation tracking.
+## Quick Start
 
-## Database Schema
+### Prerequisites
 
-### Core Entities
+- Node.js 18+
+- PostgreSQL 14+
 
-**Contact**
-- Basic information: firstName, lastName, email, phone
-- Social: socialMedia (JSON field for flexible social platform tracking: twitter, linkedin, github, mastodon, etc.)
-- Additional: company, jobTitle, address, birthday
-- Relationships: interactions, reminders, notes, tags
+### Setup
 
-**Interaction**
-- Type: CALL, MEETING, EMAIL, TEXT, COFFEE, LUNCH, EVENT, OTHER
-- Fields: subject, notes, date, duration, location
-- Links to: Contact
+```bash
+# 1. Clone and install
+git clone <repo-url>
+cd fph-crm
+npm install
 
-**Reminder**
-- Fields: title, description, dueDate, isCompleted, completedAt
-- Links to: Contact
+# 2. Configure environment
+# Create server/.env:
+DATABASE_URL="postgresql://user:password@localhost:5432/fph_crm"
+PORT=3001
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
 
-**Note**
-- Fields: content, isPinned
-- Links to: Contact
+# 3. Set up database
+cd server
+npm run prisma:migrate
 
-**Tag**
-- Fields: name, color
-- Links to: Contacts (many-to-many)
+# 4. Start development servers
+make dev
+# Or separately:
+# Terminal 1: cd server && npm run dev
+# Terminal 2: cd client && npm run dev
+```
+
+**URLs:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001
+- API Docs: http://localhost:3001/api-docs
+- Database GUI: `make db-studio`
 
 ## Project Structure
 
 ```
 fph-crm/
-├── client/                      # React frontend
+├── client/               # React frontend
+│   └── src/
+│       ├── components/   # UI components
+│       ├── pages/        # Route pages
+│       ├── hooks/        # Custom hooks
+│       ├── lib/          # API client
+│       └── types/        # TypeScript types
+├── server/               # Express backend
 │   ├── src/
-│   │   ├── components/          # Reusable UI components
-│   │   ├── pages/               # Page components
-│   │   ├── hooks/               # Custom React hooks
-│   │   ├── lib/                 # API client & utilities
-│   │   ├── types/               # TypeScript types
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   └── package.json
-│
-├── server/                      # Express backend
-│   ├── src/
-│   │   ├── routes/              # API routes
-│   │   ├── controllers/         # Request handlers
-│   │   ├── services/            # Business logic
-│   │   ├── middleware/          # Error handling, validation
-│   │   └── index.ts
-│   ├── prisma/
-│   │   ├── schema.prisma        # Database schema
-│   │   └── migrations/
-│   └── package.json
-│
-├── shared/                      # Shared TypeScript types
-├── Makefile                     # Make commands for common tasks
-├── README.md                    # This file
-├── ROADMAP.md                   # Development progress tracking
-└── package.json                 # Root package.json
+│   │   ├── routes/       # API routes (with Swagger docs)
+│   │   ├── controllers/  # Request handlers
+│   │   ├── services/     # Business logic
+│   │   └── test/         # Unit & integration tests
+│   └── prisma/           # Database schema & migrations
+├── postman/              # API testing collection
+├── ROADMAP.md            # Development progress
+└── Makefile              # Common commands
 ```
 
-## Getting Started
+## Common Commands
 
-### Prerequisites
-- Node.js 18 or higher
-- npm 9 or higher (comes with Node.js)
-- PostgreSQL 14 or higher
-- Git
+```bash
+make dev            # Start client + server
+make test           # Run backend tests
+make test-coverage  # Tests with coverage report
+make db-studio      # Open Prisma Studio
+make build          # Production build
+```
 
-### Installation
+Run `make help` for all available commands.
 
-1. Clone the repository:
-   ```bash
-   git clone <repo-url>
-   cd fph-crm
-   ```
+## API Reference
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+Full interactive documentation at **http://localhost:3001/api-docs** (Swagger UI)
 
-3. Set up environment variables:
+### Key Endpoints
 
-   Create `/server/.env`:
-   ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/fph_crm"
-   PORT=3001
-   NODE_ENV=development
-   CORS_ORIGIN=http://localhost:5173
-   ```
+| Resource | Endpoints |
+|----------|-----------|
+| **Contacts** | `GET/POST /api/contacts`, `GET/PUT/DELETE /api/contacts/:id` |
+| **Search** | `GET /api/search?q=query` (global), `GET /api/contacts/search?q=query` |
+| **Interactions** | `GET/POST /api/contacts/:id/interactions`, `GET/PUT/DELETE /api/interactions/:id` |
+| **Reminders** | `GET /api/reminders`, `/upcoming`, `/overdue`, `PATCH /:id/complete` |
+| **Notes** | `GET/POST /api/contacts/:id/notes`, `PATCH /api/notes/:id/pin` |
+| **Tags** | `GET/POST /api/tags`, `GET /api/tags/:id/contacts` |
 
-   Create `/client/.env`:
-   ```env
-   VITE_API_URL=http://localhost:3001/api
-   ```
+### Contact Filtering & Sorting
 
-4. Set up the database:
-   ```bash
-   cd server
-   npm run prisma migrate dev
-   npm run prisma db seed  # Optional: seed with sample data
-   ```
+```
+GET /api/contacts?tags=id1,id2&company=Acme&hasReminders=true&sortBy=name&sortOrder=desc
+```
 
-5. Start the development servers:
-   ```bash
-   # Terminal 1 - Backend
-   cd server
-   npm run dev
-
-   # Terminal 2 - Frontend
-   cd client
-   npm run dev
-   ```
-
-6. Open http://localhost:5173 in your browser
-
-## Make Commands
-
-This project includes a Makefile for convenient command shortcuts. Run `make help` to see all available commands:
-
-| Command | Description |
-|---------|-------------|
-| `make install` | Install all dependencies |
-| `make dev` | Start development servers (client + server) |
-| `make dev-server` | Start backend server only |
-| `make dev-client` | Start frontend client only |
-| `make build` | Build for production |
-| `make lint` | Run linting |
-| `make format` | Format code with Prettier |
-| `make test` | Run all tests |
-| `make test-watch` | Run tests in watch mode |
-| `make test-coverage` | Run tests with coverage |
-| `make db-migrate` | Run database migrations |
-| `make db-generate` | Generate Prisma client |
-| `make db-studio` | Open Prisma Studio |
-| `make clean` | Remove build artifacts and node_modules |
-
-## Development Workflow
-
-- Backend runs on `http://localhost:3001`
-- Frontend runs on `http://localhost:5173`
-- Database GUI: `make db-studio` or `npm run prisma studio` (from `/server` directory)
-
-## API Endpoints
-
-Full interactive API documentation is available at **http://localhost:3001/api-docs** (Swagger UI)
-
-### Contacts
-- `GET /api/contacts` - List all contacts (supports `?tags=id1,id2` filter with AND logic)
-- `GET /api/contacts/search?q={query}` - Search contacts by name, email, twitter, or company
-- `GET /api/contacts/:id` - Get single contact with related data
-- `POST /api/contacts` - Create contact
-- `PUT /api/contacts/:id` - Update contact
-- `DELETE /api/contacts/:id` - Delete contact
-- `POST /api/contacts/:id/tags` - Add a tag to contact (idempotent)
-- `DELETE /api/contacts/:id/tags/:tagId` - Remove a tag from contact
-
-### Interactions
-- `GET /api/contacts/:contactId/interactions` - List interactions for a contact (supports `type`, `startDate`, `endDate` filters)
-- `GET /api/interactions/:id` - Get single interaction
-- `POST /api/contacts/:contactId/interactions` - Create interaction
-- `PUT /api/interactions/:id` - Update interaction
-- `DELETE /api/interactions/:id` - Delete interaction
-
-### Reminders
-- `GET /api/reminders` - List all reminders (supports `isCompleted`, `startDate`, `endDate` filters)
-- `GET /api/reminders/upcoming` - Get upcoming incomplete reminders (supports `limit` param)
-- `GET /api/reminders/overdue` - Get overdue incomplete reminders
-- `GET /api/contacts/:contactId/reminders` - List reminders for a contact
-- `GET /api/reminders/:id` - Get single reminder
-- `POST /api/contacts/:contactId/reminders` - Create reminder
-- `PUT /api/reminders/:id` - Update reminder
-- `PATCH /api/reminders/:id/complete` - Toggle reminder completion
-- `DELETE /api/reminders/:id` - Delete reminder
-
-### Tags
-- `GET /api/tags` - List all tags with contact counts
-- `GET /api/tags/:id` - Get single tag with contact count
-- `POST /api/tags` - Create tag (returns 409 on duplicate name)
-- `PUT /api/tags/:id` - Update tag (partial updates allowed)
-- `DELETE /api/tags/:id` - Delete tag (removes from all contacts)
-- `GET /api/tags/:id/contacts` - List all contacts with specific tag
-
-### Notes
-- `GET /api/contacts/:contactId/notes` - List notes for contact (pinned first)
-- `GET /api/notes/:id` - Get single note with contact info
-- `POST /api/contacts/:contactId/notes` - Create note
-- `PUT /api/notes/:id` - Update note (partial updates allowed)
-- `PATCH /api/notes/:id/pin` - Toggle pin status
-- `DELETE /api/notes/:id` - Delete note
-
-### Health
-- `GET /health` - API health check
+Parameters: `tags`, `company`, `createdAfter`, `createdBefore`, `hasReminders`, `hasOverdueReminders`, `sortBy`, `sortOrder`
 
 ## Testing
 
-The backend includes comprehensive unit and integration tests using Jest and Supertest.
-
 ```bash
-# Run backend tests
-cd server && npm test
-
-# Run tests in watch mode
-cd server && npm run test:watch
-
-# Run tests with coverage report
+cd server && npm test           # Run all tests
+cd server && npm run test:watch # Watch mode
 cd server && npm run test:coverage
-
-# Run frontend tests
-cd client && npm test
 ```
 
-**Test Coverage:** 358 tests across 11 test suites covering:
-- Contact API (CRUD, search, tag linking)
-- Tag API (CRUD, contact lookup)
-- Interaction API (CRUD, filtering)
-- Reminder API (CRUD, upcoming/overdue)
-- Note API (CRUD, pinning)
-
-## Contributing
-
-This is a personal project, but suggestions and feedback are welcome!
+Coverage: 358 tests across Contact, Tag, Interaction, Reminder, Note, and Search APIs.
 
 ## License
 
@@ -283,4 +137,4 @@ MIT
 
 ---
 
-**Last Updated**: 2025-12-23 | **Current Phase**: 5 - Notes & Tagging (Complete) | See [ROADMAP.md](./ROADMAP.md) for details
+**Current Phase**: 6 - Enhanced UI/UX & Search (6.1-6.5 Complete) | See [ROADMAP.md](./ROADMAP.md)

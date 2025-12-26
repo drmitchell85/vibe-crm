@@ -30,8 +30,8 @@ export function NoteCard({ note, onEdit, onTogglePin, isPinning = false }: NoteC
 
   return (
     <div
-      className={`bg-white border rounded-lg p-4 hover:shadow-md transition-shadow ${
-        note.isPinned ? 'border-amber-300 bg-amber-50/50' : 'border-gray-200'
+      className={`bg-white dark:bg-gray-800 border rounded-lg p-4 hover:shadow-md transition-shadow ${
+        note.isPinned ? 'border-amber-300 dark:border-amber-600 bg-amber-50/50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'
       }`}
     >
       {/* Header with pin and actions */}
@@ -47,8 +47,8 @@ export function NoteCard({ note, onEdit, onTogglePin, isPinning = false }: NoteC
             disabled={isPinning}
             className={`p-1 rounded transition-colors ${
               note.isPinned
-                ? 'text-amber-600 hover:text-amber-700'
-                : 'text-gray-400 hover:text-gray-600'
+                ? 'text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
+                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
             } ${isPinning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             title={note.isPinned ? 'Unpin note' : 'Pin note'}
           >
@@ -67,7 +67,7 @@ export function NoteCard({ note, onEdit, onTogglePin, isPinning = false }: NoteC
             </svg>
           </button>
           {note.isPinned && (
-            <span className="text-xs font-medium text-amber-600">Pinned</span>
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Pinned</span>
           )}
         </div>
 
@@ -76,7 +76,7 @@ export function NoteCard({ note, onEdit, onTogglePin, isPinning = false }: NoteC
           <button
             type="button"
             onClick={onEdit}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             title="Edit note"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,14 +93,14 @@ export function NoteCard({ note, onEdit, onTogglePin, isPinning = false }: NoteC
 
       {/* Note content */}
       <div
-        className="text-gray-700 whitespace-pre-wrap break-words cursor-pointer"
+        className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words cursor-pointer"
         onClick={onEdit}
       >
         {note.content}
       </div>
 
       {/* Timestamp */}
-      <div className="mt-3 text-xs text-gray-400" title={fullTimestamp}>
+      <div className="mt-3 text-xs text-gray-400 dark:text-gray-500" title={fullTimestamp}>
         {relativeTime}
         {wasEdited && (
           <span className="ml-2" title={`Edited ${editedTimestamp}`}>

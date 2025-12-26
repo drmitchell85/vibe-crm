@@ -87,14 +87,14 @@ export function TagsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tags</h1>
-          <p className="mt-1 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Tags</h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">
             Organize your contacts with custom tags
           </p>
         </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
         >
           + Create Tag
         </button>
@@ -141,11 +141,11 @@ export function TagsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
+          <p className="text-gray-700 dark:text-gray-300">
             Are you sure you want to delete the tag{' '}
             <strong>"{deletingTag?.name}"</strong>?
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             This will remove the tag from all contacts. The contacts themselves
             will not be deleted.
           </p>
@@ -153,7 +153,7 @@ export function TagsPage() {
             <button
               onClick={() => setDeletingTag(null)}
               disabled={deleteMutation.isPending}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50"
             >
               Cancel
             </button>
@@ -171,7 +171,7 @@ export function TagsPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <LoadingState message="Loading tags..." size="lg" />
         </div>
       )}
@@ -187,7 +187,7 @@ export function TagsPage() {
 
       {/* Empty State */}
       {!isLoading && !error && tags && tags.length === 0 && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <EmptyState
             icon="🏷️"
             title="No tags yet"
@@ -196,7 +196,7 @@ export function TagsPage() {
             action={
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
               >
                 + Create Your First Tag
               </button>
@@ -220,7 +220,7 @@ export function TagsPage() {
 
       {/* Tags Count */}
       {!isLoading && tags && tags.length > 0 && (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
           {tags.length} tag{tags.length !== 1 ? 's' : ''} total
         </p>
       )}
@@ -235,7 +235,7 @@ function TagCard({ tag, onClick }: { tag: Tag; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-lg shadow p-4 text-left hover:shadow-md transition-shadow w-full"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-left hover:shadow-md transition-shadow w-full"
     >
       <div className="flex items-start justify-between">
         <TagBadge tag={tag} />
@@ -253,13 +253,13 @@ function TagCard({ tag, onClick }: { tag: Tag; onClick: () => void }) {
           />
         </svg>
       </div>
-      <div className="mt-3 text-sm text-gray-600">
+      <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
         {tag.contactCount !== undefined ? (
           <span>
             {tag.contactCount} contact{tag.contactCount !== 1 ? 's' : ''}
           </span>
         ) : (
-          <span className="text-gray-400">—</span>
+          <span className="text-gray-400 dark:text-gray-500">—</span>
         )}
       </div>
     </button>

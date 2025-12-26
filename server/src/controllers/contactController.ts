@@ -118,11 +118,11 @@ export const contactController = {
   },
 
   /**
-   * Get all contacts with optional tag filtering
+   * Get all contacts with optional advanced filtering, sorting, and pagination
    */
-  async getContactsWithTagFilter(req: Request, res: Response, next: NextFunction) {
+  async getContactsWithFilters(req: Request, res: Response, next: NextFunction) {
     try {
-      const { tags } = req.query;
+      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders, sortBy, sortOrder, page, limit } = req.query;
 
       // Parse tags query parameter (comma-separated tag IDs)
       let tagIds: string[] | undefined;
@@ -130,11 +130,101 @@ export const contactController = {
         tagIds = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
       }
 
-      const contacts = await contactService.getContactsWithTagFilter(tagIds);
+      // Parse company filter
+      const companyFilter = company && typeof company === 'string' ? company : undefined;
+
+      // Parse date filters
+      let createdAfterDate: Date | undefined;
+      let createdBeforeDate: Date | undefined;
+      if (createdAfter && typeof createdAfter === 'string') {
+        createdAfterDate = new Date(createdAfter);
+        if (isNaN(createdAfterDate.getTime())) {
+          throw new AppError('Invalid createdAfter date format', 400, 'INVALID_DATE');
+        }
+      }
+      if (createdBefore && typeof createdBefore === 'string') {
+        createdBeforeDate = new Date(createdBefore);
+        if (isNaN(createdBeforeDate.getTime())) {
+          throw new AppError('Invalid createdBefore date format', 400, 'INVALID_DATE');
+        }
+      }
+
+      // Parse boolean filters
+      const hasRemindersFilter = hasReminders === 'true' ? true : undefined;
+      const hasOverdueRemindersFilter = hasOverdueReminders === 'true' ? true : undefined;
+
+      // Parse sort parameters
+      const validSortFields = ['name', 'email', 'company', 'createdAt', 'updatedAt'];
+      const validSortOrders = ['asc', 'desc'];
+
+      let sortByField: 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt' | undefined;
+      if (sortBy && typeof sortBy === 'string' && validSortFields.includes(sortBy)) {
+        sortByField = sortBy as 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+      }
+
+      let sortOrderValue: 'asc' | 'desc' | undefined;
+      if (sortOrder && typeof sortOrder === 'string' && validSortOrders.includes(sortOrder)) {
+        sortOrderValue = sortOrder as 'asc' | 'desc';
+      }
+
+      // Parse pagination parameters
+      let pageNum: number | undefined;
+      let limitNum: number | undefined;
+      if (page && typeof page === 'string') {
+        pageNum = parseInt(page, 10);
+        if (isNaN(pageNum) || pageNum < 1) {
+          throw new AppError('Invalid page number', 400, 'INVALID_PAGE');
+        }
+      }
+      if (limit && typeof limit === 'string') {
+        limitNum = parseInt(limit, 10);
+        if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+          throw new AppError('Invalid limit (must be 1-100)', 400, 'INVALID_LIMIT');
+        }
+      }
+
+      const result = await contactService.getContactsWithFilters({
+        tagIds,
+        company: companyFilter,
+        createdAfter: createdAfterDate,
+        createdBefore: createdBeforeDate,
+        hasReminders: hasRemindersFilter,
+        hasOverdueReminders: hasOverdueRemindersFilter,
+        sortBy: sortByField,
+        sortOrder: sortOrderValue,
+        page: pageNum,
+        limit: limitNum,
+      });
+
+      // Handle paginated vs non-paginated response
+      if (pageNum !== undefined && limitNum !== undefined) {
+        const paginatedResult = result as { contacts: any[]; pagination: any };
+        res.json({
+          success: true,
+          data: paginatedResult.contacts,
+          pagination: paginatedResult.pagination
+        });
+      } else {
+        res.json({
+          success: true,
+          data: result
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Get all distinct company names for filter dropdown
+   */
+  async getDistinctCompanies(req: Request, res: Response, next: NextFunction) {
+    try {
+      const companies = await contactService.getDistinctCompanies();
 
       res.json({
         success: true,
-        data: contacts
+        data: companies
       });
     } catch (error) {
       next(error);

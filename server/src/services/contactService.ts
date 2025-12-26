@@ -212,44 +212,214 @@ export const contactService = {
   },
 
   /**
-   * Get all contacts with optional tag filtering
-   * @param tagIds - Optional array of tag IDs to filter by (contacts must have ALL tags)
-   * @returns Array of contacts matching the filter
+   * Valid sort fields for contacts
    */
-  async getContactsWithTagFilter(tagIds?: string[]) {
-    try {
-      const whereClause: Prisma.ContactWhereInput = {};
 
-      // If tag IDs provided, filter contacts that have ALL specified tags
+  /**
+   * Get all contacts with optional advanced filtering, sorting, and pagination
+   * @param options - Filter, sort, and pagination options for contacts
+   * @returns Object with contacts array and pagination metadata
+   */
+  async getContactsWithFilters(options: {
+    tagIds?: string[];
+    company?: string;
+    createdAfter?: Date;
+    createdBefore?: Date;
+    hasReminders?: boolean;
+    hasOverdueReminders?: boolean;
+    sortBy?: 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
+    sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  } = {}) {
+    try {
+      const {
+        tagIds,
+        company,
+        createdAfter,
+        createdBefore,
+        hasReminders,
+        hasOverdueReminders,
+        sortBy = 'name',
+        sortOrder = 'asc',
+        page,
+        limit
+      } = options;
+
+      const conditions: Prisma.ContactWhereInput[] = [];
+
+      // Tag filter - contacts must have ALL specified tags
       if (tagIds && tagIds.length > 0) {
-        whereClause.AND = tagIds.map(tagId => ({
-          tags: {
-            some: {
-              tagId: tagId
+        tagIds.forEach(tagId => {
+          conditions.push({
+            tags: {
+              some: {
+                tagId: tagId
+              }
             }
-          }
-        }));
+          });
+        });
       }
 
-      const contacts = await prisma.contact.findMany({
-        where: whereClause,
-        orderBy: [
-          { lastName: 'asc' },
-          { firstName: 'asc' }
-        ],
-        include: {
-          tags: {
-            include: {
-              tag: true
+      // Company filter - case insensitive contains
+      if (company) {
+        conditions.push({
+          company: {
+            contains: company,
+            mode: 'insensitive'
+          }
+        });
+      }
+
+      // Created date range filter
+      if (createdAfter || createdBefore) {
+        const createdAtFilter: Prisma.DateTimeFilter = {};
+        if (createdAfter) {
+          createdAtFilter.gte = createdAfter;
+        }
+        if (createdBefore) {
+          createdAtFilter.lte = createdBefore;
+        }
+        conditions.push({ createdAt: createdAtFilter });
+      }
+
+      // Has overdue reminders filter (incomplete + past due date)
+      if (hasOverdueReminders === true) {
+        conditions.push({
+          reminders: {
+            some: {
+              isCompleted: false,
+              dueDate: {
+                lt: new Date()
+              }
             }
           }
-        }
-      });
+        });
+      }
+      // Has any pending reminders filter (incomplete, any due date)
+      else if (hasReminders === true) {
+        conditions.push({
+          reminders: {
+            some: {
+              isCompleted: false
+            }
+          }
+        });
+      }
+
+      const whereClause: Prisma.ContactWhereInput = conditions.length > 0
+        ? { AND: conditions }
+        : {};
+
+      // Build orderBy clause based on sortBy field
+      let orderBy: Prisma.ContactOrderByWithRelationInput[];
+      switch (sortBy) {
+        case 'name':
+          // Sort by lastName then firstName
+          orderBy = [
+            { lastName: sortOrder },
+            { firstName: sortOrder }
+          ];
+          break;
+        case 'email':
+          // Nulls last for email sorting
+          orderBy = [{ email: { sort: sortOrder, nulls: 'last' } }];
+          break;
+        case 'company':
+          // Nulls last for company sorting
+          orderBy = [{ company: { sort: sortOrder, nulls: 'last' } }];
+          break;
+        case 'createdAt':
+          orderBy = [{ createdAt: sortOrder }];
+          break;
+        case 'updatedAt':
+          orderBy = [{ updatedAt: sortOrder }];
+          break;
+        default:
+          orderBy = [{ lastName: 'asc' }, { firstName: 'asc' }];
+      }
+
+      // Apply pagination if both page and limit are provided
+      const isPaginated = page !== undefined && limit !== undefined;
+      const skip = isPaginated ? (page - 1) * limit : undefined;
+      const take = isPaginated ? limit : undefined;
+
+      // Execute query with optional pagination
+      const [contacts, totalCount] = await Promise.all([
+        prisma.contact.findMany({
+          where: whereClause,
+          orderBy,
+          skip,
+          take,
+          include: {
+            tags: {
+              include: {
+                tag: true
+              }
+            }
+          }
+        }),
+        // Only count if paginated (for pagination metadata)
+        isPaginated ? prisma.contact.count({ where: whereClause }) : Promise.resolve(0)
+      ]);
+
+      // Return with pagination metadata if paginated
+      if (isPaginated) {
+        return {
+          contacts,
+          pagination: {
+            page: page!,
+            limit: limit!,
+            total: totalCount,
+            totalPages: Math.ceil(totalCount / limit!),
+            hasMore: page! < Math.ceil(totalCount / limit!)
+          }
+        };
+      }
 
       return contacts;
     } catch (error) {
       throw new AppError('Failed to fetch contacts', 500, 'FETCH_CONTACTS_ERROR');
     }
+  },
+
+  /**
+   * Get all distinct company names for filter dropdown
+   * @returns Array of unique company names
+   */
+  async getDistinctCompanies() {
+    try {
+      const contacts = await prisma.contact.findMany({
+        where: {
+          company: {
+            not: null
+          }
+        },
+        select: {
+          company: true
+        },
+        distinct: ['company'],
+        orderBy: {
+          company: 'asc'
+        }
+      });
+
+      // Filter out nulls and return unique company names
+      return contacts
+        .map(c => c.company)
+        .filter((company): company is string => company !== null);
+    } catch (error) {
+      throw new AppError('Failed to fetch companies', 500, 'FETCH_COMPANIES_ERROR');
+    }
+  },
+
+  /**
+   * Get all contacts with optional tag filtering (legacy method for backwards compatibility)
+   * @param tagIds - Optional array of tag IDs to filter by (contacts must have ALL tags)
+   * @returns Array of contacts matching the filter
+   */
+  async getContactsWithTagFilter(tagIds?: string[]) {
+    return this.getContactsWithFilters({ tagIds });
   },
 
   /**

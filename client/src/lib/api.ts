@@ -4,6 +4,8 @@ import type {
   ContactWithTags,
   CreateContactInput,
   UpdateContactInput,
+  ContactQueryOptions,
+  PaginationMeta,
   Interaction,
   CreateInteractionInput,
   UpdateInteractionInput,
@@ -20,6 +22,11 @@ import type {
   NoteWithContact,
   CreateNoteInput,
   UpdateNoteInput,
+  GlobalSearchResponse,
+  DashboardStats,
+  ContactGrowthData,
+  InteractionBreakdown,
+  RecentActivityItem,
 } from '../types';
 
 /**
@@ -33,6 +40,15 @@ interface ApiResponse<T> {
     code: string;
     details?: any;
   };
+  pagination?: PaginationMeta;
+}
+
+/**
+ * Paginated contacts response
+ */
+export interface PaginatedContactsResponse {
+  contacts: ContactWithTags[];
+  pagination: PaginationMeta;
 }
 
 /**
@@ -395,15 +411,74 @@ class ApiClient {
   }
 
   /**
-   * Get all contacts with optional tag filter (returns normalized contacts with tags)
+   * Get all contacts with optional filters, sorting, and pagination (returns normalized contacts with tags)
+   * When page and limit are provided, returns paginated response with metadata
+   */
+  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[]>;
+  async getContactsWithFilters(options: ContactQueryOptions & { page: number; limit: number }): Promise<PaginatedContactsResponse>;
+  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[] | PaginatedContactsResponse> {
+    const params: Record<string, string> = {};
+
+    if (options) {
+      if (options.tags && options.tags.length > 0) {
+        params.tags = options.tags.join(',');
+      }
+      if (options.company) {
+        params.company = options.company;
+      }
+      if (options.createdAfter) {
+        params.createdAfter = options.createdAfter;
+      }
+      if (options.createdBefore) {
+        params.createdBefore = options.createdBefore;
+      }
+      if (options.hasReminders) {
+        params.hasReminders = 'true';
+      }
+      if (options.hasOverdueReminders) {
+        params.hasOverdueReminders = 'true';
+      }
+      if (options.sortBy) {
+        params.sortBy = options.sortBy;
+      }
+      if (options.sortOrder) {
+        params.sortOrder = options.sortOrder;
+      }
+      if (options.page !== undefined) {
+        params.page = String(options.page);
+      }
+      if (options.limit !== undefined) {
+        params.limit = String(options.limit);
+      }
+    }
+
+    const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
+    const contacts = normalizeContactsArray(response.data.data);
+
+    // Return paginated response if pagination metadata is present
+    if (response.data.pagination) {
+      return {
+        contacts,
+        pagination: response.data.pagination
+      };
+    }
+
+    return contacts;
+  }
+
+  /**
+   * Get all contacts with optional tag filter (legacy method, use getContactsWithFilters instead)
    */
   async getContactsWithTags(tagIds?: string[]): Promise<ContactWithTags[]> {
-    const params: Record<string, string> = {};
-    if (tagIds && tagIds.length > 0) {
-      params.tags = tagIds.join(',');
-    }
-    const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
-    return normalizeContactsArray(response.data.data);
+    return this.getContactsWithFilters({ tags: tagIds });
+  }
+
+  /**
+   * Get all distinct company names for filter dropdown
+   */
+  async getDistinctCompanies(): Promise<string[]> {
+    const response = await this.client.get<ApiResponse<string[]>>('/contacts/companies');
+    return response.data.data;
   }
 
   // ============================================
@@ -467,6 +542,58 @@ class ApiClient {
    */
   async deleteNote(id: string): Promise<void> {
     await this.client.delete(`/notes/${id}`);
+  }
+
+  // ============================================
+  // Search Endpoints
+  // ============================================
+
+  /**
+   * Global search across contacts, notes, interactions, and reminders
+   */
+  async globalSearch(query: string, limit: number = 10): Promise<GlobalSearchResponse> {
+    const response = await this.client.get<ApiResponse<GlobalSearchResponse>>('/search', {
+      params: { q: query, limit },
+    });
+    return response.data.data;
+  }
+
+  // ============================================
+  // Stats Endpoints
+  // ============================================
+
+  /**
+   * Get dashboard statistics
+   */
+  async getDashboardStats(): Promise<DashboardStats> {
+    const response = await this.client.get<ApiResponse<DashboardStats>>('/stats');
+    return response.data.data;
+  }
+
+  /**
+   * Get contact growth data for the last 12 months
+   */
+  async getContactGrowth(): Promise<ContactGrowthData[]> {
+    const response = await this.client.get<ApiResponse<ContactGrowthData[]>>('/stats/growth');
+    return response.data.data;
+  }
+
+  /**
+   * Get interaction breakdown by type
+   */
+  async getInteractionBreakdown(): Promise<InteractionBreakdown[]> {
+    const response = await this.client.get<ApiResponse<InteractionBreakdown[]>>('/stats/interactions');
+    return response.data.data;
+  }
+
+  /**
+   * Get recent activity feed
+   */
+  async getRecentActivity(limit: number = 10): Promise<RecentActivityItem[]> {
+    const response = await this.client.get<ApiResponse<RecentActivityItem[]>>('/stats/activity', {
+      params: { limit },
+    });
+    return response.data.data;
   }
 
   // ============================================

@@ -38,8 +38,8 @@ export function EmptyState({ icon, title, description, action, size = 'md' }: Em
   return (
     <div className={`text-center ${paddingClasses[size]}`}>
       <div className={`${iconSizes[size]} mb-3`}>{icon}</div>
-      <h3 className={`text-gray-900 font-medium mb-1 ${titleSizes[size]}`}>{title}</h3>
-      <p className="text-gray-500 text-sm mb-4">{description}</p>
+      <h3 className={`text-gray-900 dark:text-gray-100 font-medium mb-1 ${titleSizes[size]}`}>{title}</h3>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{description}</p>
       {action}
     </div>
   );

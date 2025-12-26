@@ -25,7 +25,7 @@ export function LoadingState({ message = 'Loading...', size = 'md' }: LoadingSta
   return (
     <div className={`text-center ${paddingClasses[size]}`}>
       <Spinner size={spinnerSizes[size]} />
-      <p className="mt-3 text-gray-600 text-sm">{message}</p>
+      <p className="mt-3 text-gray-600 dark:text-gray-400 text-sm">{message}</p>
     </div>
   );
 }

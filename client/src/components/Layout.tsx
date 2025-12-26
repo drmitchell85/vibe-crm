@@ -1,58 +1,142 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { CommandPalette } from './CommandPalette';
+import { ThemeToggle } from './ThemeToggle';
+import { useKeyboardShortcutsContext } from '../contexts/KeyboardShortcutsContext';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 /**
- * Main layout component with header and navigation
+ * Main layout component with sidebar navigation and global search
  */
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { openHelp } = useKeyboardShortcutsContext();
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/contacts', label: 'Contacts' },
-    { path: '/reminders', label: 'Reminders' },
-    { path: '/tags', label: 'Tags' },
+    { path: '/', label: 'Home', icon: '🏠', shortcut: 'g h' },
+    { path: '/contacts', label: 'Contacts', icon: '👥', shortcut: 'g c' },
+    { path: '/reminders', label: 'Reminders', icon: '🔔', shortcut: 'g r' },
+    { path: '/tags', label: 'Tags', icon: '🏷️', shortcut: 'g t' },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Global keyboard shortcut: Cmd/Ctrl + K to open search
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      setIsSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
-              <Link to="/" className="hover:text-blue-600 transition-colors">
-                FPH CRM
-              </Link>
-            </h1>
-
-            <nav className="flex gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={
-                    isActive(link.path)
-                      ? 'text-sm font-medium text-blue-600'
-                      : 'text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors'
-                  }
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Left Sidebar */}
+      <aside className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        {/* Logo / Brand */}
+        <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
+          <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            FPH CRM
+          </Link>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {children}
-      </main>
+        {/* Search Button */}
+        <div className="px-4 py-4">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <span>Search...</span>
+            <kbd className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </button>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="flex-1 px-4 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              title={`${link.label} (${link.shortcut})`}
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive(link.path)
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <span className="text-lg">{link.icon}</span>
+              <span className="flex-1">{link.label}</span>
+              <span className="hidden group-hover:flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500">
+                {link.shortcut.split(' ').map((key, i) => (
+                  <kbd key={i} className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-[10px]">
+                    {key}
+                  </kbd>
+                ))}
+              </span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* Footer Actions */}
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+          {/* Keyboard Shortcuts Help */}
+          <button
+            onClick={openHelp}
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors"
+          >
+            <span className="text-lg">⌨️</span>
+            <span className="flex-1 text-left">Shortcuts</span>
+            <kbd className="px-1.5 py-0.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">
+              ?
+            </kbd>
+          </button>
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="ml-64">
+        <main className="max-w-7xl mx-auto px-6 py-8 lg:px-8">
+          {children}
+        </main>
+      </div>
+
+      {/* Command Palette (Global Search) */}
+      <CommandPalette
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </div>
   );
 }
