@@ -96,8 +96,10 @@ make db-studio        # Open Prisma Studio GUI
 - `pages/` - Route components (ContactsPage, RemindersPage, etc.)
 - `components/` - Reusable UI components
 - `components/ui/` - Base UI primitives (LoadingState, ErrorState, etc.)
-- `hooks/` - Custom React hooks (useDebounce, etc.)
+- `contexts/` - React contexts (ThemeContext for dark mode)
+- `hooks/` - Custom React hooks (useDebounce, useKeyboardShortcuts, etc.)
 - `lib/api.ts` - Axios client wrapper with typed methods
+- `lib/queryKeys.ts` - Centralized React Query key factory
 - `types/index.ts` - TypeScript interfaces and types
 
 **State Management:**
@@ -192,6 +194,10 @@ const response = await request(app)
 | GET | /api/reminders | List reminders |
 | GET | /api/reminders/upcoming | Upcoming reminders |
 | GET | /api/reminders/overdue | Overdue reminders |
+| GET | /api/stats | Dashboard statistics |
+| GET | /api/stats/growth | Contact growth over time |
+| GET | /api/stats/interactions | Interaction breakdown by type |
+| GET | /api/stats/activity | Recent activity feed |
 
 ## Key Files to Know
 
@@ -199,5 +205,8 @@ const response = await request(app)
 - `server/prisma/schema.prisma` - Database schema
 - `server/src/routes/*.ts` - API routes with Swagger docs
 - `client/src/lib/api.ts` - API client with all endpoints
+- `client/src/lib/queryKeys.ts` - Centralized React Query key factory
 - `client/src/types/index.ts` - Frontend TypeScript types
+- `client/src/contexts/ThemeContext.tsx` - Dark mode theme provider
+- `client/src/hooks/useKeyboardShortcuts.ts` - Global keyboard shortcut handler
 - `postman/FPH-CRM-API.postman_collection.json` - API testing collection

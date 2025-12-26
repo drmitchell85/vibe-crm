@@ -122,108 +122,97 @@ This document tracks the implementation progress of the FPH CRM application, org
 ## Phase 6: Enhanced UI/UX & Search ✅ COMPLETED
 **Completed**: 2025-12-25
 
-**Chunk 6.1: Global Search Backend** ✅ COMPLETED
-- [x] Create search service (`server/src/services/searchService.ts`)
-  - `globalSearch(query)` — search across contacts, notes, interactions, reminders
-  - Return unified results with entity type, relevance score, and preview text
-  - Case-insensitive matching with Prisma `contains` + `mode: 'insensitive'`
-- [x] Create search controller and routes (`GET /api/search?q=query&limit=10`)
-- [x] Swagger documentation for search endpoint
-- [x] Unit tests (30) and integration tests (21) for search service
+**Backend:**
+- Global search service searching across contacts, notes, interactions, reminders
+- Search API endpoint (`GET /api/search?q=query&limit=10`) with relevance scoring
+- Dashboard stats API (`/api/stats`, `/stats/growth`, `/stats/interactions`, `/stats/activity`)
+- Contact filtering by company, date range, reminder status
+- Sortable contact queries with null-last handling
+- Pagination support with metadata (page, limit, total, totalPages, hasMore)
+- Swagger documentation and unit/integration tests for all new endpoints
 
-**Chunk 6.2: Global Search Frontend** ✅ COMPLETED
-- [x] SearchInput component in header (persistent across pages)
-- [x] Command palette modal (Cmd/Ctrl+K to open)
-- [x] Search results with type badges (Contact, Note, Interaction, Reminder)
-- [x] Keyboard navigation in results (arrow keys, Enter to select)
-- [x] Click/select navigates to relevant page
-- [x] Recent searches stored in localStorage
-- [x] Debounced API calls (300ms)
-
-**Chunk 6.3: Advanced Contact Filtering** ✅ COMPLETED
-- [x] Company filter dropdown on contact list (populated from distinct companies via `/api/contacts/companies`)
-- [x] Date range filter (created date with createdAfter/createdBefore)
-- [x] "Has reminders" / "Has overdue reminders" filter toggles
-- [x] Combine with existing tag filter (all filters work together via AND logic)
-- [x] URL parameter persistence for all filters
-- [x] Filter summary chip/badge showing active filter count
-- [x] Collapsible filter panel with expand/collapse toggle
-- [x] Active filter chips with individual remove buttons
-
-**Chunk 6.4: Sorting Options** ✅ COMPLETED
-- [x] Sortable column headers on contact list table (Name, Email, Company)
-- [x] Sort options: Name (A-Z, Z-A), Email, Company, Created Date, Updated Date
-- [x] Sort direction toggle (ascending/descending) - click same column to toggle
-- [x] URL parameter persistence (`?sortBy=name&sortOrder=asc`)
-- [x] Visual indicator on active sort column (blue arrows)
-- [x] Null values sorted last for email/company columns
-
-**Chunk 6.5: Dashboard & Analytics** ✅ COMPLETED
-- [x] Dashboard stats API endpoint (`GET /api/stats`, `/stats/growth`, `/stats/interactions`, `/stats/activity`)
-  - Total contacts, interactions this week/month, pending reminders, overdue count
-  - Contact growth over 12 months with cumulative totals
-  - Interaction breakdown by type with labels
-  - Recent activity feed with activity type, contact info, and timestamps
-- [x] Dashboard page layout with stat cards (4 cards: Contacts, Interactions, Reminders, Tags)
-- [x] Contact growth chart (area chart with cumulative line, 12-month view)
-- [x] Interaction breakdown by type (horizontal bar chart with color coding)
-- [x] Recent activity feed (interactions, notes, reminders with relative timestamps)
-- [x] Quick action buttons (Add Contact, Add Reminder in header)
-
-**Chunk 6.6: Dark Mode** ✅ COMPLETED
-- [x] ThemeContext provider with light/dark/system modes (`client/src/contexts/ThemeContext.tsx`)
-- [x] CSS variables for all colors (backgrounds, text, borders, accents) in `index.css`
-- [x] Theme toggle button in sidebar (cycles through light/dark/system)
-- [x] LocalStorage persistence of theme preference (`fph-crm-theme` key)
-- [x] Respect system preference with `prefers-color-scheme` media query
-- [x] Update Tailwind config for dark mode (class-based strategy)
-- [x] Update all components with dark: variants (Layout, Modal, CommandPalette, pages, UI components)
-
-**Chunk 6.7: Keyboard Shortcuts** ✅ COMPLETED
-- [x] Global keyboard shortcut handler (custom `useKeyboardShortcuts` hook with sequence detection)
-- [x] Navigation shortcuts: `g+c` → Contacts, `g+r` → Reminders, `g+t` → Tags, `g+h` → Home
-- [x] Action shortcuts: `n` → New Contact, `?` → Help modal
-- [x] Modal shortcuts: `Escape` → Close, `Cmd+Enter` → Submit form
-- [x] Keyboard shortcuts help modal (show all available shortcuts)
-- [x] Visual hints in UI (show shortcuts on hover in sidebar and buttons)
-
-**Chunk 6.8: Performance Optimization** ✅ COMPLETED
-- [x] React Query caching strategy review and optimization
-  - Added `gcTime` (30 min) for longer cache retention
-  - Added mutation retry configuration
-  - Created centralized query key factory (`client/src/lib/queryKeys.ts`)
-- [x] Virtualized lists for large datasets (react-window v2)
-  - VirtualizedContactTable component for 50+ contacts
-  - Automatic fallback to regular table for smaller lists
-- [x] Code splitting with React.lazy for route-based chunks
-  - All route components lazy-loaded with Suspense fallback
-  - Manual chunk configuration for vendor libraries (react, react-query, recharts)
-- [x] Bundle size analysis with rollup-plugin-visualizer
-  - Added `npm run build:analyze` script for visualization
-  - Generates `dist/stats.html` with gzip/brotli sizes
-- [x] Image optimization and lazy loading (N/A - no user images in app)
-- [x] API response pagination for large result sets
-  - Backend: Added `page` and `limit` params to contacts endpoint
-  - Returns `pagination` metadata (page, limit, total, totalPages, hasMore)
-  - Frontend: Updated API client with paginated response types
-- [x] Lighthouse audit ready
-  - Run with: `npm run build && npm run preview`, then use Chrome DevTools Lighthouse
-
-**Deliverable:** Polished, fast UI with comprehensive search, dark mode, and keyboard shortcuts
+**Frontend:**
+- Command palette search modal (Cmd/Ctrl+K) with keyboard navigation
+- Recent searches stored in localStorage with debounced API calls
+- Advanced contact filtering: company dropdown, date range, reminder toggles
+- Collapsible filter panel with active filter chips and URL persistence
+- Sortable table columns with visual indicators and direction toggle
+- Dashboard with stat cards, contact growth chart, interaction breakdown, activity feed
+- Dark mode with ThemeContext (light/dark/system), CSS variables, localStorage persistence
+- Global keyboard shortcuts: `g+c/r/t/h` navigation, `n` new contact, `?` help modal
+- Performance: React Query optimization, virtualized lists (react-window), code splitting
+- Bundle analysis with rollup-plugin-visualizer (`npm run build:analyze`)
 
 ---
 
 ## Phase 7: Data Management & Export ⏳ PENDING
 
-**Tasks:**
-- [ ] CSV import/export functionality
-- [ ] Bulk operations (delete, tag multiple contacts)
-- [ ] Settings page
-- [ ] Production configuration
-- [ ] Rate limiting
-- [ ] Error logging
+**Chunk 7.1: CSV Export** ⏳ PENDING
+- [ ] Create export service (`server/src/services/exportService.ts`)
+  - `exportContacts(options)` — generate CSV from contacts with selected fields
+  - Support field selection (name, email, phone, company, tags, etc.)
+  - Handle related data (flatten tags to comma-separated, count interactions)
+- [ ] Export API endpoint (`GET /api/contacts/export?format=csv&fields=...`)
+- [ ] Swagger documentation for export endpoint
+- [ ] Frontend: Export button on Contacts page
+- [ ] Export options modal (field selection, include/exclude filters)
+- [ ] Download handling with proper filename (fph-crm-contacts-YYYY-MM-DD.csv)
 
-**Deliverable:** Import/export and production-ready configuration
+**Chunk 7.2: CSV Import** ⏳ PENDING
+- [ ] Create import service (`server/src/services/importService.ts`)
+  - `parseCSV(file)` — parse uploaded CSV with header detection
+  - `validateImportData(rows)` — validate against contact schema
+  - `importContacts(rows, options)` — bulk create with duplicate handling
+- [ ] Import API endpoint (`POST /api/contacts/import`)
+  - Accept multipart/form-data with CSV file
+  - Return import summary (created, skipped, errors)
+- [ ] Swagger documentation for import endpoint
+- [ ] Frontend: Import button on Contacts page
+- [ ] Import modal with file upload dropzone
+- [ ] CSV preview table with column mapping
+- [ ] Duplicate detection options (skip, update, create new)
+- [ ] Import progress and results summary
+
+**Chunk 7.3: Bulk Operations** ⏳ PENDING
+- [ ] Bulk delete endpoint (`DELETE /api/contacts/bulk` with body: { ids: [...] })
+- [ ] Bulk tag endpoint (`POST /api/contacts/bulk/tags` with body: { ids: [...], tagIds: [...], action: 'add'|'remove' })
+- [ ] Swagger documentation for bulk endpoints
+- [ ] Frontend: Selection mode on contact list (checkboxes)
+- [ ] Select all / deselect all functionality
+- [ ] Bulk action toolbar (appears when items selected)
+  - Delete selected (with confirmation)
+  - Add tags to selected
+  - Remove tags from selected
+- [ ] Selection count indicator
+- [ ] Keyboard shortcuts: `Ctrl+A` select all, `Escape` clear selection
+
+**Chunk 7.4: Settings Page** ⏳ PENDING
+- [ ] Create settings routes and controller
+- [ ] Settings storage (localStorage for frontend preferences)
+- [ ] Settings page (`/settings`) with sections:
+  - **Display**: Default sort order, items per page, date format
+  - **Theme**: Light/Dark/System (move from sidebar)
+  - **Keyboard Shortcuts**: View and customize shortcuts
+  - **Data**: Export all data, clear local cache
+- [ ] Settings context for app-wide preference access
+- [ ] Persist settings to localStorage with migration support
+
+**Chunk 7.5: Production Hardening** ⏳ PENDING
+- [ ] Rate limiting middleware (`express-rate-limit`)
+  - Global rate limit (100 req/min)
+  - Stricter limits for write operations (20 req/min)
+  - Custom error response format
+- [ ] Structured logging (`pino` or `winston`)
+  - Request/response logging with correlation IDs
+  - Error logging with stack traces
+  - Log levels based on NODE_ENV
+- [ ] Security headers (`helmet` middleware)
+- [ ] Input sanitization review
+- [ ] Environment configuration validation (fail fast on missing vars)
+- [ ] Health check endpoint enhancements (`/health` with DB connectivity check)
+- [ ] Graceful shutdown handling
+
+**Deliverable:** Import/export, bulk operations, settings, and production-ready configuration
 
 ---
 
