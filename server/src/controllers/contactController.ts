@@ -118,11 +118,11 @@ export const contactController = {
   },
 
   /**
-   * Get all contacts with optional advanced filtering and sorting
+   * Get all contacts with optional advanced filtering, sorting, and pagination
    */
   async getContactsWithFilters(req: Request, res: Response, next: NextFunction) {
     try {
-      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders, sortBy, sortOrder } = req.query;
+      const { tags, company, createdAfter, createdBefore, hasReminders, hasOverdueReminders, sortBy, sortOrder, page, limit } = req.query;
 
       // Parse tags query parameter (comma-separated tag IDs)
       let tagIds: string[] | undefined;
@@ -167,7 +167,23 @@ export const contactController = {
         sortOrderValue = sortOrder as 'asc' | 'desc';
       }
 
-      const contacts = await contactService.getContactsWithFilters({
+      // Parse pagination parameters
+      let pageNum: number | undefined;
+      let limitNum: number | undefined;
+      if (page && typeof page === 'string') {
+        pageNum = parseInt(page, 10);
+        if (isNaN(pageNum) || pageNum < 1) {
+          throw new AppError('Invalid page number', 400, 'INVALID_PAGE');
+        }
+      }
+      if (limit && typeof limit === 'string') {
+        limitNum = parseInt(limit, 10);
+        if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+          throw new AppError('Invalid limit (must be 1-100)', 400, 'INVALID_LIMIT');
+        }
+      }
+
+      const result = await contactService.getContactsWithFilters({
         tagIds,
         company: companyFilter,
         createdAfter: createdAfterDate,
@@ -176,12 +192,24 @@ export const contactController = {
         hasOverdueReminders: hasOverdueRemindersFilter,
         sortBy: sortByField,
         sortOrder: sortOrderValue,
+        page: pageNum,
+        limit: limitNum,
       });
 
-      res.json({
-        success: true,
-        data: contacts
-      });
+      // Handle paginated vs non-paginated response
+      if (pageNum !== undefined && limitNum !== undefined) {
+        const paginatedResult = result as { contacts: any[]; pagination: any };
+        res.json({
+          success: true,
+          data: paginatedResult.contacts,
+          pagination: paginatedResult.pagination
+        });
+      } else {
+        res.json({
+          success: true,
+          data: result
+        });
+      }
     } catch (error) {
       next(error);
     }

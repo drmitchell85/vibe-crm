@@ -7,6 +7,7 @@ import { Modal } from '../components/Modal';
 import { ContactForm } from '../components/ContactForm';
 import { ContactFilters } from '../components/ContactFilters';
 import { TagBadgeList } from '../components/TagBadge';
+import { VirtualizedContactTable, VIRTUALIZATION_THRESHOLD } from '../components/VirtualizedContactTable';
 import { LoadingState, ErrorState, EmptyState } from '../components/ui';
 import type {
   ContactWithTags,
@@ -284,48 +285,58 @@ export function ContactsPage() {
         </div>
       )}
 
-      {/* Contacts List */}
+      {/* Contacts List - Uses virtualized table for large datasets */}
       {!isLoading && !error && contacts && contacts.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <SortableHeader
-                  field="name"
-                  label="Name"
-                  currentSortBy={sortBy}
-                  currentSortOrder={sortOrder}
-                  onSort={handleSortChange}
-                />
-                <SortableHeader
-                  field="email"
-                  label="Email"
-                  currentSortBy={sortBy}
-                  currentSortOrder={sortOrder}
-                  onSort={handleSortChange}
-                />
-                <SortableHeader
-                  field="company"
-                  label="Company"
-                  currentSortBy={sortBy}
-                  currentSortOrder={sortOrder}
-                  onSort={handleSortChange}
-                />
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Tags
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {contacts.map((contact) => (
-                <ContactRow key={contact.id} contact={contact} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        contacts.length >= VIRTUALIZATION_THRESHOLD ? (
+          <VirtualizedContactTable
+            contacts={contacts}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSortChange}
+            height={Math.min(600, window.innerHeight - 350)}
+          />
+        ) : (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <SortableHeader
+                    field="name"
+                    label="Name"
+                    currentSortBy={sortBy}
+                    currentSortOrder={sortOrder}
+                    onSort={handleSortChange}
+                  />
+                  <SortableHeader
+                    field="email"
+                    label="Email"
+                    currentSortBy={sortBy}
+                    currentSortOrder={sortOrder}
+                    onSort={handleSortChange}
+                  />
+                  <SortableHeader
+                    field="company"
+                    label="Company"
+                    currentSortBy={sortBy}
+                    currentSortOrder={sortOrder}
+                    onSort={handleSortChange}
+                  />
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Tags
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {contacts.map((contact) => (
+                  <ContactRow key={contact.id} contact={contact} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
       )}
 
       {/* Results Count */}

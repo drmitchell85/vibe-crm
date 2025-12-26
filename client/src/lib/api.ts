@@ -5,6 +5,7 @@ import type {
   CreateContactInput,
   UpdateContactInput,
   ContactQueryOptions,
+  PaginationMeta,
   Interaction,
   CreateInteractionInput,
   UpdateInteractionInput,
@@ -39,6 +40,15 @@ interface ApiResponse<T> {
     code: string;
     details?: any;
   };
+  pagination?: PaginationMeta;
+}
+
+/**
+ * Paginated contacts response
+ */
+export interface PaginatedContactsResponse {
+  contacts: ContactWithTags[];
+  pagination: PaginationMeta;
 }
 
 /**
@@ -401,9 +411,12 @@ class ApiClient {
   }
 
   /**
-   * Get all contacts with optional filters and sorting (returns normalized contacts with tags)
+   * Get all contacts with optional filters, sorting, and pagination (returns normalized contacts with tags)
+   * When page and limit are provided, returns paginated response with metadata
    */
-  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[]> {
+  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[]>;
+  async getContactsWithFilters(options: ContactQueryOptions & { page: number; limit: number }): Promise<PaginatedContactsResponse>;
+  async getContactsWithFilters(options?: ContactQueryOptions): Promise<ContactWithTags[] | PaginatedContactsResponse> {
     const params: Record<string, string> = {};
 
     if (options) {
@@ -431,10 +444,26 @@ class ApiClient {
       if (options.sortOrder) {
         params.sortOrder = options.sortOrder;
       }
+      if (options.page !== undefined) {
+        params.page = String(options.page);
+      }
+      if (options.limit !== undefined) {
+        params.limit = String(options.limit);
+      }
     }
 
     const response = await this.client.get<ApiResponse<any[]>>('/contacts', { params });
-    return normalizeContactsArray(response.data.data);
+    const contacts = normalizeContactsArray(response.data.data);
+
+    // Return paginated response if pagination metadata is present
+    if (response.data.pagination) {
+      return {
+        contacts,
+        pagination: response.data.pagination
+      };
+    }
+
+    return contacts;
   }
 
   /**

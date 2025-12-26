@@ -200,6 +200,25 @@ export interface ContactSort {
 export interface ContactQueryOptions extends ContactFilters {
   sortBy?: ContactSortField;
   sortOrder?: SortOrder;
+  page?: number;
+  limit?: number;
+}
+
+// ============================================
+// Pagination Types
+// ============================================
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
 }
 
 // ============================================

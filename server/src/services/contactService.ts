@@ -216,9 +216,9 @@ export const contactService = {
    */
 
   /**
-   * Get all contacts with optional advanced filtering and sorting
-   * @param options - Filter and sort options for contacts
-   * @returns Array of contacts matching the filters, sorted as specified
+   * Get all contacts with optional advanced filtering, sorting, and pagination
+   * @param options - Filter, sort, and pagination options for contacts
+   * @returns Object with contacts array and pagination metadata
    */
   async getContactsWithFilters(options: {
     tagIds?: string[];
@@ -229,6 +229,8 @@ export const contactService = {
     hasOverdueReminders?: boolean;
     sortBy?: 'name' | 'email' | 'company' | 'createdAt' | 'updatedAt';
     sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
   } = {}) {
     try {
       const {
@@ -239,7 +241,9 @@ export const contactService = {
         hasReminders,
         hasOverdueReminders,
         sortBy = 'name',
-        sortOrder = 'asc'
+        sortOrder = 'asc',
+        page,
+        limit
       } = options;
 
       const conditions: Prisma.ContactWhereInput[] = [];
@@ -335,17 +339,43 @@ export const contactService = {
           orderBy = [{ lastName: 'asc' }, { firstName: 'asc' }];
       }
 
-      const contacts = await prisma.contact.findMany({
-        where: whereClause,
-        orderBy,
-        include: {
-          tags: {
-            include: {
-              tag: true
+      // Apply pagination if both page and limit are provided
+      const isPaginated = page !== undefined && limit !== undefined;
+      const skip = isPaginated ? (page - 1) * limit : undefined;
+      const take = isPaginated ? limit : undefined;
+
+      // Execute query with optional pagination
+      const [contacts, totalCount] = await Promise.all([
+        prisma.contact.findMany({
+          where: whereClause,
+          orderBy,
+          skip,
+          take,
+          include: {
+            tags: {
+              include: {
+                tag: true
+              }
             }
           }
-        }
-      });
+        }),
+        // Only count if paginated (for pagination metadata)
+        isPaginated ? prisma.contact.count({ where: whereClause }) : Promise.resolve(0)
+      ]);
+
+      // Return with pagination metadata if paginated
+      if (isPaginated) {
+        return {
+          contacts,
+          pagination: {
+            page: page!,
+            limit: limit!,
+            total: totalCount,
+            totalPages: Math.ceil(totalCount / limit!),
+            hasMore: page! < Math.ceil(totalCount / limit!)
+          }
+        };
+      }
 
       return contacts;
     } catch (error) {

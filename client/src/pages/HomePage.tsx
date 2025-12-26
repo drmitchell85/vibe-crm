@@ -20,7 +20,6 @@ import { ContactForm } from '../components/ContactForm';
 import { ReminderForm } from '../components/ReminderForm';
 import { LoadingState } from '../components/ui';
 import type {
-  DashboardStats,
   ContactGrowthData,
   InteractionBreakdown,
   RecentActivityItem,
@@ -388,8 +387,8 @@ function ContactGrowthChart({ data }: { data: ContactGrowthData[] }) {
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             color: 'var(--tooltip-text, #111827)',
           }}
-          formatter={(value: number, name: string) => [
-            value,
+          formatter={(value, name) => [
+            value ?? 0,
             name === 'cumulative' ? 'Total Contacts' : 'New This Month',
           ]}
           labelFormatter={(label) => `Month: ${label}`}
@@ -441,7 +440,7 @@ function InteractionBreakdownChart({ data }: { data: InteractionBreakdown[] }) {
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             color: 'var(--tooltip-text, #111827)',
           }}
-          formatter={(value: number) => [value, 'Count']}
+          formatter={(value) => [value ?? 0, 'Count']}
         />
         <Bar dataKey="count" radius={[0, 4, 4, 0]}>
           {filteredData.map((_, index) => (
